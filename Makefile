@@ -3,7 +3,7 @@ AVERSIVE_BASE=/home/astralien3000/aversive--
 MMCU=atmega128
 
 CXX=avr-g++
-CXX_FLAGS=-Wall -L$(AVERSIVE_BASE)/build/avr -I$(AVERSIVE_BASE)/include/avr -mmcu=$(MMCU) -std=c++11 -fno-threadsafe-statics -O1 -D__STDC_LIMIT_MACROS
+CXX_FLAGS=-Wall -L$(AVERSIVE_BASE)/build/avr -I$(AVERSIVE_BASE)/include/avr -mmcu=$(MMCU) -std=c++11 -fno-threadsafe-statics -O3 -D__STDC_LIMIT_MACROS
 CXX_LIBS=-laversive_$(MMCU)
 
 OBJCOPY=avr-objcopy
@@ -16,6 +16,7 @@ all: $(HEX)
 
 load: $(HEX)
 	sudo avarice -j /dev/ttyUSB0 --erase --program -f $(HEX)
+#	sudo avrdude -cjtagmkI -p$(MMCU) -P $(DEV) -U flash:w:$(HEX) -D
 
 clean:
 	rm -f $(ELF) $(HEX) *~
