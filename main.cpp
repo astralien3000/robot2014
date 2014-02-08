@@ -9,9 +9,11 @@
 
 #include <device/eirbot2014/encoder.hpp>
 #include <device/eirbot2014/motor.hpp>
-#include <device/eirbot2014/odometer.hpp>
-#include <device/eirbot2014/motor_controller.hpp>
-#include <device/eirbot2014/robot_controller.hpp>
+//#include <device/eirbot2014/odometer.hpp>
+#include <device/controller/motor_controller.hpp>
+#include <device/controller/robot_controller.hpp>
+#include <device/output_converter.hpp>
+#include <device/input_converter.hpp>
 
 #include <math/vect.hpp>
 #include <math/matrix.hpp>
@@ -35,19 +37,15 @@
 #define MOT_L (*(volatile s8*)0x8001)
 #define RESET_FPGA (*(volatile u8*)0x807F)
 
-typedef Encoder<volatile u32> LeftEncoder;
-typedef Encoder<volatile u32> RightEncoder;
+#define RELATION (*(volatile u32*)0x8024)
 
-typedef Motor<volatile s8> LeftMotor;
-typedef Motor<volatile s8> RightMotor;
-
-typedef MotorController<LeftMotor, LeftEncoder, QuadrampFilter, DiffFilter, PidFilter> LeftController;
-typedef MotorController<RightMotor, RightEncoder, QuadrampFilter, DiffFilter, PidFilter> RightController;
-
-typedef Odometer<LeftEncoder, RightEncoder> MyOdometer;
-
-typedef RobotController<LeftController, RightController, MyOdometer, QuadrampFilter, PidFilter, PidFilter> MyRobot;
-
+// READ-ONLY
+#define FPGA_US   (*(volatile u16*)0x8080)
+#define FPGA_MS   (*(volatile u16*)0x8082)
+#define FPGA_S    (*(volatile u16*)0x8084)
+#define POSX_FPGA    (*(volatile u32*)0x8086)
+#define POSY_FPGA    (*(volatile u32*)0x808A)
+#define ROT_FPGA     (*(volatile u16*)0x808E)
 
 // Filters
 PidFilter id;
@@ -68,18 +66,26 @@ QuadrampFilter qramp_d;
 QuadrampFilter qramp_a;
 
 // Devices
-LeftEncoder enc_l("left_encoder", &ENC_L);
-RightEncoder enc_r("left_encoder", &ENC_R);
+Encoder<volatile u32> enc_l("left_encoder", &ENC_L);
+Encoder<volatile u32> enc_r("left_encoder", &ENC_R);
 
-LeftMotor mot_l("left_motor", &MOT_L);
-RightMotor mot_r("left_motor", &MOT_R);
+InputConverter<s32, volatile u32> enc_conv_l(enc_l);
+InputConverter<s32, volatile u32> enc_conv_r(enc_r);
+
+Motor<volatile s8> mot_l("left_motor", &MOT_L);
+Motor<volatile s8> mot_r("left_motor", &MOT_R);
+
+OutputConverter<s32, volatile s8> mot_conv_l(mot_l);
+OutputConverter<s32, volatile s8> mot_conv_r(mot_r);
   
-LeftController motc_l("left_controller", mot_l, enc_l, qramp_l, diff_l, pid_l);
-RightController motc_r("right_controller", mot_r, enc_r, qramp_r, diff_r, pid_r);
+//MotorController motc_l(mot_conv_l, enc_conv_l, qramp_l, diff_l, pid_l);
+//MotorController motc_r(mot_conv_r, enc_conv_r, qramp_r, diff_r, pid_r);
+MotorController motc_l(mot_conv_l, enc_conv_l, id, id, pid_l);
 
-MyOdometer odo("odometer", enc_l, enc_r);
+// TODO : REPAIRE
+//Odometer odo(enc_l, enc_r);
 
-MyRobot robot("robot_controller", motc_l, motc_r, odo, qramp_d, id, pid_d, qramp_a, id, pid_a);
+//RobotController robot(motc_l, motc_r, odo, qramp_d, id, pid_d, qramp_a, id, pid_a);
 
 
 void asserv_init(void) {
@@ -89,7 +95,7 @@ void asserv_init(void) {
   diff_l.setDelta(4);
   pid_l.setGains(800, 0, 0);
   pid_l.setMaxIntegral(1000);
-  pid_l.setOutShift(11);
+  pid_l.setOutShift(5);
   qramp_l.setFirstOrderLimit(100,100);
   qramp_l.setSecondOrderLimit(8,8);
 
@@ -101,8 +107,8 @@ void asserv_init(void) {
   qramp_r.setSecondOrderLimit(8,8);
 
   // Odometer
-  odo.setImpPerCm(100);
-  odo.setDistEncoders(15);
+  //odo.setImpPerCm(100);
+  //odo.setDistEncoders(15);
 
   // Robot
   pid_a.setGains(1000, 10, 0);
@@ -120,81 +126,40 @@ void asserv_init(void) {
   qramp_d.setSecondOrderLimit(1,1);
 }
 
-u16 i = 0;
-
-template<typename T>
-void eeprom_write(u16 addr, T val) {
-  for(u16 i = 0 ; i < sizeof(val) ; i++) {
-    Eeprom::instance().write(addr+i, (u8)(val >> ((sizeof(val) - 1 - i) * 8)));
-  }
+void fpga_init(void) {
+  // Extenral memory initialization
+  Xmem::instance().init();
+  // FPGA manual reste
+  DDRB |= (1<<0); 
+  PORTB &= ~(1<<0);
+  _delay_ms(500);
+  PORTB |= (1<<0);
+  PORTB &= ~(1<<0);
 }
 
-template<typename T>
-void eeprom_read(u16 addr, T& val) {
-  u8 buff;
-  for(u16 i = 0 ; i < sizeof(val) ; i++) {
-    Eeprom::instance().read(addr+i, buff);
-    val <<= 8;
-    val += buff;
-  }
-}
+extern "C" void __cxa_pure_virtual() { while(1); }
 
-void ihm_set_eeprom(UartStream<0>& io, const char* name, u16 addr) {
-    s32 val = 0;
-    eeprom_read(0, val);
-    io << name << " = " << val << "\n";
-    io << "Enter new " << name << " : ";
-    io >> val;
-    eeprom_write(0, val);
-}
+//void ziegler_nichols_algo(Output<s32>&, Input<s32>&, PidFilter&);
+void ziegler_nichols_algo(Output<s32>&, Input<volatile u32>&, PidFilter&);
 
 int main(int argc, char* argv[]) {
-  Xmem::instance().init();
-  //reset FPGA
-  _delay_ms(300);
-  DDRB |= (1<<0);
-  _delay_ms(300);
-  PORTB &= ~(1<<0);
-  _delay_ms(300);
-  _delay_ms(300);
-  PORTB |= (1<<0);
-  _delay_ms(300);
-  PORTB &= ~(1<<0);
-  _delay_ms(300);
-  
-  for(unsigned int i=0x8000;i<0x807F;i++) (*(volatile u8*)i) = 0;
-  RESET_FPGA = 255;
-  _delay_ms(300);
-  RESET_FPGA =0;
+  fpga_init();
 
   MOT_R = 0;
   MOT_L = 0;
   
-  motc_l.inverse();
-  motc_r.inverse();  
+  UartStream<0> io("stdio");
+  //Uart<0>::instance().init();
 
-  asserv_init();
+  ziegler_nichols_algo(motc_l, enc_l, pid_l);
+  return 0;
 
-  Timer<0>& timer = Timer<0>::instance();
-  timer.init();
-  timer.setPrescaler<8>();
-  Timer<0>::OverflowEvent& evt = timer.overflowEvent();
-  evt.setFunction([]() {
-      if(i++ % 30 == 0) {
-	Vect<2, s32> cmd;
-	cmd.coord(0) = 0;
-	cmd.coord(1) = 10;
-	robot.setValue(cmd);
-      }
-    });
-  evt.start();
-
-  //Interrupts::set();
-
-  UartStream<0> io;
-
+  s32 dummy = 0;
   while(1) {
-    ihm_set_eeprom(io, "test", 0);
+    //Uart<0>::instance().send('d');
+    io << "time : " << (s16)FPGA_S << "s " << (s16)FPGA_MS << "ms " << (s16)FPGA_US << "us\n";
+    io << "position (x=" << (s16)POSX_FPGA << " ; y=" << (s16)POSY_FPGA << " ; a=" << (s16)ROT_FPGA << " )\n";
+    io >> dummy;
   }
 
   return 0;
