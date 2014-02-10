@@ -7,7 +7,7 @@
 AVERSIVE_ROOT=/home/astralien3000/aversive--
 
 ## Your project's object .o files
-OBJ= main.o
+OBJ= main.o ziegler_nichols_algo.o
 
 ## Your executable file name
 EXEC=robot.elf
@@ -22,7 +22,7 @@ AVR_CC=avr-g++
 ## Flags
 GEN_CFLAGS=-Wall -Wextra --std=c++11
 SASIAE_CFLAGS=$(GEN_CFLAGS) -DQT_CORE_LIB -fpic
-AVR_CFLAGS=$(GEN_CFLAGS) -fno-threadsafe-statics -D__STD_LIMIT_MACROS -O3
+AVR_CFLAGS=$(GEN_CFLAGS) -fno-threadsafe-statics -D__STDC_LIMIT_MACROS -O3
 
 ## Include
 GEN_INCLUDE= -I$(AVERSIVE_ROOT)/include
@@ -87,12 +87,21 @@ mrproper: clean
 
 ########################################
 # Load
+ELF=$(EXEC)
 HEX=robot.hex
-DEV=/dev/ttyACM0
+DEV=/dev/ttyUSB0
 
-load: $(HEX)
-#	sudo avarice -j $(DEV) --erase --program -f $(HEX)
+OBJCOPY=avr-objcopy
+
+
+$(HEX): $(ELF)
+	$(OBJCOPY) -O ihex $(ELF) $(HEX)
+
+load_unioc: atmega128 $(HEX)
+	sudo avarice -j $(DEV) --erase --program -f $(HEX)
 #	sudo avrdude -cjtagmkI -p$(MMCU) -P $(DEV) -U flash:w:$(HEX) -D
+
+load_arduino: atmega2560 $(HEX)
 	sudo avrdude -cwiring -p$(MMCU) -P $(DEV) -U flash:w:$(HEX) -D
 
 $(HEX): $(ELF)

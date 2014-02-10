@@ -3,7 +3,7 @@
 
 ///////////////////////////////////////////////
 // On UNIOC
-#if defined (_Atmega128_)
+#if defined (__AVR_ATmega128__)
 
 #define ENC_R (*(volatile u32*)0x80A0)
 #define ENC_L (*(volatile u32*)0x8098)
@@ -27,6 +27,8 @@
 ///////////////////////////////////////////////
 //NO UNIOC
 #else
+
+#warning "FPGA is not managed"
 
 u32 ENC_R;
 u32 ENC_L;

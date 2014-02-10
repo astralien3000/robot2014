@@ -10,6 +10,7 @@
 #include <hardware/interrupts.hpp>
 
 
+#define FPGA_US   (*(volatile u16*)0x8080)
 #define FPGA_MS   (*(volatile u16*)0x8082)
 #define FPGA_S    (*(volatile u16*)0x8084)
 
@@ -21,8 +22,8 @@ volatile bool finished = true;
 volatile s32 compter = 0;
 
 Output<s32>* _out;
-//Input<s32>* _in;
-Input<volatile u32>* _in;
+Input<s32>* _in;
+//Input<volatile u32>* _in;
 
 //! \brief Represent a function by an array
 //! \todo implement
@@ -52,11 +53,18 @@ inline s32 time_ms(void) {
   return ((s32)FPGA_S << 16) + (s32)FPGA_MS;
 }
 
+inline s32 time_us(void) {
+  return ((s32)FPGA_MS << 16) + (s32)FPGA_US;
+}
+
 //! \brief Ziegler-Nichols method to configure a PidFilter
 //! \param out : device controlled by a PidFilter
 //! \param in : device used to see the result of a command
 //! \param pid : the PidFilter to configure
-void ziegler_nichols_algo(Output<s32>& out, Input<volatile u32>& in, PidFilter& pid) {
+
+//void ziegler_nichols_algo(Output<s32>& out, Input<volatile u32>& in, PidFilter& pid) {
+void ziegler_nichols_algo(Output<s32>& out, Input<s32>& in, PidFilter& pid) {
+
   // Init
   s32 k = 1;
   pid.setGains(k,0,0);
@@ -69,7 +77,7 @@ void ziegler_nichols_algo(Output<s32>& out, Input<volatile u32>& in, PidFilter& 
   while(!data.oscillating()) {
     io << "New Test with K = " << k << "\n";
     // Increase PID
-    k *= 2;
+    k++;
     pid.setGains(k,0,0);
 
     finished = false;
@@ -95,7 +103,7 @@ void ziegler_nichols_algo(Output<s32>& out, Input<volatile u32>& in, PidFilter& 
 	  }
 	}
 
-	io << (s32)TEST_COMMAND << " " << (s32)_in->getValue() << " " << (s32)pid.out() << "\n";
+	io << "cmd=" << (s32)TEST_COMMAND << " enc=" << (s32)_in->getValue() << " pid.out=" << (s32)pid.out() << "\n";
 	  
 	t1 = t2;
 	//Uart<0>::instance().send('a');
