@@ -13,8 +13,8 @@
 #define FPGA_MS   (*(volatile u16*)0x8082)
 #define FPGA_S    (*(volatile u16*)0x8084)
 
-const s32 RESET_COMMAND = 0;
-const s32 TEST_COMMAND = 10000;
+const u32 RESET_COMMAND = 0;
+const u32 TEST_COMMAND = 10000;
 const s32 MAX_DATA = 200;
 
 volatile bool finished = true;
@@ -77,7 +77,7 @@ void ziegler_nichols_algo(Output<s32>& out, Input<volatile u32>& in, PidFilter& 
     compter = 0;
     i = 0;
 
-    io << "Goto " << TEST_COMMAND << "\n";
+    io << "Goto " << (s32)TEST_COMMAND << "\n";
     s32 t1 = time_ms(), t2 = t1;
     while(!finished) {
       t2 = time_ms();
@@ -95,7 +95,7 @@ void ziegler_nichols_algo(Output<s32>& out, Input<volatile u32>& in, PidFilter& 
 	  }
 	}
 
-	io << TEST_COMMAND << " " << (s32)_in->getValue() << " " << (s32)pid.out() << "\n";
+	io << (s32)TEST_COMMAND << " " << (s32)_in->getValue() << " " << (s32)pid.out() << "\n";
 	  
 	t1 = t2;
 	//Uart<0>::instance().send('a');
@@ -110,7 +110,7 @@ void ziegler_nichols_algo(Output<s32>& out, Input<volatile u32>& in, PidFilter& 
 
     // Reset command
     io << "Returning to default state...\n";
-    io << "Goto " << RESET_COMMAND << "\n";
+    io << "Goto " << (s32)RESET_COMMAND << "\n";
     while(in.getValue() != RESET_COMMAND) {
       out.setValue(RESET_COMMAND);
     }

@@ -5,6 +5,8 @@
 #include <filter/composed_filter.hpp>
 
 #include <device/stream/uart_stream.hpp>
+#include <device/stream/eeprom_stream.hpp>
+
 #include <math/safe_integer.hpp>
 
 #include <device/eirbot2014/encoder.hpp>
@@ -26,26 +28,9 @@
 
 #define F_CPU 16000000l
 
-#include <util/delay.h>
+//#include <util/delay.h>
 
-#define ENC_R (*(volatile u32*)0x80A0)
-#define ENC_L (*(volatile u32*)0x8098)
-#define ENC_MOT_R (*(volatile u32*)0x8094)
-#define ENC_MOT_L (*(volatile u32*)0x809C)
-
-#define MOT_R (*(volatile s8*)0x8000)
-#define MOT_L (*(volatile s8*)0x8001)
-#define RESET_FPGA (*(volatile u8*)0x807F)
-
-#define RELATION (*(volatile u32*)0x8024)
-
-// READ-ONLY
-#define FPGA_US   (*(volatile u16*)0x8080)
-#define FPGA_MS   (*(volatile u16*)0x8082)
-#define FPGA_S    (*(volatile u16*)0x8084)
-#define POSX_FPGA    (*(volatile u32*)0x8086)
-#define POSY_FPGA    (*(volatile u32*)0x808A)
-#define ROT_FPGA     (*(volatile u16*)0x808E)
+#include "fpga.hpp"
 
 // Filters
 PidFilter id;
@@ -67,13 +52,13 @@ QuadrampFilter qramp_a;
 
 // Devices
 Encoder<volatile u32> enc_l("left_encoder", &ENC_L);
-Encoder<volatile u32> enc_r("left_encoder", &ENC_R);
+Encoder<volatile u32> enc_r("right_encoder", &ENC_R);
 
 InputConverter<s32, volatile u32> enc_conv_l(enc_l);
 InputConverter<s32, volatile u32> enc_conv_r(enc_r);
 
 Motor<volatile s8> mot_l("left_motor", &MOT_L);
-Motor<volatile s8> mot_r("left_motor", &MOT_R);
+Motor<volatile s8> mot_r("right_motor", &MOT_R);
 
 OutputConverter<s32, volatile s8> mot_conv_l(mot_l);
 OutputConverter<s32, volatile s8> mot_conv_r(mot_r);
@@ -128,13 +113,13 @@ void asserv_init(void) {
 
 void fpga_init(void) {
   // Extenral memory initialization
-  Xmem::instance().init();
+  // Xmem::instance().init();
   // FPGA manual reste
-  DDRB |= (1<<0); 
-  PORTB &= ~(1<<0);
-  _delay_ms(500);
-  PORTB |= (1<<0);
-  PORTB &= ~(1<<0);
+  // DDRB |= (1<<0); 
+  // PORTB &= ~(1<<0);
+  // _delay_ms(500);
+  // PORTB |= (1<<0);
+  // PORTB &= ~(1<<0);
 }
 
 extern "C" void __cxa_pure_virtual() { while(1); }
@@ -143,23 +128,37 @@ extern "C" void __cxa_pure_virtual() { while(1); }
 void ziegler_nichols_algo(Output<s32>&, Input<volatile u32>&, PidFilter&);
 
 int main(int argc, char* argv[]) {
+  (void)argc;
+  (void)argv;
+
+  Aversive::init();
   fpga_init();
 
   MOT_R = 0;
   MOT_L = 0;
-  
+
   UartStream<0> io("stdio");
+  EepromStream fs("eeprom");
+  fs.setMode(Stream::BINARY);
   //Uart<0>::instance().init();
 
-  ziegler_nichols_algo(motc_l, enc_l, pid_l);
-  return 0;
+  //ziegler_nichols_algo(motc_l, enc_l, pid_l);
+  //return 0;
 
   s32 dummy = 0;
-  while(1) {
+  while(Aversive::isRunning()) {
     //Uart<0>::instance().send('d');
-    io << "time : " << (s16)FPGA_S << "s " << (s16)FPGA_MS << "ms " << (s16)FPGA_US << "us\n";
-    io << "position (x=" << (s16)POSX_FPGA << " ; y=" << (s16)POSY_FPGA << " ; a=" << (s16)ROT_FPGA << " )\n";
+    //io << "time : " << (s16)FPGA_S << "s " << (s16)FPGA_MS << "ms " << (s16)FPGA_US << "us\n";
+    //io << "position (x=" << (s16)POSX_FPGA << " ; y=" << (s16)POSY_FPGA << " ; a=" << (s16)ROT_FPGA << " )\n";
+    dummy = 0;
+    fs.seek(0);
+    fs >> dummy;
+    io << "read " << dummy << "\n";
     io >> dummy;
+    fs.seek(0);
+    fs << dummy;
+    io << "write " << dummy << " " << (s32)55 << "\n";
+    Aversive::sleep();
   }
 
   return 0;
