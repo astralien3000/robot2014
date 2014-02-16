@@ -15,7 +15,7 @@
 #define FPGA_S    (*(volatile u16*)0x8084)
 
 const u32 RESET_COMMAND = 0;
-const u32 TEST_COMMAND = 10000;
+const u32 TEST_COMMAND = 10;
 const s32 MAX_DATA = 200;
 
 volatile bool finished = true;
@@ -47,7 +47,7 @@ public:
 Function data;
 s32 i = 0;
 
-UartStream<0> io("stdio");
+static UartStream<0> io("stdio");
 
 inline s32 time_ms(void) {
   return ((s32)FPGA_S << 16) + (s32)FPGA_MS;
@@ -66,7 +66,7 @@ inline s32 time_us(void) {
 void ziegler_nichols_algo(Output<s32>& out, Input<s32>& in, PidFilter& pid) {
 
   // Init
-  s32 k = 1;
+  s32 k = 500;
   pid.setGains(k,0,0);
   out.setValue(RESET_COMMAND);
   _out = &out;
@@ -77,7 +77,7 @@ void ziegler_nichols_algo(Output<s32>& out, Input<s32>& in, PidFilter& pid) {
   while(!data.oscillating()) {
     io << "New Test with K = " << k << "\n";
     // Increase PID
-    k++;
+    k+=500;
     pid.setGains(k,0,0);
 
     finished = false;
@@ -88,11 +88,11 @@ void ziegler_nichols_algo(Output<s32>& out, Input<s32>& in, PidFilter& pid) {
     io << "Goto " << (s32)TEST_COMMAND << "\n";
     s32 t1 = time_ms(), t2 = t1;
     while(!finished) {
-      t2 = time_ms();
-      if(t2 - t1 > 1) {
+      t2 = time_us();
+      if(t2 - t1 > 500) {
 	if(compter % 3 == 0) {
 	  // Test command
-	  _out->setValue(TEST_COMMAND);
+	  _out->setValue(TEST_COMMAND);	  
 	}
       
 	if(compter % 1 == 0) {
@@ -100,10 +100,12 @@ void ziegler_nichols_algo(Output<s32>& out, Input<s32>& in, PidFilter& pid) {
 	  data(i++) = _in->getValue();
 	  if(MAX_DATA <= i) {
 	    finished = true;
+	    //Uart<0>::instance().send('b');
 	  }
+	  //Uart<0>::instance().send('a');
 	}
 
-	io << "cmd=" << (s32)TEST_COMMAND << " enc=" << (s32)_in->getValue() << " pid.out=" << (s32)pid.out() << "\n";
+	io << (s32)_in->getValue() << "\n";
 	  
 	t1 = t2;
 	//Uart<0>::instance().send('a');
@@ -114,6 +116,7 @@ void ziegler_nichols_algo(Output<s32>& out, Input<s32>& in, PidFilter& pid) {
     io << "Final state : " << (s32)in.getValue() << "\n";
 
     for(int i = 0 ; i < MAX_DATA ; i++) {
+      io << "cmd=" << (s32)TEST_COMMAND << " enc=" << (s32)data(i) << "\n";
     }
 
     // Reset command

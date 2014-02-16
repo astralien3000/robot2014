@@ -7,7 +7,7 @@
 AVERSIVE_ROOT=/home/astralien3000/aversive--
 
 ## Your project's object .o files
-OBJ= main.o ziegler_nichols_algo.o
+OBJ= main.o # ziegler_nichols_algo.o
 
 ## Your executable file name
 EXEC=robot.elf
@@ -32,7 +32,7 @@ AVR_INCLUDE= $(GEN_INCLUDE)/avr
 ## Link
 GEN_LDFLAGS= -L$(AVERSIVE_ROOT)/build
 SASIAE_LDFLAGS= $(GEN_LDFLAGS) -laversive_sasiae -lQt5Core -lpthread
-AVR_LDFLAGS= $(GEN_LDFLAGS) 
+AVR_LDFLAGS= $(GEN_LDFLAGS) /usr/lib/avr/lib/avr51/libm.a
 
 ## Build Directory
 GEN_BUILD_DIR=build
@@ -102,7 +102,7 @@ load_unioc: atmega128 $(HEX)
 #	sudo avrdude -cjtagmkI -p$(MMCU) -P $(DEV) -U flash:w:$(HEX) -D
 
 load_arduino: atmega2560 $(HEX)
-	sudo avrdude -cwiring -p$(MMCU) -P $(DEV) -U flash:w:$(HEX) -D
+	sudo avrdude -cwiring -patmega2560 -P /dev/ttyACM0 -U flash:w:$(HEX) -D
 
 $(HEX): $(ELF)
 	$(OBJCOPY) -O ihex $(ELF) $(HEX)
