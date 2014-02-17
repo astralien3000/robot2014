@@ -32,7 +32,7 @@ AVR_INCLUDE= $(GEN_INCLUDE)/avr
 ## Link
 GEN_LDFLAGS= -L$(AVERSIVE_ROOT)/build
 SASIAE_LDFLAGS= $(GEN_LDFLAGS) -laversive_sasiae -lQt5Core -lpthread
-AVR_LDFLAGS= $(GEN_LDFLAGS) /usr/lib/avr/lib/avr51/libm.a
+AVR_LDFLAGS= $(GEN_LDFLAGS) #-lm
 
 ## Build Directory
 GEN_BUILD_DIR=build

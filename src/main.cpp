@@ -75,7 +75,7 @@ MotorController motc_r(mot_conv_r, enc_conv_r, PidFilter::identity(), diff_r, pi
 //MotorController motc_l(mot_conv_l, enc_conv_l, PidFilter::identity(), PidFilter::identity(), pid_l);
 
 Odometer odo(enc_conv_l, enc_conv_r);
-PositionManager pos(odo);
+//PositionManager pos(odo);
 
 RobotController robot(motc_l, motc_r, odo, qramp_d, id, pid_d, qramp_a, id, pid_a);
 
@@ -233,7 +233,7 @@ void cmd_print_infos(void) {
 }
 
 void cmd_print_pos(void) {
-  io << "position (x=" << (s32)pos.x() << " ; y=" << (s32)pos.y() << " ; a=" << (s32)pos.angle() << " )\n";
+  //io << "position (x=" << (s32)pos.x() << " ; y=" << (s32)pos.y() << " ; a=" << (s32)pos.angle() << " )\n";
   io << "encoder (l=" << (u32)ENC_L << " ; r=" << (u32)ENC_R << ")\n";
   io << "distance=" << (s32)odo.getValue().coord(1) << " ; angle=" << (s32)odo.getValue().coord(0) << "\n";
 }
@@ -321,10 +321,13 @@ int main(int argc, char* argv[]) {
   s32 dummy = 0;
 
   while(Aversive::isRunning()) {
-    cmd_print_infos();
+    //cmd_print_infos();
     //cmd_print_pos();
     //cmd_pid_set();
-    cmd_dist_angle();
+    //cmd_dist_angle();
+    u16 c;
+    io >> c;
+    io << "test : " << (c+ 200) << "\n";
   }
 
   return 0;
