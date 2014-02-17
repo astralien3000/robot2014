@@ -1,22 +1,26 @@
-#include <filter/pid_filter.hpp>
-#include <filter/quadramp_filter.hpp>
-#include <filter/diff_filter.hpp>
+// #include <filter/pid_filter.hpp>
+// #include <filter/diff_filter.hpp>
+// #include <filter/quadramp_filter.hpp>
 #include <filter/feedback_loop_filter.hpp>
 #include <filter/composed_filter.hpp>
+
+#include "filters.hpp"
 
 #include <device/stream/uart_stream.hpp>
 #include <device/stream/eeprom_stream.hpp>
 
 #include <math/safe_integer.hpp>
 
-#include <device/eirbot2014/encoder.hpp>
-#include <device/eirbot2014/motor.hpp>
-#include <device/eirbot2014/odometer.hpp>
-#include <device/controller/motor_controller.hpp>
-#include <device/controller/robot_controller.hpp>
+// #include <device/eirbot2014/encoder.hpp>
+// #include <device/eirbot2014/motor.hpp>
+// #include <device/eirbot2014/odometer.hpp>
+// #include <device/controller/motor_controller.hpp>
+// #include <device/controller/robot_controller.hpp>
 #include <device/output_converter.hpp>
 #include <device/input_converter.hpp>
-#include <device/eirbot2014/position_manager.hpp>
+// #include <device/eirbot2014/position_manager.hpp>
+
+#include "devices.hpp"
 
 #include <math/vect.hpp>
 #include <math/matrix.hpp>
@@ -119,20 +123,6 @@ void asserv_init(void) {
 
   qramp_d.setFirstOrderLimit(100,100);
   qramp_d.setSecondOrderLimit(1,1);
-}
-
-void fpga_init(void) {
-#if defined (__AVR_ATmega128__)
-  // External memory initialization
-  Xmem::instance().init();
-  // FPGA manual reste
-  DDRB |= (1<<0); 
-  PORTB &= ~(1<<0);
-  _delay_ms(500);
-  PORTB |= (1<<0);
-  _delay_ms(1);
-  PORTB &= ~(1<<0);
-#endif
 }
 
 Vect<2, s32> cmd;

@@ -7,7 +7,7 @@
 AVERSIVE_ROOT=/home/astralien3000/aversive--
 
 ## Your project's object .o files
-OBJ= main.o # ziegler_nichols_algo.o
+OBJ= main.o fpga.o # ziegler_nichols_algo.o
 
 ## Your executable file name
 EXEC=robot.elf
