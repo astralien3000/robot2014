@@ -1,5 +1,10 @@
 #include "fpga.hpp"
 
+#include <util/delay.h>
+#include <avr/io.h>
+
+#include <hardware/xmem.hpp>
+
 void fpga_init(void) {
 #if defined (__AVR_ATmega128__)
   // External memory initialization

@@ -7,7 +7,7 @@
 AVERSIVE_ROOT=/home/astralien3000/aversive--
 
 ## Your project's object .o files
-OBJ= main.o fpga.o # ziegler_nichols_algo.o
+OBJ= main.o fpga.o asserv.o eirbot_shell.o # ziegler_nichols_algo.o
 
 ## Your executable file name
 EXEC=robot.elf
@@ -22,7 +22,7 @@ AVR_CC=avr-g++
 ## Flags
 GEN_CFLAGS=-Wall -Wextra --std=c++11
 SASIAE_CFLAGS=$(GEN_CFLAGS) -DQT_CORE_LIB -fpic
-AVR_CFLAGS=$(GEN_CFLAGS) -fno-threadsafe-statics -D__STDC_LIMIT_MACROS -O3
+AVR_CFLAGS=$(GEN_CFLAGS) -fno-threadsafe-statics -D__STDC_LIMIT_MACROS -O3 -DF_CPU=16000000l
 
 ## Include
 GEN_INCLUDE= -I$(AVERSIVE_ROOT)/include

@@ -8,6 +8,9 @@
 #include <device/controller/robot_controller.hpp>
 #include <device/eirbot2014/position_manager.hpp>
 
+#include <device/stream/uart_stream.hpp>
+#include <device/stream/eeprom_stream.hpp>
+
 ////////////////////////////////////////
 // Physical devices
 
