@@ -73,9 +73,9 @@ void asserv_init(void) {
   pid_a.setMaxIntegral(10000);
   pid_a.setOutShift(4);
   
-  pid_d.setGains(200, 0, 0);
+  pid_d.setGains(800, 1, 0);
   pid_d.setMaxIntegral(1000);
-  pid_d.setOutShift(5);
+  pid_d.setOutShift(3);
 
   qramp_a.setFirstOrderLimit(100,100);
   qramp_a.setSecondOrderLimit(3,3);

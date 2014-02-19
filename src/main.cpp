@@ -34,12 +34,6 @@
 #include <hardware/interrupts.hpp>
 
 #include <system/scheduler.hpp>
-
-#if defined (__AVR_ATmega128__)
-#include <util/delay.h>
-#endif
-
-
 #include "fpga.hpp"
 
 // Filters
@@ -127,29 +121,18 @@
 Scheduler& sched = Scheduler::instance();
 
 void control_init(void) {
-// #if defined (__AVR_ATmega128__)
-//   /*
-//   Timer<0>& timer = Timer<0>::instance();
-//   timer.init();
-//   timer.setPrescaler<64>();
-//   Timer<0>::OverflowEvent& evt = timer.overflowEvent();
-//   evt.setFunction([]() {
-//       robot.setValue(cmd);
-//       //Uart<0>::instance().send('b');
-//     });
-//   evt.start();
-//   */
-//   Task t([](void) {
-//       robot.setValue(cmd);
-//       pos.update();
-//     });
+#if defined (__AVR_ATmega128__)
+  Task t([](void) {
+      robot.setValue(cmd);
+      //pos.update();
+    });
 
-//   t.setPeriod(8000);
-//   t.setRepeat();
-//   sched.addTask(t);
+  t.setPeriod(8000);
+  t.setRepeat();
+  sched.addTask(t);
 
-//   Interrupts::set();
-// #endif
+  Interrupts::set();
+#endif
 }
 
 extern "C" void __cxa_pure_virtual() { while(1); }
@@ -183,7 +166,7 @@ int main(int argc, char* argv[]) {
     //cmd_print_infos();
     //cmd_print_pos();
     //cmd_pid_set();
-    //cmd_dist_angle();
+    cmd_dist_angle();
   }
 
   return 0;
