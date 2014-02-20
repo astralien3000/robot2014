@@ -162,8 +162,14 @@ int main(int argc, char* argv[]) {
   //motc_r.inverse();
   enc_r.inverse();
   
+  //motc_l.setValue(50);
+  //motc_r.setValue(50);
+  
+  //cmd.coord(0) = 200;
+  //cmd.coord(1) = 90;
+  
   while(Aversive::isRunning()) {
-    //cmd_print_infos();
+    cmd_print_infos();
     //cmd_print_pos();
     //cmd_pid_set();
     cmd_dist_angle();

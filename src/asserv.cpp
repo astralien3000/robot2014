@@ -51,7 +51,7 @@ void asserv_init(void) {
 
   // MotorControl
   diff_l.setDelta(4);
-  pid_l.setGains(1000, 0, 0);
+  pid_l.setGains(900, 0, 0);
   pid_l.setMaxIntegral(1000);
   pid_l.setOutShift(11);
   //qramp_l.setFirstOrderLimit(80,80);
@@ -66,20 +66,20 @@ void asserv_init(void) {
 
   // Odometer
   odo.setImpPerCm(100);
-  odo.setDistEncoders(15);
+  odo.setDistEncoders(3);
 
   // Robot
-  pid_a.setGains(600, 1, 0);
+  pid_a.setGains(120, 1, 50);
   pid_a.setMaxIntegral(10000);
   pid_a.setOutShift(4);
   
-  pid_d.setGains(800, 1, 0);
+  pid_d.setGains(70, 1, 20);
   pid_d.setMaxIntegral(1000);
-  pid_d.setOutShift(3);
+  pid_d.setOutShift(4);
 
-  qramp_a.setFirstOrderLimit(100,100);
-  qramp_a.setSecondOrderLimit(3,3);
+  qramp_a.setFirstOrderLimit(200,200);
+  qramp_a.setSecondOrderLimit(10,10);
 
-  qramp_d.setFirstOrderLimit(100,100);
+  qramp_d.setFirstOrderLimit(3,3);
   qramp_d.setSecondOrderLimit(1,1);
 }
