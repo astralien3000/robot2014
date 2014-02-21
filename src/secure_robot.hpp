@@ -8,11 +8,12 @@
 
 #include <math/vect.hpp>
 
-//! \brief A Device which prevent the robot from moving while skating too long.
+//! \brief A Device which prevents the robot from moving while skating
+//! too long.
 /*!
   
   In normal functionnment, the secure robot only forward commands to
-  the robot controller, but if the robot is skating, it prevent to
+  the robot controller, but if the robot is skating, it prevents to
   continue.
 
  */

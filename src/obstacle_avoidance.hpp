@@ -12,7 +12,7 @@
 //! \brief Gives the robot a way to go to a position, avoiding problems...
 /*!
   
-  May have also to simplify trajectory for trajectoery manager.
+  May have also to simplify trajectory for trajectory manager.
 
  */
 class ObstacleAvoidance : public Output< Vect<2, s32> > {
