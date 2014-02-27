@@ -7,6 +7,8 @@ SecureRobot::SecureRobot(Output< Vect<2, s32> >& robot, Input<bool>& skd_l, Inpu
   this->_skd_r = skd_r;
   this->_state = false;
   Task check([this](void) {
+      if (this->_state)
+	return; //do not update _state while unlock() is not called
       this->_state = this->_skd_l.getValue() || this->_skd_r.getValue();
       if (this->_state) {
 	Vect<2, s32> zero(0, 0);
