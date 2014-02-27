@@ -27,7 +27,7 @@ void SecureRobot::setValue(Vect<2, s32> command) {
   if (this->_state) {
     //robot is skating, send "DO NOT MOVE"
     Vect<2, s32> zero(0, 0);
-    this->robot.setValue(zero);
+    this->_robot.setValue(zero);
   } else {
     this->_robot.setValue(command);
   }
