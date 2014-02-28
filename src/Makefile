@@ -7,10 +7,10 @@
 AVERSIVE_ROOT=/home/astralien3000/aversive--
 
 ## Your project's object .o files
-OBJ= main.o fpga.o asserv.o eirbot_shell.o # ziegler_nichols_algo.o
+OBJ=main.o fpga.o asserv.o eirbot_shell.o
 
 ## Your executable file name
-EXEC=robot.elf
+GEN_EXEC=robot
 
 ########################################
 # Automatic Configuration
@@ -21,8 +21,8 @@ AVR_CC=avr-g++
 
 ## Flags
 GEN_CFLAGS=-Wall -Wextra --std=c++11
-SASIAE_CFLAGS=$(GEN_CFLAGS) -DQT_CORE_LIB -fpic
-AVR_CFLAGS=$(GEN_CFLAGS) -fno-threadsafe-statics -D__STDC_LIMIT_MACROS -O3 -DF_CPU=16000000l
+SASIAE_CFLAGS=$(GEN_CFLAGS) -DQT_CORE_LIB -fpic -g
+AVR_CFLAGS=$(GEN_CFLAGS) -fno-threadsafe-statics -D__STDC_LIMIT_MACROS -O3
 
 ## Include
 GEN_INCLUDE= -I$(AVERSIVE_ROOT)/include
@@ -32,12 +32,12 @@ AVR_INCLUDE= $(GEN_INCLUDE)/avr
 ## Link
 GEN_LDFLAGS= -L$(AVERSIVE_ROOT)/build
 SASIAE_LDFLAGS= $(GEN_LDFLAGS) -laversive_sasiae -lQt5Core -lpthread
-AVR_LDFLAGS= $(GEN_LDFLAGS) #-lm
+AVR_LDFLAGS= $(GEN_LDFLAGS) 
 
 ## Build Directory
 GEN_BUILD_DIR=build
 SASIAE_BUILD_DIR=$(GEN_BUILD_DIR)/sasiae
-AVR_BUILD_DIR=$(GEN_BUILD_DIR)/avr
+AVR_BUILD_DIR=$(GEN_BUILD_DIR)
 
 ########################################
 # Rules
@@ -53,6 +53,7 @@ sasiae: export CFLAGS=$(SASIAE_CFLAGS)
 sasiae: export INCLUDE=$(SASIAE_INCLUDE)
 sasiae: export LDFLAGS=$(SASIAE_LDFLAGS)
 sasiae: export BUILD_DIR=$(SASIAE_BUILD_DIR)
+sasiae: export EXEC=$(GEN_EXEC)_sasiae.elf
 sasiae: compile
 
 atmega128: export AVERSIVE_MMCU=atmega128
@@ -65,11 +66,12 @@ avr: export CC=$(AVR_CC)
 avr: export CFLAGS=$(AVR_CFLAGS) -mmcu=$(AVERSIVE_MMCU)
 avr: export INCLUDE=$(AVR_INCLUDE)
 avr: export LDFLAGS=$(AVR_LDFLAGS) -laversive_$(AVERSIVE_MMCU)
-avr: export BUILD_DIR=$(AVR_BUILD_DIR)
+avr: export BUILD_DIR=$(AVR_BUILD_DIR)/$(AVERSIVE_MMCU)
+avr: export EXEC=$(GEN_EXEC)_$(AVERSIVE_MMCU).elf
 avr: compile
 
 # Add additional files you need to compile
-# Add additional dependencies if needed for each .o files (apart from the .c file)
+# Add additional dependencies if needed for each .o files (apart from the .cpp file)
 %.o: %.cpp
 	$(CC) $(CFLAGS) $(INCLUDE) -o $(BUILD_DIR)/$@ -c $<
 
@@ -80,10 +82,10 @@ make_build_dir:
 	mkdir -p $(BUILD_DIR)
 
 clean:
-	rm -f $(shell find . -name "*~" -o -name "#*#" -o -name "*.o")
+	rm -rf $(shell find . -name "*~" -o -name "#*#" -o -name "*.o") $(GEN_BUILD_DIR)
 
 mrproper: clean
-	rm -rf $(GEN_BUILD_DIR)
+	rm -rf $(GEN_EXEC)_*.elf
 
 ########################################
 # Load
@@ -104,5 +106,3 @@ load_unioc: atmega128 $(HEX)
 load_arduino: atmega2560 $(HEX)
 	sudo avrdude -cwiring -patmega2560 -P /dev/ttyACM0 -U flash:w:$(HEX) -D
 
-$(HEX): $(ELF)
-	$(OBJCOPY) -O ihex $(ELF) $(HEX)

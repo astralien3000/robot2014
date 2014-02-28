@@ -135,8 +135,9 @@ void control_init(void) {
 #endif
 }
 
+#if defined (__AVR_ATmega128__)
 extern "C" void __cxa_pure_virtual() { while(1); }
-
+#endif
 
 int main(int argc, char* argv[]) {
   (void)argc;
@@ -168,12 +169,13 @@ int main(int argc, char* argv[]) {
   //cmd.coord(0) = 200;
   //cmd.coord(1) = 90;
   
-  while(Aversive::isRunning()) {
+  while(Aversive::sync()) {
     cmd_print_infos();
     //cmd_print_pos();
     //cmd_pid_set();
     cmd_dist_angle();
   }
 
-  return 0;
+  Aversive::setReturnCode(0);
+  return Aversive::exit();
 }

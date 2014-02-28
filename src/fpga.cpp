@@ -1,9 +1,11 @@
 #include "fpga.hpp"
 
+#if defined (__AVR_ATmega128__)
 #include <util/delay.h>
 #include <avr/io.h>
 
 #include <hardware/xmem.hpp>
+#endif
 
 void fpga_init(void) {
 #if defined (__AVR_ATmega128__)
