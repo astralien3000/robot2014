@@ -1,18 +1,18 @@
 #include "secure_robot.hpp"
 
 
-SecureRobot::SecureRobot(Output< Vect<2, s32> >& robot, Input<bool>& skd_l, Input<bool>& skd_r) {
+SecureRobot::SecureRobot(Output< Vect<2, s32> >& robot, Input<bool>& skd_l, Input<bool>& skd_r, Input< Vect<2, s32> >& odometer) {
   this->_robot = robot;
   this->_skd_l = skd_l;
   this->_skd_r = skd_r;
   this->_state = false;
+  this->_odo = odometer;
   Task check([this](void) {
       if (this->_state)
 	return; //do not update _state while unlock() is not called
       this->_state = this->_skd_l.getValue() || this->_skd_r.getValue();
       if (this->_state) {
-	Vect<2, s32> zero(0, 0);
-	this->setValue(zero);
+	this->setValue(this->_odo.getValue());
       }
     });
   check.setRepeat();
@@ -28,8 +28,7 @@ bool SecureRobot::getValue(void) { //what is the best solution ?
 void SecureRobot::setValue(Vect<2, s32> command) {
   if (this->_state) {
     //robot is skating, send "DO NOT MOVE"
-    Vect<2, s32> zero(0, 0);
-    this->_robot.setValue(zero);
+    this->_robot.setValue(this->_odo.getValue());
   } else {
     this->_robot.setValue(command);
   }

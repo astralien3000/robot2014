@@ -26,9 +26,10 @@ private:
   Output< Vect<2, s32> >& _robot;
   Input<bool>& _skd_l, _skd_r;
   bool _state;
+  Input< Vect<2, s32> >& _odo;
 
 public:
-  SecureRobot(Output< Vect<2, s32> >& robot, Input<bool>& skd_l, Input<bool>& skd_r);
+  SecureRobot(Output< Vect<2, s32> >& robot, Input<bool>& skd_l, Input<bool>& skd_r, Input< Vect<2, s32> >& odometer);
 
   bool getValue(void);
 
