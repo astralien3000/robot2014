@@ -27,6 +27,7 @@ void fpga_init(void);
 #define FPGA_US    (*(volatile u16*)0x8080)
 #define FPGA_MS    (*(volatile u16*)0x8082)
 #define FPGA_S     (*(volatile u16*)0x8084)
+
 #define POSX_FPGA  (*(volatile u32*)0x8088)
 #define POSY_FPGA  (*(volatile u32*)0x808C)
 #define ROT_FPGA   (*(volatile u16*)0x8090)

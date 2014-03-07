@@ -1,6 +1,8 @@
 #include "fpga.hpp"
 
 #if defined (__AVR_ATmega128__)
+#define F_CPU 16000000l
+
 #include <util/delay.h>
 #include <avr/io.h>
 

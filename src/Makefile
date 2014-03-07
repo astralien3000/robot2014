@@ -95,6 +95,7 @@ DEV=/dev/ttyUSB0
 
 OBJCOPY=avr-objcopy
 
+ELF=robot_atmega128.elf
 
 $(HEX): $(ELF)
 	$(OBJCOPY) -O ihex $(ELF) $(HEX)

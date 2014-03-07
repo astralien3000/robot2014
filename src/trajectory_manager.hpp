@@ -32,7 +32,7 @@ public:
   TrajectoryManager(Output< Vect<2, s32> >& robot, Input< Vect<2, s32> >& pos);
 
   //! \brief Set the new point to reach from current position
-  void gotoPosition(Vect<2, s32> pos, s32 curve = 0);
+  void gotoPosition(Vect<2, s32> pos, s32 curve);
 
   //! \brief Stop the trajectory in order to restart it later.
   void pause(void);

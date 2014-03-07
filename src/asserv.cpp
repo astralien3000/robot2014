@@ -65,8 +65,8 @@ void asserv_init(void) {
   //qramp_r.setSecondOrderLimit(2,2);
 
   // Odometer
-  odo.setImpPerCm(100);
-  odo.setDistEncoders(3);
+  odo.setImpPerUnit(81);
+  odo.setImpPerDeg(278);
 
   // Robot
   pid_a.setGains(120, 1, 50);
@@ -77,9 +77,9 @@ void asserv_init(void) {
   pid_d.setMaxIntegral(1000);
   pid_d.setOutShift(4);
 
-  qramp_a.setFirstOrderLimit(100,100);
-  qramp_a.setSecondOrderLimit(10,10);
+  qramp_a.setFirstOrderLimit(10,10);
+  qramp_a.setSecondOrderLimit(2,2);
 
-  qramp_d.setFirstOrderLimit(3,3);
-  qramp_d.setSecondOrderLimit(1,1);
+  qramp_d.setFirstOrderLimit(10,10);
+  qramp_d.setSecondOrderLimit(2,2);
 }

@@ -20,12 +20,12 @@ void cmd_dist_angle(void) {
   io << "Waiting for command...\n";
   io << "distance+=";
   io >> aux;
-  cmd.coord(1) += aux;
-  io << "angle+=";
-  io >> aux;
   cmd.coord(0) += aux;
+  io << "\nangle+=";
+  io >> aux;
+  cmd.coord(1) += aux;
   
-  io << "GOTO " << cmd.coord(1) << " " << cmd.coord(0) << "\n";
+  io << "\nGOTO " << cmd.coord(1) << " " << cmd.coord(0) << "\n";
 }
 
 void cmd_print_infos(void) {
@@ -33,22 +33,21 @@ void cmd_print_infos(void) {
   io << (s16)FPGA_MS << "ms " ;
   io << (s16)FPGA_US << "us\n";
 
-  io << "position (x=" << ((s32)POSX_FPGA >> 16);
-  io << " ; y=" << ((s32)POSY_FPGA >> 16);
-  io << " ; a1=" << ((ROT_FPGA >> 8) & 0xFF);
-  io << " a2=" << (ROT_FPGA & 0xFF) << " )\n";
+  io << "position (x=" << ((s32)POSX_FPGA);
+  io << " ; y=" << ((s32)POSY_FPGA);
+  io << " ; a=" << ((ROT_FPGA >> 7) & 0x1FF) << ")\n";
 
   io << "encoder (l=" << (u32)ENC_L;
   io << " ; r=" << (u32)ENC_R << ")\n";
   
-  io << "distance=" << (s32)odo.getValue().coord(1);
-  io << " ; angle=" << (s32)odo.getValue().coord(0) << "\n";
+  io << "distance=" << (s32)odo.getValue().coord(0);
+  io << " ; angle=" << (s32)odo.getValue().coord(1) << "\n";
+  
+  io << "test : " << (s32)-100 << "\n";
 }
 
 void cmd_print_pos(void) {
-  //io << "position (x=" << (s32)pos.x() << " ; y=" << (s32)pos.y() << " ; a=" << (s32)pos.angle() << " )\n";
-  io << "encoder (l=" << (u32)ENC_L << " ; r=" << (u32)ENC_R << ")\n";
-  io << "distance=" << (s32)odo.getValue().coord(1) << " ; angle=" << (s32)odo.getValue().coord(0) << "\n";
+
 }
 
 void pid_set_gains(PidFilter& pid, u16 off) {
@@ -82,10 +81,10 @@ void cmd_pid_set(void) {
     pid_set_gains(pid_r, 3*sizeof(s32));
   }
   else if(strcmp("dist", str) == 0) {
-    pid_set_gains(pid_a, 6*sizeof(s32));
+    pid_set_gains(pid_d, 6*sizeof(s32));
   }
   else if(strcmp("angle", str) == 0) {
-    pid_set_gains(pid_d, 9*sizeof(s32));
+    pid_set_gains(pid_a, 9*sizeof(s32));
   }
   else {
     io << "error! " << 404 << "\n";
@@ -100,6 +99,6 @@ void cmd_odo_config(void) {
   io << "DistEncoders : ";
   io >> de;
 
-  odo.setImpPerCm(ipc);
-  odo.setDistEncoders(de);
+  odo.setImpPerUnit(ipc);
+  odo.setImpPerDeg(de);
 }
