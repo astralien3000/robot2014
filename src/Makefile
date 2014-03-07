@@ -7,7 +7,7 @@
 AVERSIVE_ROOT=/home/astralien3000/aversive--
 
 ## Your project's object .o files
-OBJ=main.o fpga.o asserv.o eirbot_shell.o
+OBJ=main.o fpga.o asserv.o eirbot_shell.o secure_robot.o skating_detector.o
 
 ## Your executable file name
 GEN_EXEC=robot

@@ -14,6 +14,11 @@
 
 Scheduler& sched = Scheduler::instance();
 
+#include <filter/diff_filter.hpp>
+bool val = false;
+DiffFilter diff;
+s32 enc_ext = 0;
+
 void control_init(void) {
 #if defined (__AVR_ATmega128__)
   Task t([](void) {
@@ -59,15 +64,20 @@ int main(int argc, char* argv[]) {
   //motc_l.setValue(50);
   //motc_r.setValue(50);
   
-  //cmd.coord(0) = 0;
+  //cmd.coord(0) = 300;
   //cmd.coord(1) = 90;
   
   while(Aversive::sync()) {
-    cmd_print_infos();
+    //cmd_print_infos();
     //cmd_print_pos();
     //cmd_pid_set();
     cmd_dist_angle();
     //cmd_odo_config();
+    
+    if(robot.getValue()) {
+      io << "Skating !!! \n";
+      robot.unlock();
+    }
   }
 
   Aversive::setReturnCode(0);

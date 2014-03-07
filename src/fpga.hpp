@@ -14,8 +14,8 @@ void fpga_init(void);
 
 #define ENC_R      (*(volatile u32*)0x80A0)
 #define ENC_L      (*(volatile u32*)0x8098)
-#define ENC_MOT_R  (*(volatile u32*)0x8094)
-#define ENC_MOT_L  (*(volatile u32*)0x809C)
+#define ENC_MOT_R  (*(volatile u32*)0x809C)
+#define ENC_MOT_L  (*(volatile u32*)0x8094)
 
 #define MOT_R      (*(volatile s8*)0x8000)
 #define MOT_L      (*(volatile s8*)0x8001)

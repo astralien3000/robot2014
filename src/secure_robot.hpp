@@ -1,12 +1,9 @@
 #ifndef SECURE_ROBOT_HPP
 #define SECURE_ROBOT_HPP
 
-#include <system/task.hpp>
-#include <system/scheduler.hpp>
-
 #include <base/integer.hpp>
 
-#include <device/intput.hpp>
+#include <device/input.hpp>
 #include <device/output.hpp>
 
 #include <math/vect.hpp>
@@ -24,18 +21,28 @@
 class SecureRobot : public Output<Vect<2, s32>>, public Input<bool> {
 private:
   Output< Vect<2, s32> >& _robot;
-  Input<bool>& _skd_l, _skd_r;
-  bool _state;
   Input< Vect<2, s32> >& _odo;
 
+  Input<bool>& _skd_l;
+  Input<bool>& _skd_r;
+  Output<s32>& _mot_l;
+  Output<s32>& _mot_r;
+
+  bool _state;
+  Vect<2, s32> _pos_block;
+  s8 _last_update;
+
 public:
-  SecureRobot(Output< Vect<2, s32> >& robot, Input<bool>& skd_l, Input<bool>& skd_r, Input< Vect<2, s32> >& odometer);
+  SecureRobot(Output< Vect<2, s32> >& robot, Input< Vect<2, s32> >& odo, Input<bool>& skd_l, Input<bool>& skd_r, Output<s32>& mot_l, Output<s32>& mot_r);
+
+  void update(void);
 
   bool getValue(void);
 
   void setValue(Vect<2, s32>);
 
   void unlock(void);
+
 };
 
 #endif//SECURE_ROBOT_HPP

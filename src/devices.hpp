@@ -11,12 +11,18 @@
 #include <device/stream/uart_stream.hpp>
 #include <device/stream/eeprom_stream.hpp>
 
+#include "skating_detector.hpp"
+#include "secure_robot.hpp"
+
 ////////////////////////////////////////
 // Physical devices
 
 //// Incremental Encoders
 extern Encoder<volatile u32> enc_l;
 extern Encoder<volatile u32> enc_r;
+
+extern Encoder<volatile u32> enc_mot_l;
+extern Encoder<volatile u32> enc_mot_r;
 
 //// Motors
 extern Motor<volatile s8> mot_l;
@@ -38,7 +44,10 @@ extern Odometer odo;
 extern PositionManager pos;
 
 // Robot's movement controller
-extern RobotController robot;
+extern SecureRobot robot;
 
+// Skating Detectors
+extern SkatingDetector skd_l;
+extern SkatingDetector skd_r;
 
 #endif//DEVICES_HPP

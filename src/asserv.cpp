@@ -30,11 +30,17 @@ QuadrampFilter qramp_a;
 Encoder<volatile u32> enc_l("left_encoder", &ENC_L);
 Encoder<volatile u32> enc_r("right_encoder", &ENC_R);
 
+Encoder<volatile u32> enc_mot_l("left_motor_encoder", &ENC_MOT_L);
+Encoder<volatile u32> enc_mot_r("right_motor_encoder", &ENC_MOT_R);
+
 Motor<volatile s8> mot_l("left_motor", &MOT_L);
 Motor<volatile s8> mot_r("right_motor", &MOT_R);
 
 InputConverter<s32, volatile u32> enc_conv_l(enc_l);
 InputConverter<s32, volatile u32> enc_conv_r(enc_r);
+
+InputConverter<s32, volatile u32> enc_mot_conv_l(enc_mot_l);
+InputConverter<s32, volatile u32> enc_mot_conv_r(enc_mot_r);
 
 OutputConverter<s32, volatile s8> mot_conv_l(mot_l);
 OutputConverter<s32, volatile s8> mot_conv_r(mot_r);
@@ -44,7 +50,11 @@ MotorController motc_r(mot_conv_r, enc_conv_r, id, diff_r, pid_r);
 
 Odometer odo(enc_conv_l, enc_conv_r);
 
-RobotController robot(motc_l, motc_r, odo, qramp_d, id, pid_d, qramp_a, id, pid_a);
+RobotController _robot(motc_l, motc_r, odo, qramp_d, id, pid_d, qramp_a, id, pid_a);
+SecureRobot robot(_robot, odo, skd_l, skd_r, mot_conv_l, mot_conv_r);
+
+SkatingDetector skd_l(enc_mot_conv_l, enc_conv_l, 2);
+SkatingDetector skd_r(enc_mot_conv_r, enc_conv_r, 2);
 
 void asserv_init(void) {
   id.setGains(1, 0, 0);
@@ -81,5 +91,5 @@ void asserv_init(void) {
   qramp_a.setSecondOrderLimit(2,2);
 
   qramp_d.setFirstOrderLimit(10,10);
-  qramp_d.setSecondOrderLimit(2,2);
+  qramp_d.setSecondOrderLimit(1,1);
 }
