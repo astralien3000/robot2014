@@ -8,17 +8,24 @@
   
   Basically, it compares the ratio of the speed of each Input, and if
   there is a significant difference, getValue returns true.
+
+  The third argument (limit) is supposed to be between 1?? and 100?? (to be measured).
   
 */
 class SkatingDetector : public Input<bool> {
 private:
-  Input<s32>& _enc1;
-  Input<s32>& _enc2;
+  Input<s32>& _encInt;
+  Input<s32>& _encExt;
+  int _limit;
+  int _oldInt;
+  int _oldExt;
+  int _lastRatio;
 
 public:
-  SkatingDetector(Input<s32>&, Input<s32>&);
+  SkatingDetector(Input<s32>&, Input<s32>&, int);
 
   bool getValue(void);
+  int getLastRatio(void);
 };
 
 #endif//SKATING_DETECTOR_HPP

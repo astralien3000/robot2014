@@ -1,10 +1,7 @@
 #include "secure_robot.hpp"
 
 
-SecureRobot::SecureRobot(Output< Vect<2, s32> >& robot, Input<bool>& skd_l, Input<bool>& skd_r, Input< Vect<2, s32> >& odometer) {
-  this->_robot = robot;
-  this->_skd_l = skd_l;
-  this->_skd_r = skd_r;
+SecureRobot::SecureRobot(Output< Vect<2, s32> >& robot, Input<bool>& skd_l, Input<bool>& skd_r, Input< Vect<2, s32> >& odometer) : _robot(robot), _skd_l(skd_l), _skd_r(skd_r) {
   this->_state = false;
   this->_odo = odometer;
   Task check([this](void) {
