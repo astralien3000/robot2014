@@ -2,4 +2,5 @@ build
 *.elf
 *.hex
 *~
-
+*.dat
+a.out
