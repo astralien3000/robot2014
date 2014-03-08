@@ -12,18 +12,20 @@
 #include <system/scheduler.hpp>
 #include "fpga.hpp"
 
+#include "trajectory_manager.hpp"
+
 Scheduler& sched = Scheduler::instance();
 
+PidFilter t_pid;
+TrajectoryManager traj(robot, odo, pos, t_pid);
+
 #include <filter/diff_filter.hpp>
-bool val = false;
-DiffFilter diff;
-s32 enc_ext = 0;
 
 void control_init(void) {
 #if defined (__AVR_ATmega128__)
   Task t([](void) {
-      robot.setValue(cmd);
-      //pos.update();
+      //robot.setValue(cmd);
+      traj.update();
     });
 
   t.setPeriod(8000);
@@ -67,15 +69,23 @@ int main(int argc, char* argv[]) {
   //cmd.coord(0) = 300;
   //cmd.coord(1) = 90;
   
+  t_pid.setGains(300, 0, 200);
+  t_pid.setMaxIntegral(100);
+  t_pid.setOutShift(10);
+
+  traj.gotoPosition(Vect<2, s32>(1000, 0), 0);
+
   while(Aversive::sync()) {
     //cmd_print_infos();
     //cmd_print_pos();
     //cmd_pid_set();
-    cmd_dist_angle();
+    //cmd_dist_angle();
     //cmd_odo_config();
     
     if(robot.getValue()) {
       io << "Skating !!! \n";
+      s32 dummy;
+      io >> dummy;
       robot.unlock();
     }
   }

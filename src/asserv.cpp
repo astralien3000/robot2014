@@ -81,8 +81,8 @@ void asserv_init(void) {
   odo.setImpPerDeg(278);
 
   // Position
-  pos.setImpPerUnitX(100);
-  pos.setImpPerUnitY(100);
+  pos.setImpPerUnitX(82);
+  pos.setImpPerUnitY(82);
 
   // Robot
   pid_a.setGains(120, 1, 50);
