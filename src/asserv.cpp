@@ -56,6 +56,8 @@ SecureRobot robot(_robot, odo, skd_l, skd_r, mot_conv_l, mot_conv_r);
 SkatingDetector skd_l(enc_mot_conv_l, enc_conv_l, 2);
 SkatingDetector skd_r(enc_mot_conv_r, enc_conv_r, 2);
 
+PositionManager pos(POSX_FPGA, POSY_FPGA, ROT_FPGA);
+
 void asserv_init(void) {
   id.setGains(1, 0, 0);
 
@@ -77,6 +79,10 @@ void asserv_init(void) {
   // Odometer
   odo.setImpPerUnit(81);
   odo.setImpPerDeg(278);
+
+  // Position
+  pos.setImpPerUnitX(100);
+  pos.setImpPerUnitY(100);
 
   // Robot
   pid_a.setGains(120, 1, 50);

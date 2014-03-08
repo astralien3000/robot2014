@@ -33,12 +33,12 @@ void cmd_print_infos(void) {
   io << (s16)FPGA_MS << "ms " ;
   io << (s16)FPGA_US << "us\n";
 
-  io << "position (x=" << ((s32)POSX_FPGA);
-  io << " ; y=" << ((s32)POSY_FPGA);
-  io << " ; a=" << ((ROT_FPGA >> 7) & 0x1FF) << ")\n";
+  io << "position (x=" << pos.getValue().coord(0);
+  io << " ; y=" << pos.getValue().coord(1);
+  io << " ; a=" << pos.angle() << ")\n";
 
-  io << "encoder (l=" << (u32)ENC_L;
-  io << " ; r=" << (u32)ENC_R << ")\n";
+  io << "encoder (l=" << (u32)enc_l.getValue();
+  io << " ; r=" << (u32)enc_r.getValue() << ")\n";
   
   io << "distance=" << (s32)odo.getValue().coord(0);
   io << " ; angle=" << (s32)odo.getValue().coord(1) << "\n";
