@@ -14,6 +14,7 @@
 #include <math/saturate.hpp>
 
 #include <filter/pid_filter.hpp>
+#include <filter/diff_filter.hpp>
 #include <filter/quadramp_filter.hpp>
 
 class TrajectoryManager {
@@ -32,6 +33,8 @@ private:
   Vect<2, s32> _mid; // Middle of the SctDst segment
   Vect<2, s32> _nor; // Normal
   Vect<2, s32> _cen; // Center of the circle's curve
+
+  DiffFilter _diff_d;
 
   bool _beg, _end;
   s32 _err;

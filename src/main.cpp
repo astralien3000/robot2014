@@ -69,11 +69,11 @@ int main(int argc, char* argv[]) {
   //cmd.coord(0) = 300;
   //cmd.coord(1) = 90;
   
-  t_pid.setGains(300, 0, 200);
+  t_pid.setGains(300, 0, 100);
   t_pid.setMaxIntegral(100);
   t_pid.setOutShift(10);
 
-  traj.gotoPosition(Vect<2, s32>(1000, 0), 0);
+  traj.gotoPosition(Vect<2, s32>(500, -500), 0);
 
   while(Aversive::sync()) {
     //cmd_print_infos();

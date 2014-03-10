@@ -46,8 +46,11 @@ void TrajectoryManager::update_follow_trajectory(void) {
   Vect<2,s32> pos_err = _dst - _pos.getValue();
   s32 dist_err = pos_err.norm();
 
-  //io << dist_err << " " << angle_err << "\n";
-  _robot.setValue(_odo.getValue() + Vect<2, s32>(dist_err, angle_err + 30));
+  s32 d = (_diff_d.doFilter(_odo.getValue().coord(0)) << 16) / _ray;
+  s32 a = (s32)(d * 180. / 3.14) >> 16;
+
+  //io << a << " " << angle_err << "\n";
+  _robot.setValue(_odo.getValue() + Vect<2, s32>(dist_err, angle_err + a * 16));
 }
 
 void TrajectoryManager::update_near_end(void) {
