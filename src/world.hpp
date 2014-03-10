@@ -3,109 +3,56 @@
 
 #include <base/integer.hpp>
 #include <math/vect.hpp>
-#include <base/array.hpp>
 #include <container/list.hpp>
-
-class Shape {
-public:
-  virtual bool isCollided(const Shape&) const = 0;
-};
-
-class Circle : public Shape;
-class Rectangle : public Shape;
-
-class Circle : public Shape {
-  Vect<2, s32> _centre;
-  s32 _radius;
-public:
-  inline Circle(void)
-    : _centre(0, 0), _radius(0) {
-  }
-  
-  inline Circle(const Vect<2, s32>& centre, s32 radius)
-    : _centre(centre), _radius(radius) {
-  }
-  
-  inline Circle(s32 x, s32 y, s32 radius)
-    : _centre(x, y), _radius(radius) {
-  }
-  
-  inline Circle(const Circle& other)
-    : _centre(other._centre), _radius(other._radius) {
-  }
-  
-  inline Circle& operator=(const Circle& other) {
-    _centre = other._centre;
-    _radius = other._radius;
-    return (*this);
-  }
-  
-  inline bool operator==(const Circle& other) const {
-    return _centre == other._centre && _radius = other._radius;
-  }
-  
-  inline const Vect<2, s32>& getCentre(void) const {
-    return _centre;
-  }
-  
-  inline s32 getRadius(void) const {
-    return _radius;
-  }
-  
-  virtual bool isCollided(const Shape&) const;
-  bool isCollided(const Circle&) const;
-  bool isCollided(const Rectangle&) const;
-};
-
-class Rectangle : public Shape {
-  Vect<2, s32> _centre;
-  Vect<2, s32> _topleft;
-  Vect<2, s32> _topright;
-  Vect<2, s32> _botleft;
-  Vect<2, s32> _botright;
-private:
-  inline Rectangle(const Vect<2, s32>& centre, const Vect<2, s32>& a, const Vect<2, s32>& b);
-  inline Rectangle(const Vect<2, s32>& centre, s32 h, s32 w, s32 alpha);
-  inline Rectangle(const Rectangle& other)
-    : _centre(other._centre), _topleft(other._topleft), _topright(other._topright)
-      _botleft(other._botleft), _botright(other._botright) {
-  }
-  
-  inline Rectangle& operator=(const Rectangle& other) {
-    _centre = other._centre;
-    _topleft = other._topleft;
-    _topright = other._topright;
-    _botleft = other._botleft;
-    _botright = other._botright;
-  }
-  
-  inline bool operator==(const Rectangle& other) const;
-  virtual bool isCollided(const Shape&) const;
-  bool isCollided(const Circle&) const;
-  bool isCollided(const Rectangle&) const;
-};
+#include "shape.hpp"
 
 //! \class World world.hpp "world.hpp"
-//! \brief Represents the robot's environnment
-/*!
-  
-  Contains static and dynamic obstacles.
-  
-*/
-template<array_t _SIZE>
+//! \brief Represents a 2D environnment.
+//! \param _SIZE : the amount of objects the world can handle.
+template<list_t _SIZE>
 class World {
-  List<_SIZE, Circle> _circles;
-  List<_SIZE, Rectangle> _rectangles;
+public:
+  static const list_t SIZE = _SIZE;
+  
+  List<SIZE, Shape*> _shapes;
   
 public:
-  World(void);
+  inline World(void)
+    : _shapes() {
+  }
   
-  bool addCircle(const Circle& circle) {
-    _circles
+  inline bool addShape(const Shape* s) {
+    if(_shapes.contains(s)) {
+      return true;
+    }
+    return _shapes.append(s);
+  }
   
-  bool isObstacle(Vect<2, s32>&);
+  inline bool removeShape(const Shape* s) {
+    return _shapes.remove(s);
+  }
   
-  bool isCollided(Shape&);
+  inline list_t usedSpace() const {
+    return _shapes.usedSpace();
+  }
+  
+  inline bool collides(Vect<2, s32>& p) const {
+    for(list_t  i = 0; i < _shapes.size(); i++) {
+      if(_shapes.get(i)->isCollided(p)) {
+	return true;
+      }
+    }
+    return false;
+  }
+  
+  inline bool collides(const Shape& s) const {
+    for(list_t  i = 0; i < _shapes.size(); i++) {
+      if(_shapes.get(i)->isCollided(s)) {
+	return true;
+      }
+    }
+    return false;
+  }
 };
 
 #endif//WORLD_HPP
