@@ -41,6 +41,22 @@ public:
   inline const Vect<2, s32>& getP(void) const {
     return _p;
   }
+  
+  inline const s32& getX(void) const {
+    return _p.coord(0);
+  }
+  
+  inline s32& getX(void) {
+    return _p.coord(0);
+  }
+  
+  inline const s32& getY(void) const {
+    return _p.coord(1);
+  }
+  
+  inline s32& getY(void) {
+    return _p.coord(1);
+  }
 };
 
 #endif//POINT_HPP
