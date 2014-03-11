@@ -102,11 +102,15 @@ bool CollisionDetector::collide(const Circle& c, const Shape& s) {
   return false;
 }
 
-//! \todo Implement!
 bool CollisionDetector::collide(const Circle& c1, const Circle& c2) {
-  (void) c1;
-  (void) c2;
-  return false;
+  if(((c1.getCentre().coord(0) - c2.getCentre().coord(0)) * (c1.getCentre().coord(0) - c2.getCentre().coord(0)) + // square delta x
+      (c1.getCentre().coord(1) - c2.getCentre().coord(1)) * (c1.getCentre().coord(1) - c2.getCentre().coord(1))) // square delta y
+     > ((c1.getRadius() + c2.getRadius()) * (c1.getRadius() + c2.getRadius()))) {
+    return false;
+  }
+  else {
+    return false;
+  }
 }
 
 //! \todo Implement!
