@@ -49,12 +49,24 @@ void TrajectoryManager::update_follow_trajectory(void) {
   s32 d = (_diff_d.doFilter(_odo.getValue().coord(0)) << 16) / _ray;
   s32 a = (s32)(d * 180. / 3.14) >> 16;
 
-  //io << a << " " << angle_err << "\n";
-  _robot.setValue(_odo.getValue() + Vect<2, s32>(dist_err, angle_err + a * 16));
+  s32 angle_cmd = Math::atan2<Math::DEGREE>(vray.coord(1), vray.coord(0)) + 90;
+
+  _robot.setValue(Vect<2, s32>(_odo.getValue().coord(0) + dist_err, angle_cmd + angle_err + a));
+
+  if(dist_err < 50) {
+    _state = NEAR_END;
+  }
 }
 
 void TrajectoryManager::update_near_end(void) {
-
+  Vect<2, s32> vdst = _dst - _pos.getValue();
+  s32 dist_err = vdst.norm();
+  s32 angle_cmd = Math::atan2<Math::DEGREE>(vdst.coord(1), vdst.coord(0));
+  _robot.setValue(Vect<2, s32>(_odo.getValue().coord(0) + dist_err, angle_cmd));
+  
+  if(dist_err < 5) {
+    _state = STOP;
+  }
 }
 
 void TrajectoryManager::update(void) {
@@ -72,4 +84,10 @@ void TrajectoryManager::update(void) {
     update_near_end();
     break;
   }
+}
+
+bool TrajectoryManager::isEnded(void) {
+  Vect<2, s32> vdst = _dst - _pos.getValue();
+  s32 dist_err = vdst.norm();
+  return (_state == STOP) && (dist_err < 10);
 }
