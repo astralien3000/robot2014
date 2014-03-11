@@ -32,7 +32,7 @@ public:
   }
   
   inline bool operator==(const Circle& other) const {
-    return _centre == other._centre && _radius = other._radius;
+    return _centre == other._centre && _radius == other._radius;
   }
   
   inline Vect<2, s32>& getCentre(void) {

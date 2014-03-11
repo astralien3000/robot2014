@@ -14,7 +14,7 @@ class World {
 public:
   static const list_t SIZE = _SIZE;
   
-  List<SIZE, Shape*> _shapes;
+  List<SIZE, const Shape*> _shapes;
   
 public:
   inline World(void)
@@ -36,18 +36,9 @@ public:
     return _shapes.usedSpace();
   }
   
-  inline bool collides(Vect<2, s32>& p) const {
-    for(list_t  i = 0; i < _shapes.size(); i++) {
-      if(_shapes.get(i)->isCollided(p)) {
-	return true;
-      }
-    }
-    return false;
-  }
-  
   inline bool collides(const Shape& s) const {
     for(list_t  i = 0; i < _shapes.size(); i++) {
-      if(_shapes.get(i)->isCollided(s)) {
+      if(_shapes.get(i) != &s && _shapes.get(i)->isCollided(s)) {
 	return true;
       }
     }

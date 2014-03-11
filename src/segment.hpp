@@ -44,7 +44,7 @@ public:
   }
   
   inline s32 length(void) const {
-    return (Vect<2, s32>(_a.coord(0) -_b.coord(0), _a.coord(1) - b._coord(0))).norm();
+    return (Vect<2, s32>(_a.coord(0) -_b.coord(0), _a.coord(1) - _b.coord(0))).norm();
   }
 };
 
