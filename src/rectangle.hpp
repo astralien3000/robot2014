@@ -15,14 +15,20 @@ public:
   //! \todo Implement!
   inline Rectangle(const Vect<2, s32>& centre, const Vect<2, s32>& a, const Vect<2, s32>& b)
     : _centre(centre) {
+    (void) a;
+    (void) b;
   }
   
   //! \todo Implement!
-  inline Rectangle(const Vect<2, s32>& centre, s32 h, s32 w, s32 alpha) {
+  inline Rectangle(const Vect<2, s32>& centre, s32 h, s32 w, s32 alpha)
+    : _centre(centre) {
+    (void) h;
+    (void) w;
+    (void) alpha;
   }
   
   inline Rectangle(const Rectangle& other)
-    : _centre(other._centre), _topleft(other._topleft), _topright(other._topright)
+    : _centre(other._centre), _topleft(other._topleft), _topright(other._topright),
       _botleft(other._botleft), _botright(other._botright) {
   }
   
