@@ -71,10 +71,36 @@ bool CollisionDetector::collide(const Segment& s1, const Segment& s2) {
   return false;
 }
 
-//! \todo Implement!
 bool CollisionDetector::collide(const Segment& s, const Circle& c) {
-  (void) s;
-  (void) c;
+  if(collide(Point(s.getA()), c) || collide(Point(s.getB()), c)) { // One of the extremums of the segment is in the circle.
+    return true;
+  }
+  
+  const Vect<2, s32>& A = s.getA();
+  const Vect<2, s32>& B = s.getB();
+  const Vect<2, s32>& C = c.getCentre();
+  const s32& r = c.getRadius();
+  
+  // Does the line defined with s at least collides with c.
+  const Vect<2, s32> u(B.coord(0) - A.coord(0), B.coord(1) - A.coord(1));
+  const Vect<2, s32> AC(C.coord(0) - A.coord(0), C.coord(1) - A.coord(1));
+  float numerator = u.coord(0) * AC.coord(1) - u.coord(1) * AC.coord(0);
+  numerator *= numerator; // squared to avoid using sqrt on the divisor.
+  float divisor = u.coord(0) * u.coord(0) + u.coord(1) * u.coord(1); // square norm of u.
+  float CI = numerator / divisor;
+  if(CI >= static_cast<float>(r * r)) { // The line does not collide with the circle.
+    return false;
+  }
+  
+  // So we know the line collides with c, but does s collide too ?
+  const Vect<2, s32> AB(B.coord(0) - A.coord(0), B.coord(1) - A.coord(1));
+  // AC has already been computed.
+  const Vect<2, s32> BC(C.coord(0) - B.coord(0), C.coord(1) - B.coord(1));
+  float scal1 = AB.coord(0) * AC.coord(0) + AB.coord(1) * AC.coord(1);
+  float scal2 = (-AB.coord(0)) * BC.coord(0) - AB.coord(1) * BC.coord(1);
+  if(scal1 >= 0.f && scal2 >= 0.f)
+    return true;
+  
   return false;
 }
 
