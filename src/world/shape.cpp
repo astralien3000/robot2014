@@ -1,4 +1,4 @@
-#include "shape.cpp"
+#include "shape.hpp"
 
 Shape::~Shape(void) {
 }
