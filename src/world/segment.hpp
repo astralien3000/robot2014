@@ -13,6 +13,10 @@ public:
     : _a(a), _b(b) {
   }
   
+  inline Segment(const s32& x1, const s32& y1, const s32& x2, const s32& y2)
+    : _a(x1, y1), _b(x2, y2) {
+  }
+  
   inline Segment(const Segment& s)
     : _a(s._a), _b(s._b) {
   }
