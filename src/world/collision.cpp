@@ -36,7 +36,7 @@ bool CollisionDetector::collide(const Point& p, const Circle& c) {
     return false;
   }
   else {
-    return false;
+    return true;
   }
 }
 
