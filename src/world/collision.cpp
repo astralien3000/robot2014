@@ -22,11 +22,27 @@ bool CollisionDetector::collide(const Point& p1, const Point& p2) {
   return p1 == p2;
 }
 
-//! \todo Implement!
-bool CollisionDetector::collide(const Point& p1, const Segment& s) {
-  (void) p1;
-  (void) s;
-  return false;
+bool CollisionDetector::collide(const Point& p, const Segment& s) {
+  const Vect<2, s32>& A = s.getA();
+  const Vect<2, s32>& B = s.getB();
+  
+  // If the crossproduct is strictly positive, the three points are not aligned.
+  if(((p.getY() - A.coord(1)) * (B.coord(0) - A.coord(0)) - (p.getX() - A.coord(0)) * (B.coord(1) - A.coord(1))) > 0) {
+    return false;
+  }
+  
+  // Dot product of B-A and C-A
+  const s32 dot_product = (p.getX() - A.coord(0)) * (B.coord(0) - A.coord(0)) + (p.getX() - A.coord(0)) * (B.coord(1) - A.coord(1));
+  if(dot_product < 0) {
+    return false;
+  }
+  
+  const s32 squared_delta_AB = (B.coord(0) - A.coord(0)) * (B.coord(0) - A.coord(0)) + (B.coord(1) - A.coord(1)) * (B.coord(1) - A.coord(1));
+  if(dot_product >  squared_delta_AB) {
+    return false;
+  }
+  
+  return true;
 }
 
 bool CollisionDetector::collide(const Point& p, const Circle& c) {

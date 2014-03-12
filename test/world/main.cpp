@@ -50,5 +50,13 @@ int main(int argc, char** argv) {
   assert(!CollisionDetector::collide(s2, s3));
   println("OK");
   
+  // Point/Segment collisions
+  Point p5(1, 5), p6(8, 5), p7(359,248);
+  println("Point/Segment");
+  assert(CollisionDetector::collide(s2, p5));
+  assert(!CollisionDetector::collide(s2, p6));
+  assert(!CollisionDetector::collide(s2, p7));
+  println("OK");
+  
   return EXIT_SUCCESS;
 }
