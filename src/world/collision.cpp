@@ -64,11 +64,32 @@ bool CollisionDetector::collide(const Segment& s1, const Shape& s2) {
   return false;
 }
 
-//! \todo Implement!
 bool CollisionDetector::collide(const Segment& s1, const Segment& s2) {
   (void) s1;
   (void) s2;
-  return false;
+  
+  const Vect<2, s32>& A = s1.getA();
+  const Vect<2, s32>& B = s1.getB();
+  const Vect<2, s32>& O = s2.getA();
+  const Vect<2, s32>& P = s2.getB();
+  
+  // We test collision between [AB] and (OP)
+  const Vect<2, s32> AO(O.coord(0) - A.coord(0), O.coord(1) - A.coord(1));
+  const Vect<2, s32> AP(P.coord(0) - A.coord(0), P.coord(1) - A.coord(1));
+  const Vect<2, s32> AB(B.coord(0) - A.coord(0), B.coord(1) - A.coord(1));
+  if((AB.coord(0) * AP.coord(1) - AB.coord(1) * AP.coord(0)) * (AB.coord(0) * AO.coord(1) - AB.coord(1) * AO.coord(0)) >= 0) {
+    return false;
+  }
+  
+  // We test collision between [OP] and (AB)
+  const Vect<2, s32> OA(A.coord(0) - O.coord(0), A.coord(1) - O.coord(1));
+  const Vect<2, s32> OB(B.coord(0) - O.coord(0), B.coord(1) - O.coord(1));
+  const Vect<2, s32> OP(P.coord(0) - O.coord(0), P.coord(1) - O.coord(1));
+  if((OP.coord(0) * OB.coord(1) - OP.coord(1) * OB.coord(0)) * (OP.coord(0) * OA.coord(1) - OP.coord(1) * OA.coord(0)) >= 0) {
+    return false;
+  }
+  
+  return true;
 }
 
 bool CollisionDetector::collide(const Segment& s, const Circle& c) {
@@ -135,7 +156,7 @@ bool CollisionDetector::collide(const Circle& c1, const Circle& c2) {
     return false;
   }
   else {
-    return false;
+    return true;
   }
 }
 
