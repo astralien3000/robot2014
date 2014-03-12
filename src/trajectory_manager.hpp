@@ -58,7 +58,11 @@ public:
   //! \brief Set the new point to reach from current position
   void gotoPosition(Vect<2, s32> pos, s32 pseudo_ray);
   
+  //! \brief interrupt function
   void update(void);
+
+  //! \brief Return id the robot reached destination
+  bool isEnded(void);
 
 private:
   void update_stop(void);

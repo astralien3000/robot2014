@@ -31,6 +31,7 @@ private:
   bool _state;
   Vect<2, s32> _pos_block;
   s8 _last_update;
+  s16 _sk_dur;
 
 public:
   SecureRobot(Output< Vect<2, s32> >& robot, Input< Vect<2, s32> >& odo, Input<bool>& skd_l, Input<bool>& skd_r, Output<s32>& mot_l, Output<s32>& mot_r);
