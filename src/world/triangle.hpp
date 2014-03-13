@@ -33,27 +33,27 @@ public:
     return _a == t._a && _b == t._b && _c == t._c;
   }
   
-  inline Vect<2, s32>& getA(void) {
+  inline Vect<2, s32>& a(void) {
     return _a;
   }
   
-  inline Vect<2, s32>& getB(void) {
+  inline Vect<2, s32>& b(void) {
     return _b;
   }
   
-  inline Vect<2, s32>& getC(void) {
+  inline Vect<2, s32>& c(void) {
     return _c;
   }
   
-  inline const Vect<2, s32>& getA(void) const {
+  inline const Vect<2, s32>& a(void) const {
     return _a;
   }
   
-  inline const Vect<2, s32>& getB(void) const {
+  inline const Vect<2, s32>& b(void) const {
     return _b;
   }
   
-  inline const Vect<2, s32>& getC(void) const {
+  inline const Vect<2, s32>& c(void) const {
     return _c;
   }
 };

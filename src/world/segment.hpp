@@ -31,19 +31,19 @@ public:
     return _a == s._a && _b == s._b;
   }
   
-  inline Vect<2, s32>& getA(void) {
+  inline Vect<2, s32>& a(void) {
     return _a;
   }
   
-  inline Vect<2, s32>& getB(void) {
+  inline Vect<2, s32>& b(void) {
     return _b;
   }
   
-  inline const Vect<2, s32>& getA(void) const {
+  inline const Vect<2, s32>& a(void) const {
     return _a;
   }
   
-  inline const Vect<2, s32>& getB(void) const {
+  inline const Vect<2, s32>& b(void) const {
     return _b;
   }
   

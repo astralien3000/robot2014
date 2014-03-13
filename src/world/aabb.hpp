@@ -33,27 +33,28 @@ public:
     return _o == other._o && _w == other._w && _h == other._h;
   }
   
-  inline Vect<2, s32>& getO(void) {
+  //! \brief Returns AABB's reference point
+  inline Vect<2, s32>& o(void) {
     return _o;
   }
   
-  inline s32& getW(void) {
+  inline s32& w(void) {
     return _w;
   }
   
-  inline s32& getH(void) {
+  inline s32& h(void) {
     return _h;
   }
   
-  inline const Vect<2, s32>& getO(void) const {
+  inline const Vect<2, s32>& o(void) const {
     return _o;
   }
   
-  inline const s32& getW(void) const {
+  inline const s32& w(void) const {
     return _w;
   }
   
-  inline const s32& getH(void) const {
+  inline const s32& h(void) const {
     return _h;
   }
 };

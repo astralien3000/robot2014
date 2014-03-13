@@ -34,27 +34,27 @@ public:
     return _p == p._p;
   }
   
-  inline Vect<2, s32>& getP(void) {
+  inline Vect<2, s32>& p(void) {
     return _p;
   }
   
-  inline const Vect<2, s32>& getP(void) const {
+  inline const Vect<2, s32>& p(void) const {
     return _p;
   }
   
-  inline const s32& getX(void) const {
+  inline const s32& x(void) const {
     return _p.coord(0);
   }
   
-  inline s32& getX(void) {
+  inline s32& x(void) {
     return _p.coord(0);
   }
   
-  inline const s32& getY(void) const {
+  inline const s32& y(void) const {
     return _p.coord(1);
   }
   
-  inline s32& getY(void) {
+  inline s32& y(void) {
     return _p.coord(1);
   }
 };
