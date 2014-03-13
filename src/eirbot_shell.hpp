@@ -7,6 +7,7 @@
 extern Vect<2, s32> cmd;
 
 void cmd_dist_angle(void);
+void cmd_trajectory(void);
 
 void cmd_print_infos(void);
 void cmd_print_pos(void);

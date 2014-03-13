@@ -15,7 +15,7 @@ void SecureRobot::update(void) {
     return;
 
   if(_skd_l.getValue() || _skd_r.getValue()) {
-    _state = (3 < ++_sk_dur);
+    _state = (2 < ++_sk_dur);
   }
   else {
     if(0 < _sk_dur) {
