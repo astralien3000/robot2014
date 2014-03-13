@@ -1,6 +1,29 @@
 #include <base/integer.hpp>
 #include "collision.hpp"
 
+bool CollisionDetector::collide(const Shape& s1, const Shape& s2) {
+  const void* ptr;
+  if((ptr = dynamic_cast<const Point*>(&s1))) {
+    return collide(*static_cast<const Point*>(ptr), s2);
+  }
+  else if((ptr = dynamic_cast<const Segment*>(&s1))) {
+    return collide(*static_cast<const Segment*>(ptr), s2);
+  }
+  else if((ptr = dynamic_cast<const Circle*>(&s1))) {
+    return collide(*static_cast<const Circle*>(ptr), s2);
+  }
+  else if((ptr = dynamic_cast<const AABB*>(&s1))) {
+    return collide(*static_cast<const AABB*>(ptr), s2);
+  }
+  else if((ptr = dynamic_cast<const Triangle*>(&s1))) {
+    return collide(*static_cast<const Triangle*>(ptr), s2);
+  }
+  else if((ptr = dynamic_cast<const Quadrilateral*>(&s1))) {
+    return collide(*static_cast<const Quadrilateral*>(ptr), s2);
+  }
+  return false;
+}
+
 bool CollisionDetector::collide(const Point& p, const Shape& s) {
   const void* ptr;
   if((ptr = dynamic_cast<const Point*>(&s))) {
@@ -12,8 +35,14 @@ bool CollisionDetector::collide(const Point& p, const Shape& s) {
   else if((ptr = dynamic_cast<const Circle*>(&s))) {
     return collide(p, *static_cast<const Circle*>(ptr));
   }
-  else if((ptr = dynamic_cast<const Rectangle*>(&s))) {
-    return collide(p, *static_cast<const Rectangle*>(ptr));
+  else if((ptr = dynamic_cast<const AABB*>(&s))) {
+    return collide(p, *static_cast<const AABB*>(ptr));
+  }
+  else if((ptr = dynamic_cast<const Triangle*>(&s))) {
+    return collide(p, *static_cast<const Triangle*>(ptr));
+  }
+  else if((ptr = dynamic_cast<const Quadrilateral*>(&s))) {
+    return collide(p, *static_cast<const Quadrilateral*>(ptr));
   }
   return false;
 }
@@ -57,9 +86,23 @@ bool CollisionDetector::collide(const Point& p, const Circle& c) {
 }
 
 //! \todo Implement!
-bool CollisionDetector::collide(const Point& p, const Rectangle& r) {
+bool CollisionDetector::collide(const Point& p, const AABB& a) {
   (void) p;
-  (void) r;
+  (void) a;
+  return false;
+}
+
+//! \todo Implement!
+bool CollisionDetector::collide(const Point& p, const Triangle& t) {
+  (void) p;
+  (void) t;
+  return false;
+}
+
+//! \todo Implement!
+bool CollisionDetector::collide(const Point& p, const Quadrilateral& q) {
+  (void) p;
+  (void) q;
   return false;
 }
 
@@ -74,8 +117,14 @@ bool CollisionDetector::collide(const Segment& s1, const Shape& s2) {
   else if((ptr = dynamic_cast<const Circle*>(&s2))) {
     return collide(s1, *static_cast<const Circle*>(ptr));
   }
-  else if((ptr = dynamic_cast<const Rectangle*>(&s2))) {
-    return collide(s1, *static_cast<const Rectangle*>(ptr));
+  else if((ptr = dynamic_cast<const AABB*>(&s2))) {
+    return collide(s1, *static_cast<const AABB*>(ptr));
+  }
+  else if((ptr = dynamic_cast<const Triangle*>(&s2))) {
+    return collide(s1, *static_cast<const Triangle*>(ptr));
+  }
+  else if((ptr = dynamic_cast<const Quadrilateral*>(&s2))) {
+    return collide(s1, *static_cast<const Quadrilateral*>(ptr));
   }
   return false;
 }
@@ -142,9 +191,23 @@ bool CollisionDetector::collide(const Segment& s, const Circle& c) {
 }
 
 //! \todo Implement!
-bool CollisionDetector::collide(const Segment&s, const Rectangle& r) {
+bool CollisionDetector::collide(const Segment&s, const AABB& a) {
   (void) s;
-  (void) r;
+  (void) a;
+  return false;
+}
+
+//! \todo Implement!
+bool CollisionDetector::collide(const Segment&s, const Triangle& t) {
+  (void) s;
+  (void) t;
+  return false;
+}
+
+//! \todo Implement!
+bool CollisionDetector::collide(const Segment&s, const Quadrilateral& q) {
+  (void) s;
+  (void) q;
   return false;
 }
 
@@ -159,8 +222,14 @@ bool CollisionDetector::collide(const Circle& c, const Shape& s) {
   else if((ptr = dynamic_cast<const Circle*>(&s))) {
     return collide(c, *static_cast<const Circle*>(ptr));
   }
-  else if((ptr = dynamic_cast<const Rectangle*>(&s))) {
-    return collide(c, *static_cast<const Rectangle*>(ptr));
+  else if((ptr = dynamic_cast<const AABB*>(&s))) {
+    return collide(c, *static_cast<const AABB*>(ptr));
+  }
+  else if((ptr = dynamic_cast<const Triangle*>(&s))) {
+    return collide(c, *static_cast<const Triangle*>(ptr));
+  }
+  else if((ptr = dynamic_cast<const Quadrilateral*>(&s))) {
+    return collide(c, *static_cast<const Quadrilateral*>(ptr));
   }
   return false;
 }
@@ -177,49 +246,133 @@ bool CollisionDetector::collide(const Circle& c1, const Circle& c2) {
 }
 
 //! \todo Implement!
-bool CollisionDetector::collide(const Circle& c, const Rectangle& r) {
+bool CollisionDetector::collide(const Circle& c, const AABB& a) {
   (void) c;
-  (void) r;
+  (void) a;
   return false;
 }
 
-bool CollisionDetector::collide(const Rectangle& r, const Shape& s) {
+//! \todo Implement!
+bool CollisionDetector::collide(const Circle& c, const Triangle& t) {
+  (void) c;
+  (void) t;
+  return false;
+}
+
+//! \todo Implement!
+bool CollisionDetector::collide(const Circle& c, const Quadrilateral& q) {
+  (void) c;
+  (void) q;
+  return false;
+}
+
+bool CollisionDetector::collide(const AABB& a, const Shape& s) {
   const void* ptr;
   if((ptr = dynamic_cast<const Point*>(&s))) {
-    return collide(r, *static_cast<const Point*>(ptr));
+    return collide(a, *static_cast<const Point*>(ptr));
   }
   else if((ptr = dynamic_cast<const Segment*>(&s))) {
-    return collide(r, *static_cast<const Segment*>(ptr));
+    return collide(a, *static_cast<const Segment*>(ptr));
   }
   else if((ptr = dynamic_cast<const Circle*>(&s))) {
-    return collide(r, *static_cast<const Circle*>(ptr));
+    return collide(a, *static_cast<const Circle*>(ptr));
   }
-  else if((ptr = dynamic_cast<const Rectangle*>(&s))) {
-    return collide(r, *static_cast<const Rectangle*>(ptr));
+  else if((ptr = dynamic_cast<const AABB*>(&s))) {
+    return collide(a, *static_cast<const AABB*>(ptr));
+  }
+  else if((ptr = dynamic_cast<const Triangle*>(&s))) {
+    return collide(a, *static_cast<const Triangle*>(ptr));
+  }
+  else if((ptr = dynamic_cast<const Quadrilateral*>(&s))) {
+    return collide(a, *static_cast<const Quadrilateral*>(ptr));
   }
   return false;
 }
 
 //! \todo Implement!
-bool CollisionDetector::collide(const Rectangle& r1, const Rectangle& r2) {
-  (void) r1;
-  (void) r2;
+bool CollisionDetector::collide(const AABB& a1, const AABB& a2) {
+  (void) a1;
+  (void) a2;
   return false;
 }
 
-bool CollisionDetector::collide(const Shape& s1, const Shape& s2) {
+//! \todo Implement!
+bool CollisionDetector::collide(const AABB& a, const Triangle& t) {
+  (void) a;
+  (void) t;
+  return false;
+}
+
+//! \todo Implement!
+bool CollisionDetector::collide(const AABB& a, const Quadrilateral& q) {
+  (void) a;
+  (void) q;
+  return false;
+}
+
+bool CollisionDetector::collide(const Triangle& t, const Shape& s) {
   const void* ptr;
-  if((ptr = dynamic_cast<const Point*>(&s1))) {
-    return collide(*static_cast<const Point*>(ptr), s2);
+  if((ptr = dynamic_cast<const Point*>(&s))) {
+    return collide(t, *static_cast<const Point*>(ptr));
   }
-  else if((ptr = dynamic_cast<const Segment*>(&s1))) {
-    return collide(*static_cast<const Segment*>(ptr), s2);
+  else if((ptr = dynamic_cast<const Segment*>(&s))) {
+    return collide(t, *static_cast<const Segment*>(ptr));
   }
-  else if((ptr = dynamic_cast<const Circle*>(&s1))) {
-    return collide(*static_cast<const Circle*>(ptr), s2);
+  else if((ptr = dynamic_cast<const Circle*>(&s))) {
+    return collide(t, *static_cast<const Circle*>(ptr));
   }
-  else if((ptr = dynamic_cast<const Rectangle*>(&s1))) {
-    return collide(*static_cast<const Rectangle*>(ptr), s2);
+  else if((ptr = dynamic_cast<const AABB*>(&s))) {
+    return collide(t, *static_cast<const AABB*>(ptr));
   }
+  else if((ptr = dynamic_cast<const Triangle*>(&s))) {
+    return collide(t, *static_cast<const Triangle*>(ptr));
+  }
+  else if((ptr = dynamic_cast<const Quadrilateral*>(&s))) {
+    return collide(t, *static_cast<const Quadrilateral*>(ptr));
+  }
+  return false;
+}
+
+//! \todo Implement!
+bool CollisionDetector::collide(const Triangle& t1, const Triangle& t2) {
+  (void) t1;
+  (void) t2;
+  return false;
+}
+
+//! \todo Implement!
+bool CollisionDetector::collide(const Triangle& t, const Quadrilateral& q) {
+  (void) t;
+  (void) q;
+  return false;
+}
+
+bool CollisionDetector::collide(const Quadrilateral& q, const Shape& s) {
+  const void* ptr;
+  if((ptr = dynamic_cast<const Point*>(&s))) {
+    return collide(q, *static_cast<const Point*>(ptr));
+  }
+  else if((ptr = dynamic_cast<const Segment*>(&s))) {
+    return collide(q, *static_cast<const Segment*>(ptr));
+  }
+  else if((ptr = dynamic_cast<const Circle*>(&s))) {
+    return collide(q, *static_cast<const Circle*>(ptr));
+  }
+  else if((ptr = dynamic_cast<const AABB*>(&s))) {
+    return collide(q, *static_cast<const AABB*>(ptr));
+  }
+  else if((ptr = dynamic_cast<const Triangle*>(&s))) {
+    return collide(q, *static_cast<const Triangle*>(ptr));
+  }
+  else if((ptr = dynamic_cast<const Quadrilateral*>(&s))) {
+    return collide(q, *static_cast<const Quadrilateral*>(ptr));
+  }
+  return false;
+}
+
+//! \todo Implement!
+bool CollisionDetector::collide(const Quadrilateral& q1, const Quadrilateral& q2) {
+  (void) q1;
+  (void) q2;
   return false;
 }
