@@ -85,11 +85,26 @@ bool CollisionDetector::collide(const Point& p, const Circle& c) {
   }
 }
 
-//! \todo Implement!
 bool CollisionDetector::collide(const Point& p, const AABB& a) {
-  (void) p;
-  (void) a;
-  return false;
+  const s32 left = a.o()[0];
+  const s32 right = a.o()[0] + a.w();
+  const s32 bottom = a.o()[1];
+  const s32 top = a.o()[1] + a.h();
+  
+  if(p.x() < left) {
+    return false;
+  }
+  else if(p.x() > right) {
+    return false;
+  }
+  else if(p.y() < bottom) {
+    return false;
+  }
+  else if(p.y() > top) {
+    return false;
+  }
+  
+  return true;
 }
 
 //! \todo Implement!

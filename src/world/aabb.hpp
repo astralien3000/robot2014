@@ -7,14 +7,14 @@
 
 class AABB : public Shape {
   Vect<2, s32> _o;
-  s32 _w;
-  s32 _h;
+  u32 _w;
+  u32 _h;
 public:
-  inline AABB(const Vect<2, s32>& o, const s32& w, const s32& h)
+  inline AABB(const Vect<2, s32>& o, const u32& w, const u32& h)
     : _o(o), _w(w), _h(h) {
   }
   
-  inline AABB(const s32& x, const s32& y, const s32& w, const s32& h)
+  inline AABB(const s32& x, const s32& y, const u32& w, const u32& h)
     : _o(x, y), _w(w), _h(h) {
   }
   
@@ -33,16 +33,16 @@ public:
     return _o == other._o && _w == other._w && _h == other._h;
   }
   
-  //! \brief Returns AABB's reference point
+  //! \brief Returns AABB's bottom left point.
   inline Vect<2, s32>& o(void) {
     return _o;
   }
   
-  inline s32& w(void) {
+  inline u32& w(void) {
     return _w;
   }
   
-  inline s32& h(void) {
+  inline u32& h(void) {
     return _h;
   }
   
@@ -50,11 +50,11 @@ public:
     return _o;
   }
   
-  inline const s32& w(void) const {
+  inline const u32& w(void) const {
     return _w;
   }
   
-  inline const s32& h(void) const {
+  inline const u32& h(void) const {
     return _h;
   }
 };
