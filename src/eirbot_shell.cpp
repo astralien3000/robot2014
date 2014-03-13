@@ -4,6 +4,8 @@
 #include "filters.hpp"
 #include "fpga.hpp"
 
+#include "trajectory_manager.hpp"
+
 #include <string.h>
 
 
@@ -101,4 +103,23 @@ void cmd_odo_config(void) {
 
   odo.setImpPerUnit(ipc);
   odo.setImpPerDeg(de);
+}
+
+extern TrajectoryManager traj;
+
+void cmd_trajectory(void) {
+  Vect<2, s32> dst;
+  s32 dist_center = 0;
+
+  io << "Dest x = ";
+  io >> dst.coord(0);
+  io << dst.coord(0);
+  io << "\nDest y = ";
+  io >> dst.coord(1);
+  io << dst.coord(1);
+  io << "\nDist center = ";
+  io >> dist_center;
+  io << dist_center;
+
+  traj.gotoPosition(dst, dist_center);
 }
