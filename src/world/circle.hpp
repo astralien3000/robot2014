@@ -35,19 +35,19 @@ public:
     return _centre == other._centre && _radius == other._radius;
   }
   
-  inline Vect<2, s32>& getCentre(void) {
+  inline Vect<2, s32>& centre(void) {
     return _centre;
   }
   
-  inline s32& getRadius(void) {
+  inline s32& radius(void) {
     return _radius;
   }
   
-  inline const Vect<2, s32>& getCentre(void) const {
+  inline const Vect<2, s32>& centre(void) const {
     return _centre;
   }
   
-  inline const s32& getRadius(void) const {
+  inline const s32& radius(void) const {
     return _radius;
   }
 };

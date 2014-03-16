@@ -5,6 +5,7 @@
 #include <math/vect.hpp>
 #include <container/list.hpp>
 #include "shape.hpp"
+#include "collision.hpp"
 
 //! \class World world.hpp "world.hpp"
 //! \brief Represents a 2D environnment.
@@ -36,9 +37,9 @@ public:
     return _shapes.usedSpace();
   }
   
-  inline bool collides(const Shape& s) const {
+  inline bool collide(const Shape& s) const {
     for(list_t  i = 0; i < _shapes.size(); i++) {
-      if(_shapes.get(i) != &s && _shapes.get(i)->isCollided(s)) {
+      if(_shapes.get(i) != &s && CollisionDetector::collide(*(_shapes.get(i)), s)) {
 	return true;
       }
     }
