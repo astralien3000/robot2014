@@ -19,6 +19,8 @@ Scheduler& sched = Scheduler::instance();
 PidFilter t_pid;
 TrajectoryManager traj(robot, odo, pos, t_pid);
 
+FpgaUartStream rds_stream("rds_stream", UART_TX_1_DATA, UART_TX_1_OCUP, UART_RX_1_DATA, UART_RX_1_AVA);
+
 #include <filter/diff_filter.hpp>
 
 void control_init(void) {
@@ -40,6 +42,8 @@ void control_init(void) {
 extern "C" void __cxa_pure_virtual() { while(1); }
 #endif
 
+bool toggle = false;
+
 int main(int argc, char* argv[]) {
   (void)argc;
   (void)argv;
@@ -48,6 +52,7 @@ int main(int argc, char* argv[]) {
   asserv_init();
   fpga_init();
 
+  rds_stream.setMode(Stream::BINARY);
   file.setMode(Stream::BINARY);
   
   MOT_R = 0;
@@ -69,15 +74,24 @@ int main(int argc, char* argv[]) {
   //cmd.coord(0) = 300;
   //cmd.coord(1) = 90;
   
-  t_pid.setGains(100, 1, 1);
+  t_pid.setGains(150, 2, 1);
   t_pid.setMaxIntegral(100);
   t_pid.setOutShift(8);
 
-  //traj.gotoPosition(Vect<2, s32>(500, 0), 500);
+  //traj.gotoPosition(Vect<2, s32>(1000, 0), 500);
 
   while(Aversive::sync()) {
+
     if(traj.isEnded()) {
-      cmd_trajectory();
+      if(toggle) {
+	traj.gotoPosition(Vect<2, s32>(0, 0), 0);
+      }
+      else {
+	traj.gotoPosition(Vect<2, s32>(0, -800), 0);
+      }
+      toggle = !toggle;
+      rds_stream << 'p';
+      //cmd_trajectory();
     }
 
     //cmd_print_infos();

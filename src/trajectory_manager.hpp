@@ -27,11 +27,17 @@ private:
 
   Vect<2, s32> _src;
   Vect<2, s32> _dst;
-  s32 _pseudo_ray, _ray, _ddist;
+  //s32 _pseudo_ray;
+  s32 _ray;
+  //s32 _ddist;
 
-  Vect<2, s32> _dir; // Direction Src->Dst
-  Vect<2, s32> _mid; // Middle of the SctDst segment
-  Vect<2, s32> _nor; // Normal
+  s32 _dst_angle = 0;
+  s32 _dist_cmd = 0;
+  s32 _angle_cmd = 0;
+
+  //Vect<2, s32> _dir; // Direction Src->Dst
+  //Vect<2, s32> _mid; // Middle of the SctDst segment
+  //Vect<2, s32> _nor; // Normal
   Vect<2, s32> _cen; // Center of the circle's curve
 
   DiffFilter _diff_d;

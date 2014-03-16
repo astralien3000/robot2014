@@ -110,16 +110,24 @@ extern TrajectoryManager traj;
 void cmd_trajectory(void) {
   Vect<2, s32> dst;
   s32 dist_center = 0;
+  s8 valid = 0;
 
-  io << "Dest x = ";
-  io >> dst.coord(0);
-  io << dst.coord(0);
-  io << "\nDest y = ";
-  io >> dst.coord(1);
-  io << dst.coord(1);
-  io << "\nDist center = ";
-  io >> dist_center;
-  io << dist_center;
+  while(!valid) {
+    io << "Dest x = ";
+    io >> dst.coord(0);
+    io << dst.coord(0);
+    io << "\nDest y = ";
+    io >> dst.coord(1);
+    io << dst.coord(1);
+    io << "\nDist center = ";
+    io >> dist_center;
+    io << dist_center;
+
+    io << "\nValidation :";
+    io >> valid;
+    io << valid;
+    io << "\n";
+  }
 
   traj.gotoPosition(dst, dist_center);
 }

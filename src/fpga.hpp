@@ -23,6 +23,9 @@ void fpga_init(void);
 
 #define RELATION   (*(volatile u32*)0x8024)
 
+#define UART_TX_1_DATA (*(volatile u8*)0x8028)
+#define UART_TX_2_DATA (*(volatile u8*)0x8029)
+
 // READ-ONLY
 #define FPGA_US    (*(volatile u16*)0x8080)
 #define FPGA_MS    (*(volatile u16*)0x8082)
@@ -31,6 +34,15 @@ void fpga_init(void);
 #define POSX_FPGA  (*(volatile s32*)0x8088)
 #define POSY_FPGA  (*(volatile s32*)0x808C)
 #define ROT_FPGA   (*(volatile u16*)0x8090)
+
+#define UART_TX_1_OCUP (*(volatile u8*)0x80A4) 
+#define UART_TX_2_OCUP (*(volatile u8*)0x80A5) 
+
+#define UART_RX_1_DATA (*(volatile u8*)0x80A8)
+#define UART_RX_2_DATA (*(volatile u8*)0x80A9)
+
+#define UART_RX_1_AVA  (*(volatile u8*)0x80AC)
+#define UART_RX_2_AVA  (*(volatile u8*)0x80AD)
 
 ///////////////////////////////////////////////
 // NO UNIOC

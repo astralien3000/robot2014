@@ -3,35 +3,6 @@
 #include "devices.hpp"
 
 
-TrajectoryManager::TrajectoryManager(Output< Vect<2, s32> >& robot, Input< Vect<2, s32> >& odo, Input< Vect<2, s32> >& pos, PidFilter& pid)
-  : _robot(robot), _pos(pos), _odo(odo), _pid(pid) {
-  _state = STOP;
-}
-
-void TrajectoryManager::gotoPosition(Vect<2, s32> pos, s32 pseudo_ray) {
-  _src = _pos.getValue();
-  _dst = pos;
-  _pseudo_ray = pseudo_ray;
-
-  _dir = _dst - _src;
-  _mid = _src + _dir / 2;
-  _nor = (normal(_dir) * 256) / _dir.norm();
-
-  _cen = _mid + (_pseudo_ray * _nor) / 256;
-  _ray = (_src - _cen).norm();
-  io << "center (" << _cen.coord(0) << ", " << _cen.coord(1) << ")\n";
-
-  _state = REACH_ANGLE;
-  io<< "Reach angle...\n";
-}
-
-s32 _dist_cmd = 0;
-s32 _angle_cmd = 0;
-
-void TrajectoryManager::update_stop(void) {
-  _robot.setValue(Vect<2, s32>(_dist_cmd, _angle_cmd));
-}
-
 s32 nearest_cmd_angle(s32 angle, s32 cmd) {
   s32 res = (angle % 360);
   angle -= res;
@@ -47,13 +18,45 @@ s32 nearest_cmd_angle(s32 angle, s32 cmd) {
   return angle + cmd;
 }
 
+TrajectoryManager::TrajectoryManager(Output< Vect<2, s32> >& robot, Input< Vect<2, s32> >& odo, Input< Vect<2, s32> >& pos, PidFilter& pid)
+  : _robot(robot), _pos(pos), _odo(odo), _pid(pid) {
+  _state = STOP;
+}
+
+void TrajectoryManager::gotoPosition(Vect<2, s32> pos, s32 pseudo_ray) {
+  _src = _pos.getValue();
+  _dst = pos;
+
+  Vect<2, s32> dir = _dst - _src;
+  io << "direction (" << dir.coord(0) << ", " << dir.coord(1) << ")\n";
+  Vect<2, s32> mid = _src + dir / 2;
+  io << "middle (" << mid.coord(0) << ", " << mid.coord(1) << ")\n";
+  Vect<2, s32> nor = (normal(dir) * 256) / dir.norm();
+  io << "normal (" << nor.coord(0) << ", " << nor.coord(1) << ")\n";
+
+  _cen = mid + (pseudo_ray * nor) / 256;
+  _ray = (_src - _cen).norm();
+  io << "center (" << _cen.coord(0) << ", " << _cen.coord(1) << ")\n";
+
+  Vect<2, s32> dst_ray = _dst - _cen;
+  _dst_angle = Math::atan2<Math::DEGREE>(dst_ray.coord(1), dst_ray.coord(0));
+
+  Vect<2, s32> src_ray = _src - _cen;
+  _angle_cmd = nearest_cmd_angle(_odo.getValue().coord(1), 180 - (Math::atan2<Math::DEGREE>(src_ray.coord(1), src_ray.coord(0)) + 90));
+
+  _state = REACH_ANGLE;
+  io<< "Reach angle...\n";
+}
+
+void TrajectoryManager::update_stop(void) {
+  _robot.setValue(Vect<2, s32>(_dist_cmd, _angle_cmd));
+}
 
 void TrajectoryManager::update_reach_angle(void) {
-  Vect<2, s32> vray = _pos.getValue() - _cen;
-  s32 angle_cmd = nearest_cmd_angle(_odo.getValue().coord(1), 180 - (Math::atan2<Math::DEGREE>(vray.coord(1), vray.coord(0)) + 90));
-  _robot.setValue(Vect<2, s32>(_odo.getValue().coord(0), angle_cmd));
+  //Vect<2, s32> vray = _pos.getValue() - _cen;
+  _robot.setValue(Vect<2, s32>(_odo.getValue().coord(0), _angle_cmd));
 
-  if(angle_cmd == _odo.getValue().coord(1)) {
+  if(Math::abs(_odo.getValue().coord(1) - _angle_cmd) < 10) {
     _state = FOLLOW_TRAJECTORY;
     io << "Follow trajectory...\n";
   }
@@ -71,13 +74,14 @@ void TrajectoryManager::update_follow_trajectory(void) {
   s32 d = (_diff_d.doFilter(_odo.getValue().coord(0)) << 16) / _ray;
   s32 a = (s32)(d * 180. / 3.14) >> 15; // --> * 2
 
-  s32 angle_cmd = nearest_cmd_angle(_odo.getValue().coord(1), 180 - (Math::atan2<Math::DEGREE>(vray.coord(1), vray.coord(0)) + 90));
+  s32 ray_angle = Math::atan2<Math::DEGREE>(vray.coord(1), vray.coord(0));
+  s32 angle_cmd = nearest_cmd_angle(_odo.getValue().coord(1), 180 - (ray_angle + 90));
 
   _robot.setValue(Vect<2, s32>(_odo.getValue().coord(0) + dist_err, angle_cmd + angle_err - a));
-  io << dist_err << "\n";
+  //io << dist_err << "\n";
   //io << vray.coord(0) << " " << vray.coord(1) << " " << angle_cmd << " " << _odo.getValue().coord(1) << " " << Math::atan2<Math::DEGREE>(vray.coord(1), vray.coord(0)) + 90 << "\n";
 
-  if(dist_err < 100) {
+  if(Math::abs(_dst_angle - ray_angle) < 2) {
     _state = NEAR_END;
     io << "Near end...\n";
   }
@@ -90,7 +94,7 @@ void TrajectoryManager::update_near_end(void) {
     first = false;
     Vect<2, s32> vdst = _dst - _pos.getValue();
     _dist_cmd = _odo.getValue().coord(0) + vdst.norm();
-    _angle_cmd = nearest_cmd_angle(_odo.getValue().coord(1), Math::atan2<Math::DEGREE>(vdst.coord(1), vdst.coord(0)));
+    _angle_cmd = nearest_cmd_angle(_odo.getValue().coord(1), 180 - (_dst_angle + 90));
   }
 
   _robot.setValue(Vect<2, s32>(_dist_cmd, _angle_cmd));
@@ -122,5 +126,6 @@ void TrajectoryManager::update(void) {
 bool TrajectoryManager::isEnded(void) {
   Vect<2, s32> vdst = _dst - _pos.getValue();
   s32 dist_err = vdst.norm();
-  return (_state == STOP) && (dist_err < 10);
+  //io << "pos (" << _pos.getValue().coord(0) << ", " << _pos.getValue().coord(1) << ")\n";
+  return (_state == STOP) && (dist_err < 20);
 }

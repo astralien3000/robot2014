@@ -10,6 +10,7 @@
 
 #include <device/stream/uart_stream.hpp>
 #include <device/stream/eeprom_stream.hpp>
+#include <device/stream/fpga_uart_stream.hpp>
 
 #include "skating_detector.hpp"
 #include "secure_robot.hpp"
@@ -33,6 +34,7 @@ extern Motor<volatile s8> mot_r;
 //// Communication
 extern UartStream<0> io;
 extern EepromStream file;
+extern FpgaUartStream rds_stream;
 
 ////////////////////////////////////////
 // Virtual devices

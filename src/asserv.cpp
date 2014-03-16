@@ -85,7 +85,7 @@ void asserv_init(void) {
   pos.setImpPerUnitY(82);
 
   // Robot
-  pid_a.setGains(120, 1, 50);
+  pid_a.setGains(120, 2, 50);
   pid_a.setMaxIntegral(10000);
   pid_a.setOutShift(4);
   
