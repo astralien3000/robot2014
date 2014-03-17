@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
   asserv_init();
   fpga_init();
 
-  rds_stream.setMode(Stream::BINARY);
+  //rds_stream.setMode(Stream::BINARY);
   file.setMode(Stream::BINARY);
   
   MOT_R = 0;
@@ -90,7 +90,6 @@ int main(int argc, char* argv[]) {
 	traj.gotoPosition(Vect<2, s32>(0, -800), 0);
       }
       toggle = !toggle;
-      rds_stream << 'p';
       //cmd_trajectory();
     }
 

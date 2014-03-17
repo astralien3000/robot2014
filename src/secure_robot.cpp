@@ -8,6 +8,7 @@ SecureRobot::SecureRobot(Output< Vect<2, s32> >& robot, Input< Vect<2, s32> >& o
   _state = false;
   _last_update = 0;
   _sk_dur = 0;
+  _lockable = true;
 }
 
 void SecureRobot::update(void) {
@@ -15,7 +16,9 @@ void SecureRobot::update(void) {
     return;
 
   if(_skd_l.getValue() || _skd_r.getValue()) {
-    _state = (2 < ++_sk_dur);
+    if(_lockable) {
+      _state = (2 < ++_sk_dur);
+    }
   }
   else {
     if(0 < _sk_dur) {
@@ -47,4 +50,14 @@ void SecureRobot::setValue(Vect<2, s32> command) {
 void SecureRobot::unlock(void) {
   _state = false;
   _sk_dur = 0;
+}
+
+void SecureRobot::lock(void) {
+  if(_lockable) {
+    _state = true;
+  }
+}
+
+void SecureRobot::setLockable(bool val) {
+  _lockable = val;
 }

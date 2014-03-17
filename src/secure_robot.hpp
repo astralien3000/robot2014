@@ -32,6 +32,7 @@ private:
   Vect<2, s32> _pos_block;
   s8 _last_update;
   s16 _sk_dur;
+  bool _lockable;
 
 public:
   SecureRobot(Output< Vect<2, s32> >& robot, Input< Vect<2, s32> >& odo, Input<bool>& skd_l, Input<bool>& skd_r, Output<s32>& mot_l, Output<s32>& mot_r);
@@ -43,7 +44,9 @@ public:
   void setValue(Vect<2, s32>);
 
   void unlock(void);
+  void lock(void);
 
+  void setLockable(bool);
 };
 
 #endif//SECURE_ROBOT_HPP

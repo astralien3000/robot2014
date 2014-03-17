@@ -12,6 +12,8 @@ void fpga_init(void);
 // On UNIOC
 #if defined (__AVR_ATmega128__)
 
+static const u32 UART_BAUD = 115200;
+
 #define ENC_R      (*(volatile u32*)0x80A0)
 #define ENC_L      (*(volatile u32*)0x8098)
 #define ENC_MOT_R  (*(volatile u32*)0x809C)

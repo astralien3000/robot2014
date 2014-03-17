@@ -27,30 +27,57 @@ private:
 
   Vect<2, s32> _src;
   Vect<2, s32> _dst;
-  //s32 _pseudo_ray;
-  s32 _ray;
-  //s32 _ddist;
 
-  s32 _dst_angle = 0;
+  struct CurvTrajectoryData {
+    Vect<2, s32> _cen; // Center of the circle's curve
+    s32 _dst_angle;
+    s32 _ray;
+
+    inline CurvTrajectoryData()
+      : _cen(0,0), _dst_angle(0), _ray(0) {
+
+    }
+  };
+
+  struct RectTrajectoryData {
+    Vect<2, s32> _nor; // Normal of the Src->Dst segment
+
+    inline RectTrajectoryData(void)
+      : _nor(0,0) {
+
+    }
+  };
+
+  union TrajectoryData {
+    RectTrajectoryData rect;
+    CurvTrajectoryData curv;
+
+    inline TrajectoryData(void)
+      : curv() {
+
+    }
+  };
+
+  TrajectoryData _data;
+
   s32 _dist_cmd = 0;
   s32 _angle_cmd = 0;
-
-  //Vect<2, s32> _dir; // Direction Src->Dst
-  //Vect<2, s32> _mid; // Middle of the SctDst segment
-  //Vect<2, s32> _nor; // Normal
-  Vect<2, s32> _cen; // Center of the circle's curve
 
   DiffFilter _diff_d;
 
   bool _beg, _end;
   s32 _err;
   Vect<2, s32> _cmd_end;
+  bool first = true;
 
   enum TrajectoryState {
     STOP,
     REACH_ANGLE,
     FOLLOW_TRAJECTORY,
-    NEAR_END
+    NEAR_END,
+    REACH_ANGLE_RECT,
+    FOLLOW_TRAJECTORY_RECT,
+    NEAR_END_RECT
   };
 
   TrajectoryState _state;
@@ -61,20 +88,31 @@ public:
   //! \param pos : A device to get the x,y,angle position of the robot
   TrajectoryManager(Output< Vect<2, s32> >& robot, Input< Vect<2, s32> >& odo, Input< Vect<2, s32> >& pos, PidFilter& pid);
   
+  //! \brief Set the new point to reach from current position, with a curve
+  //! \param pos : Point to reach
+  //! \param pseudo_ray : Distance between the center of the circle and the segment between Source and Destionation point
+  //! \param way : true for going in the trigonometric way
+  void gotoPosition(Vect<2, s32> pos, s32 pseudo_ray, bool way = true);
+
   //! \brief Set the new point to reach from current position
-  void gotoPosition(Vect<2, s32> pos, s32 pseudo_ray);
+  void gotoPosition(Vect<2, s32> pos);
   
   //! \brief interrupt function
   void update(void);
 
-  //! \brief Return id the robot reached destination
+  //! \brief Return if the robot reached destination
   bool isEnded(void);
 
 private:
   void update_stop(void);
+
   void update_reach_angle(void);
   void update_follow_trajectory(void);
   void update_near_end(void);
+
+  void update_reach_angle_rect(void);
+  void update_follow_trajectory_rect(void);
+  void update_near_end_rect(void);
 };
 
 #endif//TRAJECTORY_MANAGER_HPP
