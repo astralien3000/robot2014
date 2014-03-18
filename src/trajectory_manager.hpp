@@ -23,7 +23,9 @@ private:
   Input< Vect<2, s32> >& _pos;
   Input< Vect<2, s32> >& _odo;
 
-  PidFilter& _pid;
+  PidFilter& _pid_r;
+  PidFilter& _pid_c;
+  DiffFilter _diff_d;
 
   Vect<2, s32> _src;
   Vect<2, s32> _dst;
@@ -63,18 +65,13 @@ private:
   s32 _dist_cmd = 0;
   s32 _angle_cmd = 0;
 
-  DiffFilter _diff_d;
-
-  bool _beg, _end;
-  s32 _err;
-  Vect<2, s32> _cmd_end;
-  bool first = true;
-
   enum TrajectoryState {
     STOP,
-    REACH_ANGLE,
-    FOLLOW_TRAJECTORY,
-    NEAR_END,
+
+    REACH_ANGLE_CURV,
+    FOLLOW_TRAJECTORY_CURV,
+    NEAR_END_CURV,
+
     REACH_ANGLE_RECT,
     FOLLOW_TRAJECTORY_RECT,
     NEAR_END_RECT
@@ -86,7 +83,7 @@ public:
   //! \brief Constructor
   //! \param robot : A robot controller with dist/angle asserv
   //! \param pos : A device to get the x,y,angle position of the robot
-  TrajectoryManager(Output< Vect<2, s32> >& robot, Input< Vect<2, s32> >& odo, Input< Vect<2, s32> >& pos, PidFilter& pid);
+  TrajectoryManager(Output< Vect<2, s32> >& robot, Input< Vect<2, s32> >& odo, Input< Vect<2, s32> >& pos, PidFilter& pid_r, PidFilter& pid_c);
   
   //! \brief Set the new point to reach from current position, with a curve
   //! \param pos : Point to reach

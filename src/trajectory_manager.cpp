@@ -18,15 +18,23 @@ s32 nearest_cmd_angle(s32 angle, s32 cmd) {
   return angle + cmd;
 }
 
-TrajectoryManager::TrajectoryManager(Output< Vect<2, s32> >& robot, Input< Vect<2, s32> >& odo, Input< Vect<2, s32> >& pos, PidFilter& pid)
-  : _robot(robot), _pos(pos), _odo(odo), _pid(pid) {
+TrajectoryManager::TrajectoryManager(Output< Vect<2, s32> >& robot, Input< Vect<2, s32> >& odo, Input< Vect<2, s32> >& pos, PidFilter& pid_r, PidFilter& pid_c)
+  : _robot(robot), _pos(pos), _odo(odo), 
+    _pid_r(pid_r), _pid_c(pid_c) {
   _state = STOP;
 }
 
 void TrajectoryManager::gotoPosition(Vect<2, s32> pos, s32 pseudo_ray, bool way) {
   //! \todo Manage trigo way
   (void) way;
-  _src = _pos.getValue();
+
+  if(_state == NEAR_END_CURV || _state == NEAR_END_RECT) {
+    _src = _dst;
+  }
+  else {
+    _src = _pos.getValue();
+  }
+
   _dst = pos;
 
   Vect<2, s32> dir = _dst - _src;
@@ -47,22 +55,29 @@ void TrajectoryManager::gotoPosition(Vect<2, s32> pos, s32 pseudo_ray, bool way)
   _angle_cmd = nearest_cmd_angle(_odo.getValue().coord(1), 180 - (Math::atan2<Math::DEGREE>(src_ray.coord(1), src_ray.coord(0)) + 90));
   _dist_cmd = _odo.getValue().coord(0);
 
-  _state = REACH_ANGLE;
+  _state = REACH_ANGLE_CURV;
   io<< "Reach angle...\n";
 }
 
 void TrajectoryManager::gotoPosition(Vect<2, s32> pos) {
-  _src = _pos.getValue();
+
+  if(_state == NEAR_END_CURV || _state == NEAR_END_RECT) {
+    _src = _dst;
+  }
+  else {
+    _src = _pos.getValue();
+  }
+
   _dst = pos;
 
   Vect<2, s32> dir = _dst - _src;
   _data.rect._nor = (normal(dir) * 256) / dir.norm();
 
-  _angle_cmd = nearest_cmd_angle(_odo.getValue().coord(1), Math::atan2<Math::DEGREE>(dir.coord(1), dir.coord(0)));
+  _angle_cmd = nearest_cmd_angle(_odo.getValue().coord(1), -Math::atan2<Math::DEGREE>(dir.coord(1), dir.coord(0)));
   _dist_cmd = _odo.getValue().coord(0);
 
   _state = REACH_ANGLE_RECT;
-  io<< "Reach angle...\n";
+  io<< "Reach angle (rect)...\n";
 }
 
 void TrajectoryManager::update_stop(void) {
@@ -70,11 +85,10 @@ void TrajectoryManager::update_stop(void) {
 }
 
 void TrajectoryManager::update_reach_angle(void) {
-  //Vect<2, s32> vray = _pos.getValue() - _data.curv._cen;
   _robot.setValue(Vect<2, s32>(_dist_cmd, _angle_cmd));
 
   if(Math::abs(_odo.getValue().coord(1) - _angle_cmd) < 10) {
-    _state = FOLLOW_TRAJECTORY;
+    _state = FOLLOW_TRAJECTORY_CURV;
     io << "Follow trajectory...\n";
   }
 }
@@ -84,7 +98,7 @@ void TrajectoryManager::update_reach_angle_rect(void) {
 
   if(Math::abs(_odo.getValue().coord(1) - _angle_cmd) < 10) {
     _state = FOLLOW_TRAJECTORY_RECT;
-    io << "Follow trajectory...\n";
+    io << "Follow trajectory (rect)...\n";
   }
 }
 
@@ -92,7 +106,7 @@ void TrajectoryManager::update_follow_trajectory(void) {
   Vect<2, s32> vray = _pos.getValue() - _data.curv._cen;
 
   s32 rdiff = vray.norm() - _data.curv._ray;
-  s32 angle_err = _pid.doFilter(rdiff);
+  s32 angle_err = _pid_c.doFilter(rdiff);
 
   Vect<2,s32> pos_err = _dst - _pos.getValue();
   s32 dist_err = pos_err.norm();
@@ -104,11 +118,13 @@ void TrajectoryManager::update_follow_trajectory(void) {
   s32 angle_cmd = nearest_cmd_angle(_odo.getValue().coord(1), 180 - (ray_angle + 90));
 
   _robot.setValue(Vect<2, s32>(_odo.getValue().coord(0) + dist_err, angle_cmd + angle_err - a));
-  //io << dist_err << "\n";
-  //io << vray.coord(0) << " " << vray.coord(1) << " " << angle_cmd << " " << _odo.getValue().coord(1) << " " << Math::atan2<Math::DEGREE>(vray.coord(1), vray.coord(0)) + 90 << "\n";
 
-  if(Math::abs(_data.curv._dst_angle - ray_angle) < 2) {
-    _state = NEAR_END;
+  if(Math::abs(_data.curv._dst_angle - ray_angle) < 5) {
+    _state = NEAR_END_CURV;
+    
+    _dist_cmd = _odo.getValue().coord(0) + pos_err.norm();
+    _angle_cmd = nearest_cmd_angle(_odo.getValue().coord(1), 180 - (_data.curv._dst_angle + 90));
+
     io << "Near end...\n";
   }
 }
@@ -117,73 +133,62 @@ void TrajectoryManager::update_follow_trajectory_rect(void) {
   Vect<2,s32> pos_err = _dst - _pos.getValue();
 
   s32 ndiff = scal(pos_err, _data.rect._nor);
-  s32 angle_err = _pid.doFilter(ndiff);
+  s32 angle_err = _pid_r.doFilter(ndiff);
   
   s32 dist_err = pos_err.norm();
   
-  _robot.setValue(Vect<2, s32>(_odo.getValue().coord(0) + dist_err, _angle_cmd + angle_err));
+  _robot.setValue(Vect<2, s32>(_odo.getValue().coord(0) + dist_err, _angle_cmd - angle_err));
 
-  if(Math::abs(scal(pos_err, pos_err)) < 5) {
+  if(Math::abs(scal(pos_err, pos_err)) < 25 + ndiff) {
     _state = NEAR_END_RECT;
+
+    _dist_cmd = _odo.getValue().coord(0) + pos_err.norm();
+
     io << "Near end...\n";
   }
 }
 
 void TrajectoryManager::update_near_end(void) {
-  if(first) {
-    first = false;
-    Vect<2, s32> vdst = _dst - _pos.getValue();
-    _dist_cmd = _odo.getValue().coord(0) + vdst.norm();
-    _angle_cmd = nearest_cmd_angle(_odo.getValue().coord(1), 180 - (_data.curv._dst_angle + 90));
-  }
-
   _robot.setValue(Vect<2, s32>(_dist_cmd, _angle_cmd));
   
   if(Math::abs(_odo.getValue().coord(0) - _dist_cmd) < 5) {
-    first = true;
     _state = STOP;
     io << "Stop !\n";
   }
 }
 
 void TrajectoryManager::update_near_end_rect(void) {
-  if(first) {
-    first = false;
-    Vect<2, s32> vdst = _dst - _pos.getValue();
-    _dist_cmd = _odo.getValue().coord(0) + vdst.norm();
-  }
-
   _robot.setValue(Vect<2, s32>(_dist_cmd, _angle_cmd));
   
   if(Math::abs(_odo.getValue().coord(0) - _dist_cmd) < 2) {
-    first = true;
     _state = STOP;
     io << "Stop !\n";
   }
 }
 
 void TrajectoryManager::update(void) {
+  // Sorted by priority
   switch(_state) {
-  case STOP:
-    update_stop();
-    break;
-  case REACH_ANGLE:
-    update_reach_angle();
-    break;
-  case FOLLOW_TRAJECTORY:
+  case FOLLOW_TRAJECTORY_CURV:
     update_follow_trajectory();
-    break;
-  case NEAR_END:
-    update_near_end();
-    break;
-  case REACH_ANGLE_RECT:
-    update_reach_angle();
     break;
   case FOLLOW_TRAJECTORY_RECT:
-    update_follow_trajectory();
+    update_follow_trajectory_rect();
+    break;
+  case NEAR_END_CURV:
+    update_near_end();
     break;
   case NEAR_END_RECT:
-    update_near_end();
+    update_near_end_rect();
+    break;
+  case REACH_ANGLE_CURV:
+    update_reach_angle();
+    break;
+  case REACH_ANGLE_RECT:
+    update_reach_angle_rect();
+    break;
+  case STOP:
+    update_stop();
     break;
   default:
     // ERROR
@@ -194,6 +199,8 @@ void TrajectoryManager::update(void) {
 bool TrajectoryManager::isEnded(void) {
   Vect<2, s32> vdst = _dst - _pos.getValue();
   s32 dist_err = vdst.norm();
-  //io << "pos (" << _pos.getValue().coord(0) << ", " << _pos.getValue().coord(1) << ")\n";
-  return (_state == STOP) && (dist_err < 20);
+
+  return (_state == STOP) || 
+    ((_state == NEAR_END_RECT || _state == NEAR_END_CURV)
+     && (dist_err < 20));
 }

@@ -16,8 +16,9 @@
 
 Scheduler& sched = Scheduler::instance();
 
-PidFilter t_pid;
-TrajectoryManager traj(robot, odo, pos, t_pid);
+PidFilter pid_rt;
+PidFilter pid_ct;
+TrajectoryManager traj(robot, odo, pos, pid_rt, pid_ct);
 
 FpgaUartStream rds_stream("rds_stream", UART_TX_1_DATA, UART_TX_1_OCUP, UART_RX_1_DATA, UART_RX_1_AVA);
 
@@ -74,24 +75,48 @@ int main(int argc, char* argv[]) {
   //cmd.coord(0) = 300;
   //cmd.coord(1) = 90;
   
-  t_pid.setGains(150, 2, 1);
-  t_pid.setMaxIntegral(100);
-  t_pid.setOutShift(8);
+  pid_ct.setGains(150, 2, 1);
+  pid_ct.setMaxIntegral(100);
+  pid_ct.setOutShift(8);
 
-  //traj.gotoPosition(Vect<2, s32>(1000, 0), 500);
+  pid_rt.setGains(150, 5, 100);
+  pid_rt.setMaxIntegral(200);
+  pid_rt.setOutShift(16);
+
+  while(1) {
+    s16 dummy = 0;
+    while(!dummy) {
+      io >> dummy;
+    }
+
+    traj.gotoPosition(Vect<2, s32>(1500, 0));
+    while(!traj.isEnded());
+    traj.gotoPosition(Vect<2, s32>(2000, -500), -500);
+    while(!traj.isEnded());
+    traj.gotoPosition(Vect<2, s32>(2000, -1000));
+    while(!traj.isEnded());
+    traj.gotoPosition(Vect<2, s32>(500, -1000));
+    while(!traj.isEnded());
+    traj.gotoPosition(Vect<2, s32>(0, -500), -500);
+    while(!traj.isEnded());
+    traj.gotoPosition(Vect<2, s32>(0, 0));
+  }
 
   while(Aversive::sync()) {
-
     if(traj.isEnded()) {
-      if(toggle) {
-	traj.gotoPosition(Vect<2, s32>(0, 0), 0);
-      }
-      else {
-	traj.gotoPosition(Vect<2, s32>(0, -800), 0);
-      }
-      toggle = !toggle;
-      //cmd_trajectory();
+      //traj.gotoPosition(Vect<2, s32>(2000, -1000));
     }
+
+    // if(traj.isEnded()) {
+    //   if(toggle) {
+    // 	traj.gotoPosition(Vect<2, s32>(0, 0), 0);
+    //   }
+    //   else {
+    // 	traj.gotoPosition(Vect<2, s32>(0, -800), 0);
+    //   }
+    //   toggle = !toggle;
+    //   //cmd_trajectory();
+    // }
 
     //cmd_print_infos();
     //cmd_print_pos();
