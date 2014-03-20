@@ -48,11 +48,14 @@ int main(int argc, char** argv) {
   Circle c2(7, 4, 7);
   Circle c3(-4, 2, 2);
   Circle c4(-3, 1, 1);
+  Circle c5(-3, 2, 1);
+  Circle c6(-4, 5, 1);
   
   AABB a1(7, 4, 5, 3);
   AABB a2(-4, 1, 3, 2);
   
   Triangle t1(-1, 7, 2, 7, -1, 4);
+  Triangle t2(-6, 7, 0, 7, -6, 0);
   
   Quadrilateral q1(-8, 2, -6, 6, -5, 5, -7, 1);
   
@@ -150,7 +153,18 @@ int main(int argc, char** argv) {
   assert(CollisionDetector::collide(c1, a2)); print(".");
   assert(CollisionDetector::collide(c3, a2)); print(".");
   assert(CollisionDetector::collide(c4, a2)); print(".");
+  assert(CollisionDetector::collide(c5, a2)); print(".");
   assert(!CollisionDetector::collide(c2, a2)); print(".");
+  println("OK");
+  
+  // Circle/Triangle collisions
+  print("Circle/Triangle");
+  assert(CollisionDetector::collide(c2, t1)); print(".");
+  assert(CollisionDetector::collide(c3, t2)); print(".");
+  assert(CollisionDetector::collide(c5, t2)); print(".");
+  assert(CollisionDetector::collide(c6, t2)); print(".");
+  assert(!CollisionDetector::collide(c1, t1)); print(".");
+  assert(!CollisionDetector::collide(c2, t2)); print(".");
   println("OK");
   
   return EXIT_SUCCESS;

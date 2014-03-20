@@ -336,6 +336,11 @@ bool CollisionDetector::collide(const Circle& c1, const Circle& c2) {
 }
 
 bool CollisionDetector::collide(const Circle& c, const AABB& a) {
+  const Point O(c.centre());
+  if(collide(O, a)) { // If the centre of the circle is within the AABB.
+    return true;
+  }
+  
   const s32& x = a.o()[0];
   const s32& y = a.o()[1];
   const s32& w = a.w();
@@ -364,10 +369,21 @@ bool CollisionDetector::collide(const Circle& c, const AABB& a) {
   return false;
 }
 
-//! \todo Implement!
 bool CollisionDetector::collide(const Circle& c, const Triangle& t) {
-  (void) c;
-  (void) t;
+  const Point O(c.centre());
+  if(collide(O, t)) { // If the centre of the circle is within the triangle.
+    return true;
+  }
+  
+  for(u8 i = 0; i < 3; i++) {
+    const Vect<2, s32>& A = t[i];
+    const Vect<2, s32>& B = t[(i == 2) ? 0 : i + 1];
+    
+    const Segment AB(A, B);
+    if(collide(AB, c)) {
+      return true;
+    }
+  }
   return false;
 }
 
