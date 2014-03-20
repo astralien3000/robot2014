@@ -5,6 +5,8 @@
 #include <math/vect.hpp>
 #include "shape.hpp"
 
+//! \attention The points A, B, C and D defining the quadrilateral must be clockwise.
+//! \attention The quadrilateral must be convex.
 class Quadrilateral : public Shape {
   Vect<2, s32> _a;
   Vect<2, s32> _b;
@@ -51,6 +53,21 @@ public:
     return _d;
   }
   
+  inline Vect<2, s32>& operator[](u8 index) {
+    switch(index) {
+    case 0:
+      return _a;
+    case 1:
+      return _b;
+    case 2:
+      return _c;
+    case 3:
+      return _d;
+    default:
+      return *((Vect<2, s32>*) 0);
+    }
+  }
+  
   inline const Vect<2, s32>& a(void) const {
     return _a;
   }
@@ -65,6 +82,21 @@ public:
   
   inline const Vect<2, s32>& d(void) const {
     return _d;
+  }
+  
+  inline const Vect<2, s32>& operator[](u8 index) const {
+    switch(index) {
+    case 0:
+      return _a;
+    case 1:
+      return _b;
+    case 2:
+      return _c;
+    case 3:
+      return _d;
+    default:
+      return *((Vect<2, s32>*) 0);
+    }
   }
 };
 

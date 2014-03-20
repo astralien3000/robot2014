@@ -24,6 +24,8 @@ int main(int argc, char** argv) {
   Point p9(7, 5);
   Point p10(0, 5);
   Point p11(0, 6);
+  Point p12(-7, 1);
+  Point p13(-7, 2);
   
   Segment s1(0, 6, 4, 0);
   Segment s2(-3, 5, 4, 5);
@@ -42,6 +44,8 @@ int main(int argc, char** argv) {
   AABB a1(7, 4, 5, 3);
   
   Triangle t1(-1, 7, 2, 7, -1, 4);
+  
+  Quadrilateral q1(-8, 2, -6, 6, -5, 5, -7, 1);
   
   // Point/Point collisions
   println("Point/Point");
@@ -75,6 +79,13 @@ int main(int argc, char** argv) {
   assert(CollisionDetector::collide(p11, t1));
   assert(!CollisionDetector::collide(p10, t1));
   assert(!CollisionDetector::collide(p1, t1));
+  println("OK");
+  
+  // Point/Quadrilateral collisions
+  println("Point/Quadrilateral");
+  assert(CollisionDetector::collide(p13, q1));
+  assert(!CollisionDetector::collide(p9, q1));
+  assert(!CollisionDetector::collide(p12, q1));
   println("OK");
   
   // Segment/Segment collisions
