@@ -41,6 +41,8 @@ int main(int argc, char** argv) {
   Segment s7(-4, 5, -2, 5);
   Segment s8(10, 6, 12, 8);
   Segment s9(0, 5, 0, 6);
+  Segment s10(-7, 2, -6, 4);
+  Segment s11(-8, 4, -6, 1);
   
   Circle c1(1, 1, 3);
   Circle c2(7, 4, 7);
@@ -125,6 +127,14 @@ int main(int argc, char** argv) {
   assert(CollisionDetector::collide(s2, t1)); print(".");
   assert(CollisionDetector::collide(s9, t1)); print(".");
   assert(!CollisionDetector::collide(s3, t1)); print(".");
+  println("OK");
+  
+  // Segment/Quadrilateral collisions
+  print("Segment/Quadrilateral");
+  assert(CollisionDetector::collide(s6, q1)); print(".");
+  assert(CollisionDetector::collide(s10, q1)); print(".");
+  assert(CollisionDetector::collide(s11, q1)); print(".");
+  assert(!CollisionDetector::collide(s3, q1)); print(".");
   println("OK");
   
   // Circle/Circle collisions
