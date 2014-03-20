@@ -62,12 +62,12 @@ bool CollisionDetector::collide(const Point& p, const Segment& s) {
   
   // Dot product of B-A and C-A
   const s32 dot_product = (p.x() - A[0]) * (B[0] - A[0]) + (p.x() - A[0]) * (B[1] - A[1]);
-  if(dot_product < 0) {
+  if(dot_product <= 0) {
     return false;
   }
   
   const s32 squared_delta_AB = (B[0] - A[0]) * (B[0] - A[0]) + (B[1] - A[1]) * (B[1] - A[1]);
-  if(dot_product >  squared_delta_AB) {
+  if(dot_product >= squared_delta_AB) {
     return false;
   }
   
@@ -77,7 +77,7 @@ bool CollisionDetector::collide(const Point& p, const Segment& s) {
 bool CollisionDetector::collide(const Point& p, const Circle& c) {
   if(((p.x() - c.centre()[0]) * (p.x() - c.centre()[0]) + // square delta x
       (p.y() - c.centre()[1]) * (p.y() - c.centre()[1])) // square delta y
-     > (c.radius() * c.radius())) {
+     >= (c.radius() * c.radius())) {
     return false;
   }
   else {
@@ -91,16 +91,16 @@ bool CollisionDetector::collide(const Point& p, const AABB& a) {
   const s32 bottom = a.o()[1];
   const s32 top = a.o()[1] + a.h();
   
-  if(p.x() < left) {
+  if(p.x() <= left) {
     return false;
   }
-  else if(p.x() > right) {
+  else if(p.x() >= right) {
     return false;
   }
-  else if(p.y() < bottom) {
+  else if(p.y() <= bottom) {
     return false;
   }
-  else if(p.y() > top) {
+  else if(p.y() >= top) {
     return false;
   }
   
@@ -145,9 +145,6 @@ bool CollisionDetector::collide(const Segment& s1, const Shape& s2) {
 }
 
 bool CollisionDetector::collide(const Segment& s1, const Segment& s2) {
-  (void) s1;
-  (void) s2;
-  
   const Vect<2, s32>& A = s1.a();
   const Vect<2, s32>& B = s1.b();
   const Vect<2, s32>& O = s2.a();
@@ -198,17 +195,50 @@ bool CollisionDetector::collide(const Segment& s, const Circle& c) {
   // AC has already been computed.
   const Vect<2, s32> BC(C[0] - B[0], C[1] - B[1]);
   float scal1 = AB[0] * AC[0] + AB[1] * AC[1];
-  float scal2 = (-AB[0]) * BC[0] - AB[1] * BC[1];
-  if(scal1 >= 0.f && scal2 >= 0.f)
+  float scal2 = -AB[0] * BC[0] - AB[1] * BC[1];
+  if(scal1 >= 0.f && scal2 >= 0.f) {
     return true;
+  }
   
   return false;
 }
 
 //! \todo Implement!
 bool CollisionDetector::collide(const Segment&s, const AABB& a) {
-  (void) s;
-  (void) a;
+  const Point sA(s.a());
+  const Point sB(s.b());
+  
+  // If one of the extremum of the segment is in the AABB.
+  if(collide(sA, a) || collide(sB, a)) {
+    return true;
+  }
+  
+  // Otherwise, we have to test collision between the segment and the AABB edges.
+  const s32& x = a.o()[0];
+  const s32& y = a.o()[1];
+  const s32& w = a.w();
+  const s32& h = a.h();
+  
+  const Segment aLeft(x, y, x, y+h);
+  if(collide(aLeft, s)) {
+    return true;
+  }
+  
+  const Segment aRight(x + w, y, x + w, y + h);
+  if(collide(aRight, s)) {
+    return true;
+  }
+  
+  const Segment aBottom(x, y, x + w, y);
+  if(collide(aBottom, s)) {
+    return true;
+  }
+  
+  const Segment aTop(x, y + h, x + w, y + h);
+  if(collide(aTop, s)) {
+    return true;
+  }
+  
   return false;
 }
 
@@ -252,7 +282,7 @@ bool CollisionDetector::collide(const Circle& c, const Shape& s) {
 bool CollisionDetector::collide(const Circle& c1, const Circle& c2) {
   if(((c1.centre()[0] - c2.centre()[0]) * (c1.centre()[0] - c2.centre()[0]) + // square delta x
       (c1.centre()[1] - c2.centre()[1]) * (c1.centre()[1] - c2.centre()[1])) // square delta y
-     > ((c1.radius() + c2.radius()) * (c1.radius() + c2.radius()))) {
+     >= ((c1.radius() + c2.radius()) * (c1.radius() + c2.radius()))) {
     return false;
   }
   else {
