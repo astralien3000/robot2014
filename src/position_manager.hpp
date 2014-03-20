@@ -18,6 +18,11 @@ public:
   void setImpPerUnitX(s32);
   void setImpPerUnitY(s32);
 
+  void setAngle(s16 val);
+  void setX(s32);
+  void setY(s32);
+  void setPosition(const Vect<2, s32>& pos);
+
 private:
   volatile s32& _x;
   volatile s32& _y;
@@ -25,6 +30,10 @@ private:
 
   s32 _imp_per_u_x;
   s32 _imp_per_u_y;
+
+  s32 _off_x;
+  s32 _off_y;
+  s16 _off_a;
 };
 
 #endif//POSITION_MANAGER_HPP

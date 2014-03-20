@@ -85,7 +85,7 @@ void asserv_init(void) {
   pos.setImpPerUnitY(82);
 
   // Robot
-  pid_a.setGains(120, 2, 50);
+  pid_a.setGains(140, 2, 70);
   pid_a.setMaxIntegral(10000);
   pid_a.setOutShift(4);
   
@@ -93,7 +93,7 @@ void asserv_init(void) {
   pid_d.setMaxIntegral(1000);
   pid_d.setOutShift(4);
 
-  qramp_a.setFirstOrderLimit(12,12);
+  qramp_a.setFirstOrderLimit(10,10);
   qramp_a.setSecondOrderLimit(2,2);
 
   qramp_d.setFirstOrderLimit(15,15);

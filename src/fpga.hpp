@@ -7,6 +7,8 @@
 // Functions
 
 void fpga_init(void);
+void fpga_reset(void);
+void fpga_config(void);
 
 ///////////////////////////////////////////////
 // On UNIOC
@@ -27,6 +29,26 @@ static const u32 UART_BAUD = 115200;
 
 #define UART_TX_1_DATA (*(volatile u8*)0x8028)
 #define UART_TX_2_DATA (*(volatile u8*)0x8029)
+
+#define SERVO1   (*(volatile u16*)0x8004)
+#define SERVO2   (*(volatile u16*)0x8006)
+#define SERVO3   (*(volatile u16*)0x8008)
+#define SERVO4   (*(volatile u16*)0x800A)
+#define SERVO5   (*(volatile u16*)0x800C)
+#define SERVO6   (*(volatile u16*)0x800E)
+#define SERVO7   (*(volatile u16*)0x8010)
+#define SERVO8   (*(volatile u16*)0x8012)
+#define SERVO9   (*(volatile u16*)0x8014)
+#define SERVO10   (*(volatile u16*)0x8016)
+#define SERVO11   (*(volatile u16*)0x8018)
+#define SERVO12   (*(volatile u16*)0x801A)
+#define SERVO13   (*(volatile u16*)0x801C)
+#define SERVO14   (*(volatile u16*)0x801E)
+#define SERVO15   (*(volatile u16*)0x8020)
+#define SERVO16   (*(volatile u16*)0x8022)
+
+// Min servo = 600
+// Max servo = 2000
 
 // READ-ONLY
 #define FPGA_US    (*(volatile u16*)0x8080)

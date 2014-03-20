@@ -80,6 +80,12 @@ void TrajectoryManager::gotoPosition(Vect<2, s32> pos) {
   io<< "Reach angle (rect)...\n";
 }
 
+void TrajectoryManager::reset(void) {
+  _dist_cmd = odo.getValue().coord(0);
+  _angle_cmd = odo.getValue().coord(1);
+  _state = STOP;
+}
+
 void TrajectoryManager::update_stop(void) {
   _robot.setValue(Vect<2, s32>(_dist_cmd, _angle_cmd));
 }
@@ -139,7 +145,7 @@ void TrajectoryManager::update_follow_trajectory_rect(void) {
   
   _robot.setValue(Vect<2, s32>(_odo.getValue().coord(0) + dist_err, _angle_cmd - angle_err));
 
-  if(Math::abs(scal(pos_err, pos_err)) < 25 + ndiff) {
+  if(Math::abs(scal(pos_err, pos_err)) < 10000 + ndiff) {
     _state = NEAR_END_RECT;
 
     _dist_cmd = _odo.getValue().coord(0) + pos_err.norm();

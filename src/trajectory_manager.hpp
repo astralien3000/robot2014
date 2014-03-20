@@ -100,6 +100,8 @@ public:
   //! \brief Return if the robot reached destination
   bool isEnded(void);
 
+  void reset(void);
+
 private:
   void update_stop(void);
 
