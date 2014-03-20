@@ -53,6 +53,8 @@ int main(int argc, char** argv) {
   
   AABB a1(7, 4, 5, 3);
   AABB a2(-4, 1, 3, 2);
+  AABB a3(8, 5, 3, 1);
+  AABB a4(-2, 2, 2, 2);
   
   Triangle t1(-1, 7, 2, 7, -1, 4);
   Triangle t2(-6, 7, 0, 7, -6, 0);
@@ -176,6 +178,14 @@ int main(int argc, char** argv) {
   assert(!CollisionDetector::collide(c1, q2)); print(".");
   assert(!CollisionDetector::collide(c2, q2)); print(".");
   assert(!CollisionDetector::collide(c4, q2)); print(".");
+  println("OK");
+  
+  // AABB/AABB collisions
+  print("AABB/AABB");
+  assert(CollisionDetector::collide(a1, a3)); print(".");
+  assert(CollisionDetector::collide(a2, a4)); print(".");
+  assert(!CollisionDetector::collide(a1, a2)); print(".");
+  assert(!CollisionDetector::collide(a3, a4)); print(".");
   println("OK");
   
   return EXIT_SUCCESS;

@@ -428,10 +428,57 @@ bool CollisionDetector::collide(const AABB& a, const Shape& s) {
   return false;
 }
 
-//! \todo Implement!
 bool CollisionDetector::collide(const AABB& a1, const AABB& a2) {
-  (void) a1;
-  (void) a2;
+  s32 x = a1.o()[0];
+  s32 y = a1.o()[1];
+  s32 w = a1.w();
+  s32 h = a1.h();
+  
+  Point P(x, y);
+  if(collide(P, a2)) {
+    return true;
+  }
+  
+  P = Point(x + w, y);
+  if(collide(P, a2)) {
+    return true;
+  }
+  
+  P = Point(x, y + h);
+  if(collide(P, a2)) {
+    return true;
+  }
+  
+  P = Point(x + w, y + h);
+  if(collide(P, a2)) {
+    return true;
+  }
+  
+  x = a2.o()[0];
+  y = a2.o()[1];
+  w = a2.w();
+  h = a2.h();
+  
+  P = Point(x, y);
+  if(collide(P, a1)) {
+    return true;
+  }
+  
+  P = Point(x + w, y);
+  if(collide(P, a1)) {
+    return true;
+  }
+  
+  P = Point(x, y + h);
+  if(collide(P, a1)) {
+    return true;
+  }
+  
+  P = Point(x + w, y + h);
+  if(collide(P, a1)) {
+    return true;
+  }
+  
   return false;
 }
 
