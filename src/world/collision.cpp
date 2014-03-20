@@ -335,10 +335,32 @@ bool CollisionDetector::collide(const Circle& c1, const Circle& c2) {
   }
 }
 
-//! \todo Implement!
 bool CollisionDetector::collide(const Circle& c, const AABB& a) {
-  (void) c;
-  (void) a;
+  const s32& x = a.o()[0];
+  const s32& y = a.o()[1];
+  const s32& w = a.w();
+  const s32& h = a.h();
+  
+  const Segment aLeft(x, y, x, y+h);
+  if(collide(aLeft, c)) {
+    return true;
+  }
+  
+  const Segment aRight(x + w, y, x + w, y + h);
+  if(collide(aRight, c)) {
+    return true;
+  }
+  
+  const Segment aBottom(x, y, x + w, y);
+  if(collide(aBottom, c)) {
+    return true;
+  }
+  
+  const Segment aTop(x, y + h, x + w, y + h);
+  if(collide(aTop, c)) {
+    return true;
+  }
+  
   return false;
 }
 
