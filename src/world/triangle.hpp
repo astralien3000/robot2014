@@ -5,6 +5,7 @@
 #include <math/vect.hpp>
 #include "shape.hpp"
 
+//! \attention The points A, B and C defining the triangle must be clockwise.
 class Triangle : public Shape {
   Vect<2, s32> _a;
   Vect<2, s32> _b;
@@ -45,6 +46,19 @@ public:
     return _c;
   }
   
+  inline Vect<2, s32>& operator[](u8 index) {
+    switch(index) {
+    case 0:
+      return _a;
+    case 1:
+      return _b;
+    case 2:
+      return _c;
+    default:
+      return *((Vect<2, s32>*) 0);
+    }
+  }
+  
   inline const Vect<2, s32>& a(void) const {
     return _a;
   }
@@ -55,6 +69,19 @@ public:
   
   inline const Vect<2, s32>& c(void) const {
     return _c;
+  }
+  
+  inline const Vect<2, s32>& operator[](u8 index) const {
+    switch(index) {
+    case 0:
+      return _a;
+    case 1:
+      return _b;
+    case 2:
+      return _c;
+    default:
+      return *((Vect<2, s32>*) 0);
+    }
   }
 };
 

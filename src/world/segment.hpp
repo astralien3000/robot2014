@@ -39,6 +39,17 @@ public:
     return _b;
   }
   
+  inline Vect<2, s32>& operator[](u8 index) {
+    switch(index) {
+    case 0:
+      return _a;
+    case 1:
+      return _b;
+    default:
+      return *((Vect<2, s32>*) 0);
+    }
+  }
+  
   inline const Vect<2, s32>& a(void) const {
     return _a;
   }
@@ -49,6 +60,17 @@ public:
   
   inline s32 length(void) const {
     return (Vect<2, s32>(_a.coord(0) -_b.coord(0), _a.coord(1) - _b.coord(0))).norm();
+  }
+  
+  inline const Vect<2, s32>& operator[](u8 index) const {
+    switch(index) {
+    case 0:
+      return _a;
+    case 1:
+      return _b;
+    default:
+      return *((Vect<2, s32>*) 0);
+    }
   }
 };
 

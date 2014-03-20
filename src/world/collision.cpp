@@ -62,12 +62,12 @@ bool CollisionDetector::collide(const Point& p, const Segment& s) {
   
   // Dot product of B-A and C-A
   const s32 dot_product = (p.x() - A[0]) * (B[0] - A[0]) + (p.x() - A[0]) * (B[1] - A[1]);
-  if(dot_product < 0) {
+  if(dot_product <= 0) {
     return false;
   }
   
   const s32 squared_delta_AB = (B[0] - A[0]) * (B[0] - A[0]) + (B[1] - A[1]) * (B[1] - A[1]);
-  if(dot_product >  squared_delta_AB) {
+  if(dot_product >= squared_delta_AB) {
     return false;
   }
   
@@ -77,7 +77,7 @@ bool CollisionDetector::collide(const Point& p, const Segment& s) {
 bool CollisionDetector::collide(const Point& p, const Circle& c) {
   if(((p.x() - c.centre()[0]) * (p.x() - c.centre()[0]) + // square delta x
       (p.y() - c.centre()[1]) * (p.y() - c.centre()[1])) // square delta y
-     > (c.radius() * c.radius())) {
+     >= (c.radius() * c.radius())) {
     return false;
   }
   else {
@@ -91,34 +91,52 @@ bool CollisionDetector::collide(const Point& p, const AABB& a) {
   const s32 bottom = a.o()[1];
   const s32 top = a.o()[1] + a.h();
   
-  if(p.x() < left) {
+  if(p.x() <= left) {
     return false;
   }
-  else if(p.x() > right) {
+  else if(p.x() >= right) {
     return false;
   }
-  else if(p.y() < bottom) {
+  else if(p.y() <= bottom) {
     return false;
   }
-  else if(p.y() > top) {
+  else if(p.y() >= top) {
     return false;
   }
   
   return true;
 }
 
-//! \todo Implement!
 bool CollisionDetector::collide(const Point& p, const Triangle& t) {
-  (void) p;
-  (void) t;
-  return false;
+  for(u8 i = 0; i < 3; i++) {
+    const Vect<2, s32>& A = t[i];
+    const Vect<2, s32>& B = t[(i == 2) ? 0 : i + 1];
+    
+    const Vect<2, s32> AB(B[0] - A[0], B[1] - A[1]);
+    const Vect<2, s32> AP(p.x() - A[0], p.y() - A[1]);
+    
+    s32 d = AB[0] * AP[1] - AB[1] * AP[0];
+    if(d >= 0) { // If P is on the left of AB, P is outside
+      return false;
+    }
+  }
+  return true;
 }
 
-//! \todo Implement!
 bool CollisionDetector::collide(const Point& p, const Quadrilateral& q) {
-  (void) p;
-  (void) q;
-  return false;
+  for(u8 i = 0; i < 4; i++) {
+    const Vect<2, s32>& A = q[i];
+    const Vect<2, s32>& B = q[(i == 3) ? 0 : i + 1];
+    
+    const Vect<2, s32> AB(B[0] - A[0], B[1] - A[1]);
+    const Vect<2, s32> AP(p.x() - A[0], p.y() - A[1]);
+    
+    s32 d = AB[0] * AP[1] - AB[1] * AP[0];
+    if(d >= 0) { // If P is on the left of AB, P is outside
+      return false;
+    }
+  }
+  return true;
 }
 
 bool CollisionDetector::collide(const Segment& s1, const Shape& s2) {
@@ -145,9 +163,6 @@ bool CollisionDetector::collide(const Segment& s1, const Shape& s2) {
 }
 
 bool CollisionDetector::collide(const Segment& s1, const Segment& s2) {
-  (void) s1;
-  (void) s2;
-  
   const Vect<2, s32>& A = s1.a();
   const Vect<2, s32>& B = s1.b();
   const Vect<2, s32>& O = s2.a();
@@ -198,31 +213,91 @@ bool CollisionDetector::collide(const Segment& s, const Circle& c) {
   // AC has already been computed.
   const Vect<2, s32> BC(C[0] - B[0], C[1] - B[1]);
   float scal1 = AB[0] * AC[0] + AB[1] * AC[1];
-  float scal2 = (-AB[0]) * BC[0] - AB[1] * BC[1];
-  if(scal1 >= 0.f && scal2 >= 0.f)
+  float scal2 = -AB[0] * BC[0] - AB[1] * BC[1];
+  if(scal1 >= 0.f && scal2 >= 0.f) {
     return true;
+  }
   
   return false;
 }
 
-//! \todo Implement!
 bool CollisionDetector::collide(const Segment&s, const AABB& a) {
-  (void) s;
-  (void) a;
+  const Point sA(s.a());
+  const Point sB(s.b());
+  
+  // If one of the extremum of the segment is in the AABB.
+  if(collide(sA, a) || collide(sB, a)) {
+    return true;
+  }
+  
+  // Otherwise, we have to test collision between the segment and the AABB edges.
+  const s32& x = a.o()[0];
+  const s32& y = a.o()[1];
+  const s32& w = a.w();
+  const s32& h = a.h();
+  
+  const Segment aLeft(x, y, x, y+h);
+  if(collide(aLeft, s)) {
+    return true;
+  }
+  
+  const Segment aRight(x + w, y, x + w, y + h);
+  if(collide(aRight, s)) {
+    return true;
+  }
+  
+  const Segment aBottom(x, y, x + w, y);
+  if(collide(aBottom, s)) {
+    return true;
+  }
+  
+  const Segment aTop(x, y + h, x + w, y + h);
+  if(collide(aTop, s)) {
+    return true;
+  }
+  
   return false;
 }
 
-//! \todo Implement!
 bool CollisionDetector::collide(const Segment&s, const Triangle& t) {
-  (void) s;
-  (void) t;
+  const Point sA(s.a());
+  const Point sB(s.b());
+  
+  // If one of the extremum of the segment is in the triangle.
+  if(collide(sA, t) || collide(sB, t)) {
+    return true;
+  }
+  
+  for(u8 i = 0; i < 3; i++) {
+    const Vect<2, s32>& A = t[i];
+    const Vect<2, s32>& B = t[(i == 2) ? 0 : i + 1];
+    
+    const Segment AB(A, B);
+    if(collide(s, AB)) {
+      return true;
+    }
+  }
   return false;
 }
 
-//! \todo Implement!
 bool CollisionDetector::collide(const Segment&s, const Quadrilateral& q) {
-  (void) s;
-  (void) q;
+  const Point sA(s.a());
+  const Point sB(s.b());
+  
+  // If one of the extremum of the segment is in the triangle.
+  if(collide(sA, q) || collide(sB, q)) {
+    return true;
+  }
+  
+  for(u8 i = 0; i < 4; i++) {
+    const Vect<2, s32>& A = q[i];
+    const Vect<2, s32>& B = q[(i == 3) ? 0 : i + 1];
+    
+    const Segment AB(A, B);
+    if(collide(s, AB)) {
+      return true;
+    }
+  }
   return false;
 }
 
@@ -252,7 +327,7 @@ bool CollisionDetector::collide(const Circle& c, const Shape& s) {
 bool CollisionDetector::collide(const Circle& c1, const Circle& c2) {
   if(((c1.centre()[0] - c2.centre()[0]) * (c1.centre()[0] - c2.centre()[0]) + // square delta x
       (c1.centre()[1] - c2.centre()[1]) * (c1.centre()[1] - c2.centre()[1])) // square delta y
-     > ((c1.radius() + c2.radius()) * (c1.radius() + c2.radius()))) {
+     >= ((c1.radius() + c2.radius()) * (c1.radius() + c2.radius()))) {
     return false;
   }
   else {
@@ -260,24 +335,73 @@ bool CollisionDetector::collide(const Circle& c1, const Circle& c2) {
   }
 }
 
-//! \todo Implement!
 bool CollisionDetector::collide(const Circle& c, const AABB& a) {
-  (void) c;
-  (void) a;
+  const Point O(c.centre());
+  if(collide(O, a)) { // If the centre of the circle is within the AABB.
+    return true;
+  }
+  
+  const s32& x = a.o()[0];
+  const s32& y = a.o()[1];
+  const s32& w = a.w();
+  const s32& h = a.h();
+  
+  const Segment aLeft(x, y, x, y+h);
+  if(collide(aLeft, c)) {
+    return true;
+  }
+  
+  const Segment aRight(x + w, y, x + w, y + h);
+  if(collide(aRight, c)) {
+    return true;
+  }
+  
+  const Segment aBottom(x, y, x + w, y);
+  if(collide(aBottom, c)) {
+    return true;
+  }
+  
+  const Segment aTop(x, y + h, x + w, y + h);
+  if(collide(aTop, c)) {
+    return true;
+  }
+  
   return false;
 }
 
-//! \todo Implement!
 bool CollisionDetector::collide(const Circle& c, const Triangle& t) {
-  (void) c;
-  (void) t;
+  const Point O(c.centre());
+  if(collide(O, t)) { // If the centre of the circle is within the triangle.
+    return true;
+  }
+  
+  for(u8 i = 0; i < 3; i++) {
+    const Vect<2, s32>& A = t[i];
+    const Vect<2, s32>& B = t[(i == 2) ? 0 : i + 1];
+    
+    const Segment AB(A, B);
+    if(collide(AB, c)) {
+      return true;
+    }
+  }
   return false;
 }
 
-//! \todo Implement!
 bool CollisionDetector::collide(const Circle& c, const Quadrilateral& q) {
-  (void) c;
-  (void) q;
+    const Point O(c.centre());
+  if(collide(O, q)) { // If the centre of the circle is within the quadrilateral.
+    return true;
+  }
+  
+  for(u8 i = 0; i < 4; i++) {
+    const Vect<2, s32>& A = q[i];
+    const Vect<2, s32>& B = q[(i == 3) ? 0 : i + 1];
+    
+    const Segment AB(A, B);
+    if(collide(AB, c)) {
+      return true;
+    }
+  }
   return false;
 }
 
@@ -304,10 +428,57 @@ bool CollisionDetector::collide(const AABB& a, const Shape& s) {
   return false;
 }
 
-//! \todo Implement!
 bool CollisionDetector::collide(const AABB& a1, const AABB& a2) {
-  (void) a1;
-  (void) a2;
+  s32 x = a1.o()[0];
+  s32 y = a1.o()[1];
+  s32 w = a1.w();
+  s32 h = a1.h();
+  
+  Point P(x, y);
+  if(collide(P, a2)) {
+    return true;
+  }
+  
+  P = Point(x + w, y);
+  if(collide(P, a2)) {
+    return true;
+  }
+  
+  P = Point(x, y + h);
+  if(collide(P, a2)) {
+    return true;
+  }
+  
+  P = Point(x + w, y + h);
+  if(collide(P, a2)) {
+    return true;
+  }
+  
+  x = a2.o()[0];
+  y = a2.o()[1];
+  w = a2.w();
+  h = a2.h();
+  
+  P = Point(x, y);
+  if(collide(P, a1)) {
+    return true;
+  }
+  
+  P = Point(x + w, y);
+  if(collide(P, a1)) {
+    return true;
+  }
+  
+  P = Point(x, y + h);
+  if(collide(P, a1)) {
+    return true;
+  }
+  
+  P = Point(x + w, y + h);
+  if(collide(P, a1)) {
+    return true;
+  }
+  
   return false;
 }
 
