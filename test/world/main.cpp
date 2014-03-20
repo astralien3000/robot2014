@@ -58,6 +58,7 @@ int main(int argc, char** argv) {
   Triangle t2(-6, 7, 0, 7, -6, 0);
   
   Quadrilateral q1(-8, 2, -6, 6, -5, 5, -7, 1);
+  Quadrilateral q2(-4, 7, 0, 5, -5, 1, -7, 4);
   
   // Point/Point collisions
   print("Point/Point");
@@ -165,6 +166,16 @@ int main(int argc, char** argv) {
   assert(CollisionDetector::collide(c6, t2)); print(".");
   assert(!CollisionDetector::collide(c1, t1)); print(".");
   assert(!CollisionDetector::collide(c2, t2)); print(".");
+  println("OK");
+  
+  // Circle/Quadrilateral collisions
+  print("Circle/Quadrilateral");
+  assert(CollisionDetector::collide(c3, q2)); print(".");
+  assert(CollisionDetector::collide(c5, q2)); print(".");
+  assert(CollisionDetector::collide(c6, q2)); print(".");
+  assert(!CollisionDetector::collide(c1, q2)); print(".");
+  assert(!CollisionDetector::collide(c2, q2)); print(".");
+  assert(!CollisionDetector::collide(c4, q2)); print(".");
   println("OK");
   
   return EXIT_SUCCESS;
