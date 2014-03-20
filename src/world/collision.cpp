@@ -107,11 +107,20 @@ bool CollisionDetector::collide(const Point& p, const AABB& a) {
   return true;
 }
 
-//! \todo Implement!
 bool CollisionDetector::collide(const Point& p, const Triangle& t) {
-  (void) p;
-  (void) t;
-  return false;
+  for(u8 i = 0; i < 3; i++) {
+    const Vect<2, s32>& A = t[i];
+    const Vect<2, s32>& B = t[(i == 2) ? 0 : i + 1];
+    
+    const Vect<2, s32> AB(B[0] - A[0], B[1] - A[1]);
+    const Vect<2, s32> AP(p.x() - A[0], p.y() - A[1]);
+    
+    s32 d = AB[0] * AP[1] - AB[1] * AP[0];
+    if(d >= 0) { // If P is on the left of AB, P is outside
+      return false;
+    }
+  }
+  return true;
 }
 
 //! \todo Implement!
@@ -203,7 +212,6 @@ bool CollisionDetector::collide(const Segment& s, const Circle& c) {
   return false;
 }
 
-//! \todo Implement!
 bool CollisionDetector::collide(const Segment&s, const AABB& a) {
   const Point sA(s.a());
   const Point sB(s.b());
