@@ -5,6 +5,10 @@
 #include <world.hpp>
 #include <collision.hpp>
 
+inline void print(const char* str) {
+  std::cout << str;
+}
+
 inline void println(const char* str) {
   std::cout << str << std::endl;
 }
@@ -26,6 +30,7 @@ int main(int argc, char** argv) {
   Point p11(0, 6);
   Point p12(-7, 1);
   Point p13(-7, 2);
+  Point p14(4, 1);
   
   Segment s1(0, 6, 4, 0);
   Segment s2(-3, 5, 4, 5);
@@ -35,6 +40,7 @@ int main(int argc, char** argv) {
   Segment s6(-3, 5, -6, 5);
   Segment s7(-4, 5, -2, 5);
   Segment s8(10, 6, 12, 8);
+  Segment s9(0, 5, 0, 6);
   
   Circle c1(1, 1, 3);
   Circle c2(7, 4, 7);
@@ -48,75 +54,84 @@ int main(int argc, char** argv) {
   Quadrilateral q1(-8, 2, -6, 6, -5, 5, -7, 1);
   
   // Point/Point collisions
-  println("Point/Point");
-  assert(CollisionDetector::collide(p1, p2));
-  assert(!CollisionDetector::collide(p1, p3));
+  print("Point/Point");
+  assert(CollisionDetector::collide(p1, p2)); print(".");
+  assert(!CollisionDetector::collide(p1, p3)); print(".");
   println("OK");
   
   // Point/Segment collisions
-  println("Point/Segment");
-  assert(CollisionDetector::collide(s2, p5));
-  assert(!CollisionDetector::collide(s2, p6));
-  assert(!CollisionDetector::collide(s2, p7));
-  assert(!CollisionDetector::collide(s2, p8));
+  print("Point/Segment");
+  assert(CollisionDetector::collide(s2, p5)); print(".");
+  assert(!CollisionDetector::collide(s2, p6)); print(".");
+  assert(!CollisionDetector::collide(s2, p7)); print(".");
+  assert(!CollisionDetector::collide(s2, p8)); print(".");
   println("OK");
   
   // Point/Circle collisions
-  println("Point/Circle");
-  assert(CollisionDetector::collide(c1, p4));
-  assert(!CollisionDetector::collide(c1, p3));
+  print("Point/Circle");
+  assert(CollisionDetector::collide(c1, p4)); print(".");
+  assert(!CollisionDetector::collide(c1, p3)); print(".");
+  assert(!CollisionDetector::collide(c1, p14)); print(".");
   println("OK");
   
   // Point/AABB collisions
-  println("Point/AABB");
-  assert(CollisionDetector::collide(a1, p6));
-  assert(!CollisionDetector::collide(a1, p7));
-  assert(!CollisionDetector::collide(a1, p9));
+  print("Point/AABB");
+  assert(CollisionDetector::collide(a1, p6)); print(".");
+  assert(!CollisionDetector::collide(a1, p7)); print(".");
+  assert(!CollisionDetector::collide(a1, p9)); print(".");
   println("OK");
   
   // Point/Triangle collisions
-  println("Point/Triangle");
-  assert(CollisionDetector::collide(p11, t1));
-  assert(!CollisionDetector::collide(p10, t1));
-  assert(!CollisionDetector::collide(p1, t1));
+  print("Point/Triangle");
+  assert(CollisionDetector::collide(p11, t1)); print(".");
+  assert(!CollisionDetector::collide(p10, t1)); print(".");
+  assert(!CollisionDetector::collide(p1, t1)); print(".");
   println("OK");
   
   // Point/Quadrilateral collisions
-  println("Point/Quadrilateral");
-  assert(CollisionDetector::collide(p13, q1));
-  assert(!CollisionDetector::collide(p9, q1));
-  assert(!CollisionDetector::collide(p12, q1));
+  print("Point/Quadrilateral");
+  assert(CollisionDetector::collide(p13, q1)); print(".");
+  assert(!CollisionDetector::collide(p9, q1)); print(".");
+  assert(!CollisionDetector::collide(p12, q1)); print(".");
   println("OK");
   
   // Segment/Segment collisions
-  println("Segment/Segment");
-  assert(CollisionDetector::collide(s1, s2));
-  assert(!CollisionDetector::collide(s2, s3));
-  assert(!CollisionDetector::collide(s2, s6));
-  assert(!CollisionDetector::collide(s6, s7));
+  print("Segment/Segment");
+  assert(CollisionDetector::collide(s1, s2)); print(".");
+  assert(!CollisionDetector::collide(s2, s3)); print(".");
+  assert(!CollisionDetector::collide(s2, s6)); print(".");
+  assert(!CollisionDetector::collide(s6, s7)); print(".");
   println("OK");
   
   // Segment/Circle collisions
-  println("Segment/Circle");
-  assert(CollisionDetector::collide(c1, s1));
-  assert(!CollisionDetector::collide(c1, s2));
+  print("Segment/Circle");
+  assert(CollisionDetector::collide(c1, s1)); print(".");
+  assert(!CollisionDetector::collide(c1, s2)); print(".");
   println("OK");
   
   // Segment/AABB collisions
-  println("Segment/AABB");
-  assert(CollisionDetector::collide(s5, a1));
-  assert(CollisionDetector::collide(s8, a1));
-  assert(!CollisionDetector::collide(s1, a1));
-  assert(!CollisionDetector::collide(s2, a1));
-  assert(!CollisionDetector::collide(s3, a1));
-  assert(!CollisionDetector::collide(s4, a1));
+  print("Segment/AABB");
+  assert(CollisionDetector::collide(s5, a1)); print(".");
+  assert(CollisionDetector::collide(s8, a1)); print(".");
+  assert(!CollisionDetector::collide(s1, a1)); print(".");
+  assert(!CollisionDetector::collide(s2, a1)); print(".");
+  assert(!CollisionDetector::collide(s3, a1)); print(".");
+  assert(!CollisionDetector::collide(s4, a1)); print(".");
+  println("OK");
+  
+  // Segment/Triangle collisions
+  print("Segment/Triangle");
+  assert(CollisionDetector::collide(s1, t1)); print(".");
+  assert(CollisionDetector::collide(s2, t1)); print(".");
+  assert(CollisionDetector::collide(s9, t1)); print(".");
+  assert(!CollisionDetector::collide(s3, t1)); print(".");
   println("OK");
   
   // Circle/Circle collisions
-  println("Circle/Circle");
-  assert(CollisionDetector::collide(c1, c2));
-  assert(!CollisionDetector::collide(c1, c3));
-  assert(!CollisionDetector::collide(c1, c4));
+  print("Circle/Circle");
+  assert(CollisionDetector::collide(c1, c2)); print(".");
+  assert(!CollisionDetector::collide(c1, c3)); print(".");
+  assert(!CollisionDetector::collide(c1, c4)); print(".");
   println("OK");
   
   return EXIT_SUCCESS;

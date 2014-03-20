@@ -259,10 +259,24 @@ bool CollisionDetector::collide(const Segment&s, const AABB& a) {
   return false;
 }
 
-//! \todo Implement!
 bool CollisionDetector::collide(const Segment&s, const Triangle& t) {
-  (void) s;
-  (void) t;
+  const Point sA(s.a());
+  const Point sB(s.b());
+  
+  // If one of the extremum of the segment is in the triangle.
+  if(collide(sA, t) || collide(sB, t)) {
+    return true;
+  }
+  
+  for(u8 i = 0; i < 3; i++) {
+    const Vect<2, s32>& A = t[i];
+    const Vect<2, s32>& B = t[(i == 2) ? 0 : i + 1];
+    
+    const Segment AB(A, B);
+    if(collide(s, AB)) {
+      return true;
+    }
+  }
   return false;
 }
 
