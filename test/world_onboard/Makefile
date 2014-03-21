@@ -6,7 +6,7 @@ EXEC=client
 
 all: $(EXEC)
 
-$(EXEC): client.cpp my_world.cpp ../../src/world/*
+$(EXEC): client.cpp my_world.cpp ../../src/world/*.cpp
 	$(CC) $(CFLAGS) -o $(EXEC) $^ $(LDFLAGS)
 
 test: $(EXEC)

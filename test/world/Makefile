@@ -5,7 +5,7 @@ EXEC=world
 
 all: $(EXEC)
 
-$(EXEC): main.cpp ../../src/world/*
+$(EXEC): main.cpp ../../src/world/*.cpp
 	$(CC) $(CFLAGS) -o $(EXEC) main.cpp ../../src/world/*.cpp
 
 test: $(EXEC)
