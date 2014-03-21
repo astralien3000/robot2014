@@ -50,12 +50,34 @@ public:
     return _p.coord(0);
   }
   
+  inline s32& operator[](u8 index) {
+    switch(index) {
+    case 0:
+      return _x;
+    case 1:
+      return _y;
+    default:
+      return *((s32*) 0);
+    }
+  }
+  
   inline const s32& y(void) const {
     return _p.coord(1);
   }
   
   inline s32& y(void) {
     return _p.coord(1);
+  }
+  
+  inline const s32& operator[](u8 index) const {
+    switch(index) {
+    case 0:
+      return _x;
+    case 1:
+      return _y;
+    default:
+      return *((s32*) 0);
+    }
   }
 };
 

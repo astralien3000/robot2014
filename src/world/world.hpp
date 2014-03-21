@@ -45,6 +45,11 @@ public:
     }
     return false;
   }
+  
+  template<typename Callable>
+  inline void doForeach(Callable func) const {
+    _shapes.doForeach(func);
+  }
 };
 
 #endif//WORLD_HPP
