@@ -20,15 +20,15 @@ FpgaUartStream rds_stream("rds_stream", UART_TX_1_DATA, UART_TX_1_OCUP, UART_RX_
 
 Vect<2, s32> _cmd;
 bool traj_mode = true;
+s32 cmd_l = 0;
+s32 cmd_r = 0;
 
 void control_init(void) {
   Task t([](void) {
-      if(traj_mode) {
-	traj.update();
-      }
-      else {
-	robot.setValue(_cmd);
-      }
+      //motc_l.setValue(cmd_l);
+      //motc_r.setValue(cmd_r);
+      //robot.setValue(_cmd);
+      traj.update();
     });
 
   t.setPeriod(8000);
@@ -38,16 +38,31 @@ void control_init(void) {
   Interrupts::set();
 }
 
+void trajectory_reset(void) {
+  pid_l.reset();
+  pid_r.reset();
+  pid_d.reset();
+  pid_a.reset();
+
+  qramp_d.reset(odo.getValue().coord(0));
+  qramp_a.reset(odo.getValue().coord(1));
+
+  pid_ct.reset();
+  pid_rt.reset();
+
+  traj.reset();
+}
+
 #if defined (__AVR_ATmega128__)
 extern "C" void __cxa_pure_virtual() { while(1); }
 #endif
 
 bool toggle = false;
-
+/*
 void set_angle(s32 new_angle) {
   s32 old_angle = odo.getValue().coord(1);
   s32 new_zero = old_angle - new_angle;
-  s32 dist = odo.getValue().coord(0);
+  //s32 dist = odo.getValue().coord(0);
 
   s32 cur_dist = odo.getValue().coord(0);
 
@@ -108,6 +123,8 @@ void goto_wall(bool backward = false) {
 }
 
 void match_init(bool red_side) {
+  (void) red_side;
+
   traj_mode = false;
 
   // Goto wall
@@ -178,6 +195,7 @@ void side_init(bool red_side) {
     ANGLE_CALIB = YELLOW_ANGLE_CALIB;
   }
 }
+*/
 
 int main(int argc, char* argv[]) {
   (void)argc;
@@ -187,7 +205,8 @@ int main(int argc, char* argv[]) {
   asserv_init();
   fpga_init();
 
-  rds_stream.setMode(Stream::BINARY);
+  //io.setMode(Stream::BINARY);
+  //rds_stream.setMode(Stream::BINARY);
   file.setMode(Stream::BINARY);
   
   MOT_R = 0;
@@ -201,18 +220,77 @@ int main(int argc, char* argv[]) {
   motc_l.inverse();
   enc_r.inverse();
     
-  pid_ct.setGains(150, 2, 1);
+  pid_ct.setGains(1000, 50, 100);
   pid_ct.setMaxIntegral(100);
-  pid_ct.setOutShift(8);
+  pid_ct.setOutShift(11);
 
-  pid_rt.setGains(150, 5, 100);
-  pid_rt.setMaxIntegral(200);
-  pid_rt.setOutShift(16);
+  pid_rt.setGains(10, 0, 0);
+  pid_rt.setMaxIntegral(1000);
+  pid_rt.setOutShift(12);
 
   // Init
   //pwm bas 1300
   //pwm haut 490
   s16 dummy = 0;
+
+
+  /// Test trajectory
+  robot.lock();
+  while(1) {
+    dummy = 0;
+    while(!dummy) {
+      io << "GO ?\n";
+      io >> dummy;
+      io << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
+    }
+    
+    trajectory_reset();
+    robot.unlock();
+    traj.gotoPosition(Vect<2, s32>(0, 0));
+    while(!traj.isEnded()) {
+      //io << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
+    }
+    robot.lock();
+  }
+
+  /// Test asserv
+  // while(1) {
+  //   dummy = 0;
+  //   while(!dummy) {
+  //     cmd_l = 0;
+  //     cmd_r = 0;
+
+  //     io << "GO ?\n";
+  //     io >> dummy;
+  //     io << pid_l.lastOut() << "\n";
+  //   }
+  //   io << "OK GO ! GO ! GO !\n";
+    
+  //   if(dummy == 1) {
+  //     cmd_l = 1000;
+  //     cmd_r = 1000;
+  //     _cmd = Vect<2,s32>(500, 0);
+  //   }    
+  //   else if(dummy == 2) {
+  //     cmd_l = -1000;
+  //     cmd_r = -1000;
+  //     _cmd = Vect<2,s32>(0, 0);
+  //   }    
+  //   else if(dummy == 3) {
+  //     _cmd = Vect<2,s32>(0, -900);
+  //   }    
+  //   else if(dummy == 4) {
+  //     _cmd = Vect<2,s32>(0, 900);
+  //   }    
+  //   else if(dummy == 5) {
+  //     _cmd = Vect<2,s32>(400, 900);
+  //   }    
+
+  //   dummy = 0;
+  //   io << "STOP ?\n";
+  //   io >> dummy;
+  // }
+
   // u16 pwm = 0;
   // while(1) {
   //   io << "pwm ?\n";
@@ -237,86 +315,93 @@ int main(int argc, char* argv[]) {
   // }
 
   // while(1) {
-  //   char c[2] = {0,0};
+  //   u8 c = 0;
+  //   static s16 i = 2;
   //   //io >> dummy;
-  //   //rds_stream >> (u8&)c[0];
-  //   c[0] = UART_RX_1_DATA;
-  //   io << c;// << "\n";
-  //   //io << UART_RX_1_AVA << "\n";
+  //   for(volatile s16 i = 0 ; i < 20000 ; i++) {
+  //     //rds_stream << ".";// << (s16)i;
+  //   }
+  //   //io << 'p';
+  //   //rds_stream << "\nwaiting\n";
+  //   //io >> (u8&)c;
+  //   //c[0] = UART_RX_1_DATA;
+  //   rds_stream << i++ << "\n";
+  //   rds_stream << c << "\n";
+  //   //io << UART_RX_1_DATA << " ";
   // }
 
-  s16 side = 0;
-  while(!dummy) {
-    io << "side ?\n";
-    io >> side;
-    io << "side : " << side << "\n";
-    side_init(side);
-    io << "begin calibrate ?\n";
-    io >> dummy;
-  }
+  // s16 side = 0;
+  // while(!dummy) {
+  //   io << "side ?\n";
+  //   io >> side;
+  //   io << "side : " << side << "\n";
+  //   side_init(side);
+  //   io << "begin calibrate ?\n";
+  //   io >> dummy;
+  // }
 
-  qramp_a.setFirstOrderLimit(5,5);
-  qramp_d.setFirstOrderLimit(5,5);
+  // qramp_a.setFirstOrderLimit(5,5);
+  // qramp_d.setFirstOrderLimit(5,5);
   
-  match_init(side);
+  // match_init(side);
 
-  pid_d.setMaxIntegral(0);
-  pid_a.setMaxIntegral(0);
+  // pid_d.setMaxIntegral(0);
+  // pid_a.setMaxIntegral(0);
 
-  dummy = 0;
-  while(dummy) {
-    io >> dummy;
-  }
+  // dummy = 0;
+  // while(dummy) {
+  //   io >> dummy;
+  // }
 
-  robot.lock();
-  // The user can place the robot at the spawn
-  io << "Place me please <3 \n";
-  dummy = 0;
+  // robot.lock();
+  // // The user can place the robot at the spawn
+  // io << "Place me please <3 \n";
+  // dummy = 0;
 
-  while(!dummy) {
-    io >> dummy;
-    io << _cmd.coord(0) << " " << _cmd.coord(1) << "\n";
-    _cmd = odo.getValue();
-  }
+  // while(!dummy) {
+  //   io >> dummy;
+  //   io << _cmd.coord(0) << " " << _cmd.coord(1) << "\n";
+  //   _cmd = odo.getValue();
+  // }
 
-  traj.reset();
-  traj_mode = true;
-  pid_a.reset();
-  pid_d.reset();
-  robot.unlock();
+  // traj.reset();
+  // traj_mode = true;
+  // pid_a.reset();
+  // pid_d.reset();
+  // robot.unlock();
 
-  qramp_a.setFirstOrderLimit(10,10);
-  qramp_d.setFirstOrderLimit(10,10);
+  // qramp_a.setFirstOrderLimit(10,10);
+  // qramp_d.setFirstOrderLimit(10,10);
 
-  traj.gotoPosition(Vect<2, s32>(-800, 200));
-  robot.unlock();
-  while(!traj.isEnded()) {
-    robot.unlock();
-  }
+  // traj.gotoPosition(Vect<2, s32>(-800, 200));
+  // robot.unlock();
+  // while(!traj.isEnded()) {
+  //   robot.unlock();
+  // }
 
-  pid_d.setMaxIntegral(1000);
-  pid_a.setMaxIntegral(1000);
+  // pid_d.setMaxIntegral(1000);
+  // pid_a.setMaxIntegral(1000);
 
-  traj.gotoPosition(Vect<2, s32>(0, 450));
-  while(!traj.isEnded());
+  // traj.gotoPosition(Vect<2, s32>(0, 450));
+  // while(!traj.isEnded());
 
-  traj.gotoPosition(Vect<2, s32>(0, 1200));
-  while(!robot.getValue());
+  // traj.gotoPosition(Vect<2, s32>(0, 1200));
+  // while(!robot.getValue());
 
-  traj_mode = false;
-  s32 new_dist = odo.getValue().coord(0) - 200;
-  _cmd = Vect<2, s32>(new_dist, odo.getValue().coord(1));
+  // traj_mode = false;
+  // s32 new_dist = odo.getValue().coord(0) - 200;
+  // _cmd = Vect<2, s32>(new_dist, odo.getValue().coord(1));
 
-  while(odo.getValue().coord(0) > new_dist + 150) {
-    robot.unlock();
-  }
+  // while(odo.getValue().coord(0) > new_dist + 150) {
+  //   robot.unlock();
+  // }
 
-  while(odo.getValue().coord(0) > new_dist + 20);
+  // while(odo.getValue().coord(0) > new_dist + 20);
 
-  traj.reset();
-  traj_mode = true;
+  // traj.reset();
+  // traj_mode = true;
 
-  traj.gotoPosition(Vect<2, s32>(-700, 0));
+  // traj.gotoPosition(Vect<2, s32>(-700, 0));
 
   while(1);
 

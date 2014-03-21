@@ -62,40 +62,40 @@ void asserv_init(void) {
   id.setGains(1, 0, 0);
 
   // MotorControl
-  diff_l.setDelta(4);
-  pid_l.setGains(900, 0, 0);
+  diff_l.setDelta(1);
+  pid_l.setGains(200, 0, 0);
   pid_l.setMaxIntegral(1000);
-  pid_l.setOutShift(11);
+  pid_l.setOutShift(10);
   //qramp_l.setFirstOrderLimit(80,80);
   //qramp_l.setSecondOrderLimit(2,2);
 
-  diff_r.setDelta(4);
-  pid_r.setGains(1000, 0, 0);
+  diff_r.setDelta(1);
+  pid_r.setGains(200, 0, 0);
   pid_r.setMaxIntegral(1000);
-  pid_r.setOutShift(11);
+  pid_r.setOutShift(10);
   //qramp_r.setFirstOrderLimit(80,80);
   //qramp_r.setSecondOrderLimit(2,2);
 
   // Odometer
   odo.setImpPerUnit(81);
-  odo.setImpPerDeg(278);
+  odo.setImpPerDeg(28);
 
   // Position
   pos.setImpPerUnitX(82);
   pos.setImpPerUnitY(82);
 
   // Robot
-  pid_a.setGains(140, 2, 70);
-  pid_a.setMaxIntegral(10000);
-  pid_a.setOutShift(4);
+  pid_a.setGains(480, 8, 0);
+  pid_a.setMaxIntegral(500);
+  pid_a.setOutShift(7);
   
   pid_d.setGains(70, 1, 20);
-  pid_d.setMaxIntegral(1000);
+  pid_d.setMaxIntegral(500);
   pid_d.setOutShift(4);
 
-  qramp_a.setFirstOrderLimit(10,10);
-  qramp_a.setSecondOrderLimit(2,2);
+  qramp_a.setFirstOrderLimit(30,30);
+  qramp_a.setSecondOrderLimit(4,4);
 
-  qramp_d.setFirstOrderLimit(15,15);
-  qramp_d.setSecondOrderLimit(1,1);
+  qramp_d.setFirstOrderLimit(10,10);
+  qramp_d.setSecondOrderLimit(2,2);
 }
