@@ -44,6 +44,9 @@ extern Point yellow_mid_fire;
 extern Point yellow_bot_fire;
 extern Point yellow_wall_fire;
 
+extern Point left_wall_fire;
+extern Point right_wall_fire;
+
 extern Circle red_movable_torch;
 extern Circle yellow_movable_torch;
 

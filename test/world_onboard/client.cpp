@@ -91,6 +91,9 @@ void draw_movable(void) {
   draw_shape(&yellow_bot_fire);
   draw_shape(&yellow_wall_fire);
   
+  draw_shape(&left_wall_fire);
+  draw_shape(&right_wall_fire);
+  
   draw_shape(&red_movable_torch);
   draw_shape(&yellow_movable_torch);
 }

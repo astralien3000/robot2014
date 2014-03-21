@@ -34,6 +34,9 @@ Point yellow_mid_fire(1100, -50);
 Point yellow_bot_fire(600, -550);
 Point yellow_wall_fire(1485, 250);
 
+Point left_wall_fire(-200, -935);
+Point right_wall_fire(200, -935);
+
 Circle red_movable_torch(-600, -50, 80);
 Circle yellow_movable_torch(600, -50, 80);
 
