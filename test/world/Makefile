@@ -1,13 +1,12 @@
 CC=g++
 CFLAGS=--std=c++11 -Wall -Wextra -I../../../aversive++/include/common -I../../src/world
-LDFLAGS=-lm
 
 EXEC=world
 
 all: $(EXEC)
 
-$(EXEC): main.cpp ../../src/world/*
-	$(CC) $(CFLAGS) -o $(EXEC) main.cpp ../../src/world/*.cpp $(LDFLAGS)
+$(EXEC): main.cpp ../../src/world/*.cpp
+	$(CC) $(CFLAGS) -o $(EXEC) main.cpp ../../src/world/*.cpp
 
 test: $(EXEC)
 	./$(EXEC)
