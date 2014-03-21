@@ -53,9 +53,9 @@ public:
   inline s32& operator[](u8 index) {
     switch(index) {
     case 0:
-      return _x;
+      return _p[0];
     case 1:
-      return _y;
+      return _p[1];
     default:
       return *((s32*) 0);
     }
@@ -72,9 +72,9 @@ public:
   inline const s32& operator[](u8 index) const {
     switch(index) {
     case 0:
-      return _x;
+      return _p[0];
     case 1:
-      return _y;
+      return _p[1];
     default:
       return *((s32*) 0);
     }
