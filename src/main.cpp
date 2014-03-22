@@ -10,6 +10,9 @@
 
 #include "strategy.hpp"
 
+#define F_CPU 16000000l
+#include <util/delay.h>
+
 Scheduler& sched = Scheduler::instance();
 
 PidFilter pid_rt;
@@ -18,7 +21,7 @@ TrajectoryManager traj(robot, odo, pos, pid_rt, pid_ct);
 
 FpgaUartStream rds_stream("rds_stream", UART_TX_1_DATA, UART_TX_1_OCUP, UART_RX_1_DATA, UART_RX_1_AVA);
 
-Vect<2, s32> _cmd;
+Vect<2, s32> _cmd(0,0);
 bool traj_mode = true;
 s32 cmd_l = 0;
 s32 cmd_r = 0;
@@ -27,8 +30,8 @@ void control_init(void) {
   Task t([](void) {
       //motc_l.setValue(cmd_l);
       //motc_r.setValue(cmd_r);
-      //robot.setValue(_cmd);
-      traj.update();
+      robot.setValue(_cmd);
+      //traj.update();
     });
 
   t.setPeriod(8000);
@@ -56,6 +59,7 @@ void trajectory_reset(void) {
 #if defined (__AVR_ATmega128__)
 extern "C" void __cxa_pure_virtual() { while(1); }
 #endif
+
 
 bool toggle = false;
 /*
@@ -205,7 +209,7 @@ int main(int argc, char* argv[]) {
   asserv_init();
   fpga_init();
 
-  //io.setMode(Stream::BINARY);
+  io.setMode(Stream::BINARY);
   //rds_stream.setMode(Stream::BINARY);
   file.setMode(Stream::BINARY);
   
@@ -235,23 +239,23 @@ int main(int argc, char* argv[]) {
 
 
   /// Test trajectory
-  robot.lock();
-  while(1) {
-    dummy = 0;
-    while(!dummy) {
-      io << "GO ?\n";
-      io >> dummy;
-      io << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
-    }
+  // robot.lock();
+  // while(1) {
+  //   dummy = 0;
+  //   while(!dummy) {
+  //     io << "GO ?\n";
+  //     io >> dummy;
+  //     io << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
+  //   }
     
-    trajectory_reset();
-    robot.unlock();
-    traj.gotoPosition(Vect<2, s32>(0, 0));
-    while(!traj.isEnded()) {
-      //io << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
-    }
-    robot.lock();
-  }
+  //   trajectory_reset();
+  //   robot.unlock();
+  //   traj.gotoPosition(Vect<2, s32>(0, 0));
+  //   while(!traj.isEnded()) {
+  //     //io << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
+  //   }
+  //   robot.lock();
+  // }
 
   /// Test asserv
   // while(1) {
@@ -314,21 +318,39 @@ int main(int argc, char* argv[]) {
   //   SERVO16 = pwm;
   // }
 
-  // while(1) {
-  //   u8 c = 0;
-  //   static s16 i = 2;
-  //   //io >> dummy;
-  //   for(volatile s16 i = 0 ; i < 20000 ; i++) {
-  //     //rds_stream << ".";// << (s16)i;
-  //   }
-  //   //io << 'p';
-  //   //rds_stream << "\nwaiting\n";
-  //   //io >> (u8&)c;
-  //   //c[0] = UART_RX_1_DATA;
-  //   rds_stream << i++ << "\n";
-  //   rds_stream << c << "\n";
-  //   //io << UART_RX_1_DATA << " ";
-  // }
+  /// Test RDS
+  while(1) {
+    u8 rds_num = 0;
+    u8 rds_angle = 0;
+    u8 rds_dist = 0;
+
+    Uart<0>::instance().send('p');
+
+    Uart<0>::instance().recv(rds_num);
+    if(rds_num) {
+      Uart<0>::instance().recv(rds_angle);
+      Uart<0>::instance().recv(rds_dist);
+    }
+    _delay_ms(200);
+    Uart<0>::instance().send(rds_num);
+    _delay_ms(200);
+
+    if(rds_num) {
+      Uart<0>::instance().send(rds_angle);
+      _delay_ms(200);
+      Uart<0>::instance().send(rds_dist);
+      _delay_ms(200);
+    
+
+      s16 angle = (((s16)rds_angle) * 2);
+      if(180 < angle) {
+	angle -= 360;
+      }
+      
+      _cmd.coord(1) += angle*10;
+      while(odo.getValue().coord(1)/40 != _cmd.coord(1)/40);
+    }
+  }
 
   // s16 side = 0;
   // while(!dummy) {
