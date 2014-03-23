@@ -31,6 +31,8 @@ int main(int argc, char** argv) {
   Point p12(-7, 1);
   Point p13(-7, 2);
   Point p14(4, 1);
+  Point p15(0 ,0);
+  Point p16(0, 1);
   
   Segment s1(0, 6, 4, 0);
   Segment s2(-3, 5, 4, 5);
@@ -43,6 +45,10 @@ int main(int argc, char** argv) {
   Segment s9(0, 5, 0, 6);
   Segment s10(-7, 2, -6, 4);
   Segment s11(-8, 4, -6, 1);
+  Segment s12(-1, 1, 1, 1);
+  Segment s13(1, 1, 1, -1);
+  Segment s14(1, -1, -1, -1);
+  Segment s15(-1, -1, -1, 1);
   
   Circle c1(1, 1, 3);
   Circle c2(7, 4, 7);
@@ -71,9 +77,14 @@ int main(int argc, char** argv) {
   // Point/Segment collisions
   print("Point/Segment");
   assert(CollisionDetector::collide(s2, p5)); print(".");
+  assert(CollisionDetector::collide(s12, p16)); print(".");
   assert(!CollisionDetector::collide(s2, p6)); print(".");
   assert(!CollisionDetector::collide(s2, p7)); print(".");
   assert(!CollisionDetector::collide(s2, p8)); print(".");
+  assert(!CollisionDetector::collide(s12, p15)); print(".");
+  assert(!CollisionDetector::collide(s13, p15)); print(".");
+  assert(!CollisionDetector::collide(s14, p15)); print(".");
+  assert(!CollisionDetector::collide(s15, p15)); print(".");
   println("OK");
   
   // Point/Circle collisions

@@ -56,7 +56,7 @@ bool CollisionDetector::collide(const Point& p, const Segment& s) {
   const Vect<2, s32>& B = s.b();
   
   // If the crossproduct is strictly positive, the three points are not aligned.
-  if(((p.y() - A[1]) * (B[0] - A[0]) - (p.x() - A[0]) * (B[1] - A[1])) > 0) {
+  if(((p.y() - A[1]) * (B[0] - A[0]) - (p.x() - A[0]) * (B[1] - A[1])) != 0) {
     return false;
   }
   
