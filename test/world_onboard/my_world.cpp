@@ -46,10 +46,10 @@ Circle ennemy_robot(-30, 1100, 10);
 Circle ennemy_pmi(30, 1100, 10);
 
 void fill_world(World<WORLD_SIZE>& world) {
-  /*world.addShape(&top);
+  world.addShape(&top);
   world.addShape(&bottom);
   world.addShape(&left);
-  world.addShape(&right);*/
+  world.addShape(&right);
   
   world.addShape(&red_basket);
   world.addShape(&yellow_basket);

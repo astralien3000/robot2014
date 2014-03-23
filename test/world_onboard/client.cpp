@@ -216,7 +216,7 @@ int main(int argc, char** argv)
   obs.SetSize(96);
   obs.SetStyle(sf::String::Bold);
   obs.SetPosition((WIN_WIDTH - 200 - obs.GetRect().GetWidth()) / 2,
-		       (WIN_HEIGHT - obs.GetRect().GetHeight()) / 2);
+		  (WIN_HEIGHT - obs.GetRect().GetHeight()) / 2);
   
   sf::Shape obs_box =
     sf::Shape::Rectangle(obs.GetRect().Left, obs.GetRect().Top,
@@ -264,7 +264,7 @@ int main(int argc, char** argv)
 	    }
 	  }
 	}
-	// If the used clicked on the button
+	// If the user clicked on the button
 	else if(CollisionDetector::collide(Point(event.MouseButton.X, event.MouseButton.Y), button)) {
 	  hw_on = !hw_on;
 	  if(hw_on) {
@@ -317,16 +317,16 @@ int main(int argc, char** argv)
 	sendDest(fd, dest);
       }
     }
-      
+    
     app.Clear();
-      
+    
     // Title display
     app.Draw(title);
-      
+    
     // World and movable objects display
     draw_world(world);
     draw_movable();
-      
+    
     // Right panel display
     app.Draw(sf::Shape::Rectangle(WIN_WIDTH - 200, 0,
 				  WIN_WIDTH, WIN_HEIGHT,
