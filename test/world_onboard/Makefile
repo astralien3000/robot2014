@@ -7,7 +7,7 @@
 AVERSIVE_ROOT=../../../aversive++
 
 ## Your project's object .o files
-OBJ=robot.o
+OBJ=robot.o my_world.o
 
 ## Your executable file name
 GEN_EXEC=robot
@@ -76,7 +76,7 @@ avr: compile
 	$(CC) $(CFLAGS) $(INCLUDE) -o $(BUILD_DIR)/$@ -c $<
 
 compile: make_build_dir $(OBJ)
-	$(CC) $(CFLAGS) -o $(EXEC) $(addprefix $(BUILD_DIR)/, $(OBJ)) $(INCLUDE) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $(EXEC) $(addprefix $(BUILD_DIR)/, $(OBJ)) ../../src/world/*.cpp $(INCLUDE) $(LDFLAGS)
 
 make_build_dir:
 	mkdir -p $(BUILD_DIR)

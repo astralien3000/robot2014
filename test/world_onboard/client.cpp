@@ -81,18 +81,17 @@ void draw_AABB(const AABB& a) {
 }
 
 void draw_shape(const Shape* s) {
-  const void* ptr;
-  if((ptr = dynamic_cast<const Point*>(s))) {
-    draw_point(*static_cast<const Point*>(ptr));
+  if(s->shapeId() == Point::ID) {
+    draw_point(*reinterpret_cast<const Point*>(s));
   }
-  else if((ptr = dynamic_cast<const Segment*>(s))) {
-    draw_segment(*static_cast<const Segment*>(ptr));
+  else if(s->shapeId() == Segment::ID) {
+    draw_segment(*reinterpret_cast<const Segment*>(s));
   }
-  else if((ptr = dynamic_cast<const Circle*>(s))) {
-    draw_circle(*static_cast<const Circle*>(ptr));
+  else if(s->shapeId() == Circle::ID) {
+    draw_circle(*reinterpret_cast<const Circle*>(s));
   }
-  else if((ptr = dynamic_cast<const AABB*>(s))) {
-    draw_AABB(*static_cast<const AABB*>(ptr));
+  else if(s->shapeId() == AABB::ID) {
+    draw_AABB(*reinterpret_cast<const AABB*>(s));
   }
 }
 
