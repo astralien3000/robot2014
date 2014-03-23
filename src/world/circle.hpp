@@ -9,20 +9,22 @@ class Circle : public Shape {
   Vect<2, s32> _centre;
   s32 _radius;
 public:
+  static const u8 ID = 'c';
+  
   inline Circle(void)
-    : _centre(0, 0), _radius(0) {
+    : Shape(ID), _centre(0, 0), _radius(0) {
   }
   
   inline Circle(const Vect<2, s32>& centre, s32 radius)
-    : _centre(centre), _radius(radius) {
+    : Shape(ID), _centre(centre), _radius(radius) {
   }
   
   inline Circle(s32 x, s32 y, s32 radius)
-    : _centre(x, y), _radius(radius) {
+    : Shape(ID), _centre(x, y), _radius(radius) {
   }
   
   inline Circle(const Circle& other)
-    : _centre(other._centre), _radius(other._radius) {
+    : Shape(ID), _centre(other._centre), _radius(other._radius) {
   }
   
   inline Circle& operator=(const Circle& other) {

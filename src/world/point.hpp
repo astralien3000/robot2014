@@ -8,16 +8,22 @@
 class Point : public Shape {
   Vect<2, s32> _p;
 public:
+  static const u8 ID = 'p';
+  
+  inline Point(void)
+    : Shape(ID), _p(0, 0) {
+  }
+  
   inline Point(const s32& x, const s32& y)
-    : _p(x, y) {
+    : Shape(ID), _p(x, y) {
   }
   
   inline Point(const Vect<2, s32>& p)
-    : _p(p) {
+    : Shape(ID), _p(p) {
   }
   
   inline Point(const Point& p)
-    : _p(p._p) {
+    : Shape(ID), _p(p._p) {
   }
   
   inline Point& operator=(const Point& p) {

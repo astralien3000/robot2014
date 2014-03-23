@@ -10,16 +10,22 @@ class AABB : public Shape {
   u32 _w;
   u32 _h;
 public:
+  static const u8 ID = 'a';
+  
+  inline AABB(void)
+    : Shape(ID), _o(0, 0), _w(0), _h(0) {
+  }
+  
   inline AABB(const Vect<2, s32>& o, const u32& w, const u32& h)
-    : _o(o), _w(w), _h(h) {
+    : Shape(ID), _o(o), _w(w), _h(h) {
   }
   
   inline AABB(const s32& x, const s32& y, const u32& w, const u32& h)
-    : _o(x, y), _w(w), _h(h) {
+    : Shape(ID), _o(x, y), _w(w), _h(h) {
   }
   
   inline AABB(const AABB& a)
-    : _o(a._o), _w(a._w), _h(a._h) {
+    : Shape(ID), _o(a._o), _w(a._w), _h(a._h) {
   }
   
   inline AABB& operator=(const AABB& other) {

@@ -2,47 +2,45 @@
 #include "collision.hpp"
 
 bool CollisionDetector::collide(const Shape& s1, const Shape& s2) {
-  const void* ptr;
-  if((ptr = dynamic_cast<const Point*>(&s1))) {
-    return collide(*static_cast<const Point*>(ptr), s2);
+  if(s1.shapeId() == Point::ID) {
+    return collide(*reinterpret_cast<const Point*>(&s1), s2);
   }
-  else if((ptr = dynamic_cast<const Segment*>(&s1))) {
-    return collide(*static_cast<const Segment*>(ptr), s2);
+  else if(s1.shapeId() == Segment::ID) {
+    return collide(*reinterpret_cast<const Segment*>(&s1), s2);
   }
-  else if((ptr = dynamic_cast<const Circle*>(&s1))) {
-    return collide(*static_cast<const Circle*>(ptr), s2);
+  else if(s1.shapeId() == Circle::ID) {
+    return collide(*reinterpret_cast<const Circle*>(&s1), s2);
   }
-  else if((ptr = dynamic_cast<const AABB*>(&s1))) {
-    return collide(*static_cast<const AABB*>(ptr), s2);
+  else if(s1.shapeId() == AABB::ID) {
+    return collide(*reinterpret_cast<const AABB*>(&s1), s2);
   }
-  else if((ptr = dynamic_cast<const Triangle*>(&s1))) {
-    return collide(*static_cast<const Triangle*>(ptr), s2);
+  else if(s1.shapeId() == Triangle::ID) {
+    return collide(*reinterpret_cast<const Triangle*>(&s1), s2);
   }
-  else if((ptr = dynamic_cast<const Quadrilateral*>(&s1))) {
-    return collide(*static_cast<const Quadrilateral*>(ptr), s2);
+  else if(s1.shapeId() == Quadrilateral::ID) {
+    return collide(*reinterpret_cast<const Quadrilateral*>(&s1), s2);
   }
   return false;
 }
 
 bool CollisionDetector::collide(const Point& p, const Shape& s) {
-  const void* ptr;
-  if((ptr = dynamic_cast<const Point*>(&s))) {
-    return collide(p, *static_cast<const Point*>(ptr));
+  if(s.shapeId() == Point::ID) {
+    return collide(p, *reinterpret_cast<const Point*>(&s));
   }
-  else if((ptr = dynamic_cast<const Segment*>(&s))) {
-    return collide(p, *static_cast<const Segment*>(ptr));
+  else if(s.shapeId() == Segment::ID) {
+    return collide(p, *reinterpret_cast<const Segment*>(&s));
   }
-  else if((ptr = dynamic_cast<const Circle*>(&s))) {
-    return collide(p, *static_cast<const Circle*>(ptr));
+  else if(s.shapeId() == Circle::ID) {
+    return collide(p, *reinterpret_cast<const Circle*>(&s));
   }
-  else if((ptr = dynamic_cast<const AABB*>(&s))) {
-    return collide(p, *static_cast<const AABB*>(ptr));
+  else if(s.shapeId() == AABB::ID) {
+    return collide(p, *reinterpret_cast<const AABB*>(&s));
   }
-  else if((ptr = dynamic_cast<const Triangle*>(&s))) {
-    return collide(p, *static_cast<const Triangle*>(ptr));
+  else if(s.shapeId() == Triangle::ID) {
+    return collide(p, *reinterpret_cast<const Triangle*>(&s));
   }
-  else if((ptr = dynamic_cast<const Quadrilateral*>(&s))) {
-    return collide(p, *static_cast<const Quadrilateral*>(ptr));
+  else if(s.shapeId() == Quadrilateral::ID) {
+    return collide(p, *reinterpret_cast<const Quadrilateral*>(&s));
   }
   return false;
 }
@@ -140,24 +138,23 @@ bool CollisionDetector::collide(const Point& p, const Quadrilateral& q) {
 }
 
 bool CollisionDetector::collide(const Segment& s1, const Shape& s2) {
-  const void* ptr;
-  if((ptr = dynamic_cast<const Point*>(&s2))) {
-    return collide(s1, *static_cast<const Point*>(ptr));
+  if(s2.shapeId() == Point::ID) {
+    return collide(s1, *reinterpret_cast<const Point*>(&s2));
   }
-  else if((ptr = dynamic_cast<const Segment*>(&s2))) {
-    return collide(s1, *static_cast<const Segment*>(ptr));
+  else if(s2.shapeId() == Segment::ID) {
+    return collide(s1, *reinterpret_cast<const Segment*>(&s2));
   }
-  else if((ptr = dynamic_cast<const Circle*>(&s2))) {
-    return collide(s1, *static_cast<const Circle*>(ptr));
+  else if(s2.shapeId() == Circle::ID) {
+    return collide(s1, *reinterpret_cast<const Circle*>(&s2));
   }
-  else if((ptr = dynamic_cast<const AABB*>(&s2))) {
-    return collide(s1, *static_cast<const AABB*>(ptr));
+  else if(s2.shapeId() == AABB::ID) {
+    return collide(s1, *reinterpret_cast<const AABB*>(&s2));
   }
-  else if((ptr = dynamic_cast<const Triangle*>(&s2))) {
-    return collide(s1, *static_cast<const Triangle*>(ptr));
+  else if(s2.shapeId() == Triangle::ID) {
+    return collide(s1, *reinterpret_cast<const Triangle*>(&s2));
   }
-  else if((ptr = dynamic_cast<const Quadrilateral*>(&s2))) {
-    return collide(s1, *static_cast<const Quadrilateral*>(ptr));
+  else if(s2.shapeId() == Quadrilateral::ID) {
+    return collide(s1, *reinterpret_cast<const Quadrilateral*>(&s2));
   }
   return false;
 }
@@ -302,24 +299,23 @@ bool CollisionDetector::collide(const Segment&s, const Quadrilateral& q) {
 }
 
 bool CollisionDetector::collide(const Circle& c, const Shape& s) {
-  const void* ptr;
-  if((ptr = dynamic_cast<const Point*>(&s))) {
-    return collide(c, *static_cast<const Point*>(ptr));
+  if(s.shapeId() == Point::ID) {
+    return collide(c, *reinterpret_cast<const Point*>(&s));
   }
-  else if((ptr = dynamic_cast<const Segment*>(&s))) {
-    return collide(c, *static_cast<const Segment*>(ptr));
+  else if(s.shapeId() == Segment::ID) {
+    return collide(c, *reinterpret_cast<const Segment*>(&s));
   }
-  else if((ptr = dynamic_cast<const Circle*>(&s))) {
-    return collide(c, *static_cast<const Circle*>(ptr));
+  else if(s.shapeId() == Circle::ID) {
+    return collide(c, *reinterpret_cast<const Circle*>(&s));
   }
-  else if((ptr = dynamic_cast<const AABB*>(&s))) {
-    return collide(c, *static_cast<const AABB*>(ptr));
+  else if(s.shapeId() == AABB::ID) {
+    return collide(c, *reinterpret_cast<const AABB*>(&s));
   }
-  else if((ptr = dynamic_cast<const Triangle*>(&s))) {
-    return collide(c, *static_cast<const Triangle*>(ptr));
+  else if(s.shapeId() == Triangle::ID) {
+    return collide(c, *reinterpret_cast<const Triangle*>(&s));
   }
-  else if((ptr = dynamic_cast<const Quadrilateral*>(&s))) {
-    return collide(c, *static_cast<const Quadrilateral*>(ptr));
+  else if(s.shapeId() == Quadrilateral::ID) {
+    return collide(c, *reinterpret_cast<const Quadrilateral*>(&s));
   }
   return false;
 }
@@ -406,24 +402,23 @@ bool CollisionDetector::collide(const Circle& c, const Quadrilateral& q) {
 }
 
 bool CollisionDetector::collide(const AABB& a, const Shape& s) {
-  const void* ptr;
-  if((ptr = dynamic_cast<const Point*>(&s))) {
-    return collide(a, *static_cast<const Point*>(ptr));
+  if(s.shapeId() == Point::ID) {
+    return collide(a, *reinterpret_cast<const Point*>(&s));
   }
-  else if((ptr = dynamic_cast<const Segment*>(&s))) {
-    return collide(a, *static_cast<const Segment*>(ptr));
+  else if(s.shapeId() == Segment::ID) {
+    return collide(a, *reinterpret_cast<const Segment*>(&s));
   }
-  else if((ptr = dynamic_cast<const Circle*>(&s))) {
-    return collide(a, *static_cast<const Circle*>(ptr));
+  else if(s.shapeId() == Circle::ID) {
+    return collide(a, *reinterpret_cast<const Circle*>(&s));
   }
-  else if((ptr = dynamic_cast<const AABB*>(&s))) {
-    return collide(a, *static_cast<const AABB*>(ptr));
+  else if(s.shapeId() == AABB::ID) {
+    return collide(a, *reinterpret_cast<const AABB*>(&s));
   }
-  else if((ptr = dynamic_cast<const Triangle*>(&s))) {
-    return collide(a, *static_cast<const Triangle*>(ptr));
+  else if(s.shapeId() == Triangle::ID) {
+    return collide(a, *reinterpret_cast<const Triangle*>(&s));
   }
-  else if((ptr = dynamic_cast<const Quadrilateral*>(&s))) {
-    return collide(a, *static_cast<const Quadrilateral*>(ptr));
+  else if(s.shapeId() == Quadrilateral::ID) {
+    return collide(a, *reinterpret_cast<const Quadrilateral*>(&s));
   }
   return false;
 }
@@ -497,24 +492,23 @@ bool CollisionDetector::collide(const AABB& a, const Quadrilateral& q) {
 }
 
 bool CollisionDetector::collide(const Triangle& t, const Shape& s) {
-  const void* ptr;
-  if((ptr = dynamic_cast<const Point*>(&s))) {
-    return collide(t, *static_cast<const Point*>(ptr));
+  if(s.shapeId() == Point::ID) {
+    return collide(t, *reinterpret_cast<const Point*>(&s));
   }
-  else if((ptr = dynamic_cast<const Segment*>(&s))) {
-    return collide(t, *static_cast<const Segment*>(ptr));
+  else if(s.shapeId() == Segment::ID) {
+    return collide(t, *reinterpret_cast<const Segment*>(&s));
   }
-  else if((ptr = dynamic_cast<const Circle*>(&s))) {
-    return collide(t, *static_cast<const Circle*>(ptr));
+  else if(s.shapeId() == Circle::ID) {
+    return collide(t, *reinterpret_cast<const Circle*>(&s));
   }
-  else if((ptr = dynamic_cast<const AABB*>(&s))) {
-    return collide(t, *static_cast<const AABB*>(ptr));
+  else if(s.shapeId() == AABB::ID) {
+    return collide(t, *reinterpret_cast<const AABB*>(&s));
   }
-  else if((ptr = dynamic_cast<const Triangle*>(&s))) {
-    return collide(t, *static_cast<const Triangle*>(ptr));
+  else if(s.shapeId() == Triangle::ID) {
+    return collide(t, *reinterpret_cast<const Triangle*>(&s));
   }
-  else if((ptr = dynamic_cast<const Quadrilateral*>(&s))) {
-    return collide(t, *static_cast<const Quadrilateral*>(ptr));
+  else if(s.shapeId() == Quadrilateral::ID) {
+    return collide(t, *reinterpret_cast<const Quadrilateral*>(&s));
   }
   return false;
 }
@@ -534,24 +528,23 @@ bool CollisionDetector::collide(const Triangle& t, const Quadrilateral& q) {
 }
 
 bool CollisionDetector::collide(const Quadrilateral& q, const Shape& s) {
-  const void* ptr;
-  if((ptr = dynamic_cast<const Point*>(&s))) {
-    return collide(q, *static_cast<const Point*>(ptr));
+  if(s.shapeId() == Point::ID) {
+    return collide(q, *reinterpret_cast<const Point*>(&s));
   }
-  else if((ptr = dynamic_cast<const Segment*>(&s))) {
-    return collide(q, *static_cast<const Segment*>(ptr));
+  else if(s.shapeId() == Segment::ID) {
+    return collide(q, *reinterpret_cast<const Segment*>(&s));
   }
-  else if((ptr = dynamic_cast<const Circle*>(&s))) {
-    return collide(q, *static_cast<const Circle*>(ptr));
+  else if(s.shapeId() == Circle::ID) {
+    return collide(q, *reinterpret_cast<const Circle*>(&s));
   }
-  else if((ptr = dynamic_cast<const AABB*>(&s))) {
-    return collide(q, *static_cast<const AABB*>(ptr));
+  else if(s.shapeId() == AABB::ID) {
+    return collide(q, *reinterpret_cast<const AABB*>(&s));
   }
-  else if((ptr = dynamic_cast<const Triangle*>(&s))) {
-    return collide(q, *static_cast<const Triangle*>(ptr));
+  else if(s.shapeId() == Triangle::ID) {
+    return collide(q, *reinterpret_cast<const Triangle*>(&s));
   }
-  else if((ptr = dynamic_cast<const Quadrilateral*>(&s))) {
-    return collide(q, *static_cast<const Quadrilateral*>(ptr));
+  else if(s.shapeId() == Quadrilateral::ID) {
+    return collide(q, *reinterpret_cast<const Quadrilateral*>(&s));
   }
   return false;
 }
