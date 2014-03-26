@@ -20,13 +20,18 @@ s32 nearest_cmd_angle(s32 angle, s32 cmd) {
 
 TrajectoryManager::TrajectoryManager(Output< Vect<2, s32> >& robot, Input< Vect<2, s32> >& odo, Input< Vect<2, s32> >& pos, PidFilter& pid_r, PidFilter& pid_c)
   : _robot(robot), _pos(pos), _odo(odo), 
-    _pid_r(pid_r), _pid_c(pid_c) {
-  _state = STOP;
+    _pid_r(pid_r), _pid_c(pid_c),
+    _mod(FASTER), _state(STOP) {
+
 }
 
 void TrajectoryManager::gotoPosition(Vect<2, s32> pos, s32 pseudo_ray, bool way) {
-  //! \todo Manage trigo way
-  (void) way;
+  if(way) {
+    _data.curv._way_angle = 90;
+  }
+  else {
+    _data.curv._way_angle = -90;
+  }
 
   if(_state == NEAR_END_CURV || _state == NEAR_END_RECT) {
     _src = _dst;
@@ -52,7 +57,7 @@ void TrajectoryManager::gotoPosition(Vect<2, s32> pos, s32 pseudo_ray, bool way)
   _data.curv._dst_angle = Math::atan2<Math::DEGREE>(dst_ray.coord(1), dst_ray.coord(0));
 
   Vect<2, s32> src_ray = _src - _data.curv._cen;
-  _angle_cmd = nearest_cmd_angle(_odo.getValue().coord(1)/10, 180 - (Math::atan2<Math::DEGREE>(src_ray.coord(1), src_ray.coord(0)) + 90));
+  _angle_cmd = nearest_cmd_angle(_odo.getValue().coord(1)/10, 180 - (Math::atan2<Math::DEGREE>(src_ray.coord(1), src_ray.coord(0)) + _data.curv._way_angle));
   _dist_cmd = _odo.getValue().coord(0);
 
   _state = REACH_ANGLE_CURV;
@@ -119,9 +124,13 @@ void TrajectoryManager::update_follow_trajectory(void) {
 
   s32 d = (_diff_d.doFilter(_odo.getValue().coord(0)) << 16) / _data.curv._ray;
   s32 a = (s32)(d * 180. / 3.14) >> 14; // --> * 2
+  if(_data.curv._way_angle == -90) {
+    angle_err = -angle_err;
+    a = -a;
+  }
 
   s32 ray_angle = Math::atan2<Math::DEGREE>(vray.coord(1), vray.coord(0));
-  s32 angle_cmd = nearest_cmd_angle(_odo.getValue().coord(1)/10, 180 - (ray_angle + 90));
+  s32 angle_cmd = nearest_cmd_angle(_odo.getValue().coord(1)/10, 180 - (ray_angle + _data.curv._way_angle));
 
   _robot.setValue(Vect<2, s32>(_odo.getValue().coord(0) + dist_err, (angle_cmd + angle_err - a)*10));
   io << angle_cmd + angle_err - a << " " << _odo.getValue().coord(1)/10 << " " << angle_err << "\n";
@@ -130,7 +139,7 @@ void TrajectoryManager::update_follow_trajectory(void) {
     _state = NEAR_END_CURV;
     
     _dist_cmd = _odo.getValue().coord(0) + pos_err.norm();
-    _angle_cmd = nearest_cmd_angle(_odo.getValue().coord(1)/10, 180 - (_data.curv._dst_angle + 90));
+    _angle_cmd = nearest_cmd_angle(_odo.getValue().coord(1)/10, 180 - (_data.curv._dst_angle + _data.curv._way_angle));
 
     io << "Near end...\n";
   }

@@ -1,3 +1,5 @@
+#include <aversive.hpp>
+
 #include "filters.hpp"
 #include "asserv.hpp"
 #include "eirbot_shell.hpp"
@@ -30,8 +32,8 @@ void control_init(void) {
   Task t([](void) {
       //motc_l.setValue(cmd_l);
       //motc_r.setValue(cmd_r);
-      robot.setValue(_cmd);
-      //traj.update();
+      //robot.setValue(_cmd);
+      traj.update();
     });
 
   t.setPeriod(8000);
@@ -55,11 +57,6 @@ void trajectory_reset(void) {
 
   traj.reset();
 }
-
-#if defined (__AVR_ATmega128__)
-extern "C" void __cxa_pure_virtual() { while(1); }
-#endif
-
 
 bool toggle = false;
 /*
@@ -209,8 +206,8 @@ int main(int argc, char* argv[]) {
   asserv_init();
   fpga_init();
 
-  io.setMode(Stream::BINARY);
-  //rds_stream.setMode(Stream::BINARY);
+  //io.setMode(Stream::BINARY);
+  rds_stream.setMode(Stream::BINARY);
   file.setMode(Stream::BINARY);
   
   MOT_R = 0;
@@ -221,7 +218,7 @@ int main(int argc, char* argv[]) {
 
   control_init();
 
-  motc_l.inverse();
+  mot_l.inverse();
   enc_r.inverse();
     
   pid_ct.setGains(1000, 50, 100);
@@ -236,7 +233,14 @@ int main(int argc, char* argv[]) {
   //pwm bas 1300
   //pwm haut 490
   s16 dummy = 0;
+  while(!dummy) {
+    io << "GO ?\n";
+    io >> dummy;
+    io << dummy << "\n";
+  }
 
+  traj.gotoPosition(Vect<2, s32>(1000, 0), 0, dummy==2);
+  while(1);
 
   /// Test trajectory
   // robot.lock();
@@ -318,39 +322,72 @@ int main(int argc, char* argv[]) {
   //   SERVO16 = pwm;
   // }
 
-  /// Test RDS
-  while(1) {
-    u8 rds_num = 0;
-    u8 rds_angle = 0;
-    u8 rds_dist = 0;
+  // while(1) {
+  //   u8 c = 0;
+  //   //while(!UART_RX_1_AVA);
+  //   //c = UART_RX_1_DATA;
+  //   rds_stream >> c;
 
-    Uart<0>::instance().send('p');
+  //   rds_stream << c << "\n";
+  //   //UART_TX_1_DATA = c+1;
+  //   //_delay_ms(500);
+  // }
 
-    Uart<0>::instance().recv(rds_num);
-    if(rds_num) {
-      Uart<0>::instance().recv(rds_angle);
-      Uart<0>::instance().recv(rds_dist);
-    }
-    _delay_ms(200);
-    Uart<0>::instance().send(rds_num);
-    _delay_ms(200);
+  // /// Test RDS
+  // while(1) {
+  //   u8 rds_num = 0;
+  //   u8 rds_angle[2] = {0,0};
+  //   u8 rds_dist[2] = {0,0};
+  //   s16 angle[2] = {0,0};
+  //   s16 dist[2] = {0,0};
 
-    if(rds_num) {
-      Uart<0>::instance().send(rds_angle);
-      _delay_ms(200);
-      Uart<0>::instance().send(rds_dist);
-      _delay_ms(200);
+  //   Uart<0>::instance().send('p');
+
+  //   Uart<0>::instance().recv(rds_num);
+  //   for(u8 nb=0; nb<rds_num; nb++) {
+  //     Uart<0>::instance().recv(rds_angle[nb]);
+  //     Uart<0>::instance().recv(rds_dist[nb]);
+  //   }
+  //   bool send = false;
+  //   if (send) {
+  //     _delay_ms(2);
+  //     Uart<0>::instance().send(rds_num);
+  //     _delay_ms(2);
+  //   }
     
+  //   if(rds_num) {
+  //     if (send) {
+  // 	Uart<0>::instance().send(rds_angle[0]);
+  // 	_delay_ms(2);
+  // 	Uart<0>::instance().send(rds_dist[0]);
+  // 	_delay_ms(2);
+  //     }
 
-      s16 angle = (((s16)rds_angle) * 2);
-      if(180 < angle) {
-	angle -= 360;
-      }
       
-      _cmd.coord(1) += angle*10;
-      while(odo.getValue().coord(1)/40 != _cmd.coord(1)/40);
-    }
-  }
+  //     angle[0] = (((s16)rds_angle[0]) * 2);
+  //     if(180 < angle[0]) {
+  // 	angle[0] -= 360;
+  //     }
+  //     dist[0] = rds_dist[0];
+  //     u8 target = 0;
+  //     if (rds_num == 2) {
+  // 	angle[1] = (((s16)rds_angle[1]) * 2);
+  // 	if(180 < angle[1]) {
+  // 	  angle[1] -= 360;
+  // 	}
+  // 	dist[1] = rds_dist[1];
+  // 	if (rds_dist[1] > rds_dist[0]) {
+  // 	  target = 1;
+  // 	}
+  //     }
+      
+  //     _cmd.coord(1) += angle[target]*10;
+  //     while((odo.getValue().coord(1)/64) != (_cmd.coord(1)/64));
+  //     _cmd.coord(0) += dist[target]*10 -400;
+  //     while((odo.getValue().coord(0)/256) != (_cmd.coord(0)/256));
+  //     _delay_ms(500);
+  //   }
+  // }
 
   // s16 side = 0;
   // while(!dummy) {

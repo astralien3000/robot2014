@@ -35,26 +35,17 @@ Encoder<volatile u32> enc_mot_r("right_motor_encoder", &ENC_MOT_R);
 
 Motor<volatile s8> mot_l("left_motor", &MOT_L);
 Motor<volatile s8> mot_r("right_motor", &MOT_R);
-
-InputConverter<s32, volatile u32> enc_conv_l(enc_l);
-InputConverter<s32, volatile u32> enc_conv_r(enc_r);
-
-InputConverter<s32, volatile u32> enc_mot_conv_l(enc_mot_l);
-InputConverter<s32, volatile u32> enc_mot_conv_r(enc_mot_r);
-
-OutputConverter<s32, volatile s8> mot_conv_l(mot_l);
-OutputConverter<s32, volatile s8> mot_conv_r(mot_r);
   
-MotorController motc_l(mot_conv_l, enc_conv_l, id, diff_l, pid_l);
-MotorController motc_r(mot_conv_r, enc_conv_r, id, diff_r, pid_r);
+MotorController motc_l(mot_l, enc_l, id, diff_l, pid_l);
+MotorController motc_r(mot_r, enc_r, id, diff_r, pid_r);
 
-Odometer odo(enc_conv_l, enc_conv_r);
+Odometer odo(enc_l, enc_r);
 
 RobotController _robot(motc_l, motc_r, odo, qramp_d, id, pid_d, qramp_a, id, pid_a);
-SecureRobot robot(_robot, odo, skd_l, skd_r, mot_conv_l, mot_conv_r);
+SecureRobot robot(_robot, odo, skd_l, skd_r, mot_l, mot_r);
 
-SkatingDetector skd_l(enc_mot_conv_l, enc_conv_l, 2);
-SkatingDetector skd_r(enc_mot_conv_r, enc_conv_r, 2);
+SkatingDetector skd_l(enc_mot_l, enc_l, 2);
+SkatingDetector skd_r(enc_mot_r, enc_r, 2);
 
 PositionManager pos(POSX_FPGA, POSY_FPGA, ROT_FPGA);
 
@@ -66,15 +57,11 @@ void asserv_init(void) {
   pid_l.setGains(200, 0, 0);
   pid_l.setMaxIntegral(1000);
   pid_l.setOutShift(10);
-  //qramp_l.setFirstOrderLimit(80,80);
-  //qramp_l.setSecondOrderLimit(2,2);
 
   diff_r.setDelta(1);
   pid_r.setGains(200, 0, 0);
   pid_r.setMaxIntegral(1000);
   pid_r.setOutShift(10);
-  //qramp_r.setFirstOrderLimit(80,80);
-  //qramp_r.setSecondOrderLimit(2,2);
 
   // Odometer
   odo.setImpPerUnit(81);
@@ -85,8 +72,8 @@ void asserv_init(void) {
   pos.setImpPerUnitY(82);
 
   // Robot
-  pid_a.setGains(480, 8, 0);
-  pid_a.setMaxIntegral(500);
+  pid_a.setGains(480, 16, 0);
+  pid_a.setMaxIntegral(800);
   pid_a.setOutShift(7);
   
   pid_d.setGains(70, 1, 20);

@@ -30,13 +30,17 @@ private:
   Vect<2, s32> _src;
   Vect<2, s32> _dst;
 
+  Mode _mod;
+  bool _backward;
+
   struct CurvTrajectoryData {
     Vect<2, s32> _cen; // Center of the circle's curve
     s32 _dst_angle;
     s32 _ray;
+    s32 _way_angle;
 
     inline CurvTrajectoryData()
-      : _cen(0,0), _dst_angle(0), _ray(0) {
+      : _cen(0,0), _dst_angle(0), _ray(0), _way_angle(0) {
 
     }
   };
@@ -80,11 +84,20 @@ private:
   TrajectoryState _state;
 
 public:
+  enum Mode {
+    FORWARD,
+    BACKWARD,
+    FASTER
+  };
+
+public:
   //! \brief Constructor
   //! \param robot : A robot controller with dist/angle asserv
   //! \param pos : A device to get the x,y,angle position of the robot
   TrajectoryManager(Output< Vect<2, s32> >& robot, Input< Vect<2, s32> >& odo, Input< Vect<2, s32> >& pos, PidFilter& pid_r, PidFilter& pid_c);
   
+  void setMode(Mode m);
+
   //! \brief Set the new point to reach from current position, with a curve
   //! \param pos : Point to reach
   //! \param pseudo_ray : Distance between the center of the circle and the segment between Source and Destionation point
