@@ -38,7 +38,7 @@ public:
   }
   
   inline bool collide(const Shape& s) const {
-    for(list_t  i = 0; i < _shapes.size(); i++) {
+    for(list_t  i = 0; i < _shapes.usedSpace(); i++) {
       if(_shapes.get(i) != &s && CollisionDetector::collide(*(_shapes.get(i)), s)) {
 	return true;
       }

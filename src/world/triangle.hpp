@@ -11,16 +11,22 @@ class Triangle : public Shape {
   Vect<2, s32> _b;
   Vect<2, s32> _c;
 public:
+  static const u8 ID = 't';
+  
+  inline Triangle(void)
+    : Shape(ID), _a(0, 0), _b(0, 0), _c(0, 0) {
+  }
+  
   inline Triangle(const Vect<2, s32>& a, const Vect<2, s32>& b, const Vect<2, s32>& c)
-    : _a(a), _b(b), _c(c) {
+    : Shape(ID), _a(a), _b(b), _c(c) {
   }
   
   inline Triangle(const s32& x1, const s32& y1, const s32& x2, const s32& y2, const s32& x3, const s32& y3)
-    : _a(x1, y1), _b(x2, y2), _c(x3, y3) {
+    : Shape(ID), _a(x1, y1), _b(x2, y2), _c(x3, y3) {
   }
   
   inline Triangle(const Triangle& t)
-    : _a(t._a), _b(t._b), _c(t._c) {
+    : Shape(ID), _a(t._a), _b(t._b), _c(t._c) {
   }
   
   inline Triangle& operator=(const Triangle& t) {

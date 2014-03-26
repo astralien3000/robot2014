@@ -9,16 +9,22 @@ class Segment : public Shape {
   Vect<2, s32> _a;
   Vect<2, s32> _b;
 public:
+  static const u8 ID = 's';
+  
+  inline Segment(void)
+    : Shape(ID), _a(0, 0), _b(0, 0) {
+  }
+  
   inline Segment(const Vect<2, s32>& a, const Vect<2, s32>& b)
-    : _a(a), _b(b) {
+    : Shape(ID), _a(a), _b(b) {
   }
   
   inline Segment(const s32& x1, const s32& y1, const s32& x2, const s32& y2)
-    : _a(x1, y1), _b(x2, y2) {
+    : Shape(ID), _a(x1, y1), _b(x2, y2) {
   }
   
   inline Segment(const Segment& s)
-    : _a(s._a), _b(s._b) {
+    : Shape(ID), _a(s._a), _b(s._b) {
   }
   
   inline Segment& operator=(const Segment& s) {

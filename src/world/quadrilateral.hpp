@@ -13,16 +13,22 @@ class Quadrilateral : public Shape {
   Vect<2, s32> _c;
   Vect<2, s32> _d;
 public:
+  static const u8 ID = 'q';
+  
+  inline Quadrilateral(void)
+    : Shape(ID), _a(0, 0), _b(0, 0), _c(0, 0), _d(0, 0) {
+  }
+  
   inline Quadrilateral(const Vect<2, s32>& a, const Vect<2, s32>& b, const Vect<2, s32>& c, const Vect<2, s32>& d)
-    : _a(a), _b(b), _c(c), _d(d) {
+    : Shape(ID), _a(a), _b(b), _c(c), _d(d) {
   }
   
   inline Quadrilateral(const s32& x1, const s32& y1, const s32& x2, const s32& y2, const s32& x3, const s32& y3, const s32& x4, const s32& y4)
-    : _a(x1, y1), _b(x2, y2), _c(x3, y3), _d(x4, y4) {
+    : Shape(ID), _a(x1, y1), _b(x2, y2), _c(x3, y3), _d(x4, y4) {
   }
   
   inline Quadrilateral(const Quadrilateral& q)
-  : _a(q._a), _b(q._b), _c(q._c), _d(q._d) {
+    : Shape(ID), _a(q._a), _b(q._b), _c(q._c), _d(q._d) {
   }
   
   inline Quadrilateral& operator=(const Quadrilateral& q) {
