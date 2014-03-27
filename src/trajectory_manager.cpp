@@ -21,7 +21,7 @@ s32 nearest_cmd_angle(s32 angle, s32 cmd) {
 TrajectoryManager::TrajectoryManager(Output< Vect<2, s32> >& robot, Input< Vect<2, s32> >& odo, Input< Vect<2, s32> >& pos, PidFilter& pid_r, PidFilter& pid_c)
   : _robot(robot), _pos(pos), _odo(odo), 
     _pid_r(pid_r), _pid_c(pid_c),
-    _mod(FASTER), _state(STOP) {
+    _state(STOP), _mod(FASTER) {
 
 }
 
@@ -78,7 +78,27 @@ void TrajectoryManager::gotoPosition(Vect<2, s32> pos) {
   Vect<2, s32> dir = _dst - _src;
   _data.rect._nor = (normal(dir) * 256) / dir.norm();
 
-  _angle_cmd = nearest_cmd_angle(_odo.getValue().coord(1)/10, -Math::atan2<Math::DEGREE>(dir.coord(1), dir.coord(0)));
+  if(_mod == FASTER) {
+    s32 angle_forward = nearest_cmd_angle(_odo.getValue().coord(1)/10, -Math::atan2<Math::DEGREE>(dir.coord(1), dir.coord(0)));
+    s32 angle_backward = nearest_cmd_angle(_odo.getValue().coord(1)/10, 180 - Math::atan2<Math::DEGREE>(dir.coord(1), dir.coord(0)));
+    if(Math::abs(angle_forward) <= Math::abs(angle_backward)) {
+      _angle_cmd = angle_forward;
+      _backward = false;
+    }
+    else {
+      _angle_cmd = angle_backward;
+      _backward = true;
+    }
+  }
+  else if(_mod == FORWARD) {
+    _angle_cmd = nearest_cmd_angle(_odo.getValue().coord(1)/10, -Math::atan2<Math::DEGREE>(dir.coord(1), dir.coord(0)));
+    _backward = false;
+  }
+  else if(_mod == BACKWARD) {
+    _angle_cmd = nearest_cmd_angle(_odo.getValue().coord(1)/10, 180 - Math::atan2<Math::DEGREE>(dir.coord(1), dir.coord(0)));
+    _backward = true;
+  }
+
   _dist_cmd = _odo.getValue().coord(0);
 
   _state = REACH_ANGLE_RECT;
@@ -152,14 +172,24 @@ void TrajectoryManager::update_follow_trajectory_rect(void) {
   s32 angle_err = _pid_r.doFilter(ndiff);
   
   s32 dist_err = pos_err.norm();
+
+  if(_backward) {
+    dist_err = -dist_err;
+  }
   
   _robot.setValue(Vect<2, s32>(_odo.getValue().coord(0) + dist_err, (_angle_cmd - angle_err)*10));
 
   if(Math::abs(scal(pos_err, pos_err)) < 10000 + ndiff) {
     _state = NEAR_END_RECT;
 
-    _dist_cmd = _odo.getValue().coord(0) + pos_err.norm();
-
+    if(_backward) {
+      _dist_cmd = _odo.getValue().coord(0) - pos_err.norm();
+    }
+    else {
+      _dist_cmd = _odo.getValue().coord(0) + pos_err.norm();
+    }
+    
+    _angle_cmd = _odo.getValue().coord(1)/10;
     io << "Near end...\n";
   }
 }

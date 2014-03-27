@@ -232,6 +232,8 @@ int main(int argc, char* argv[]) {
   // Init
   //pwm bas 1300
   //pwm haut 490
+  traj.setMode(TrajectoryManager::FASTER);
+
   s16 dummy = 0;
   while(!dummy) {
     io << "GO ?\n";
@@ -239,8 +241,17 @@ int main(int argc, char* argv[]) {
     io << dummy << "\n";
   }
 
-  traj.gotoPosition(Vect<2, s32>(1000, 0), 0, dummy==2);
-  while(1);
+  traj.gotoPosition(Vect<2, s32>(-400, -400));
+  while(!traj.isEnded());
+
+  traj.gotoPosition(Vect<2, s32>(-400, 0));
+  while(!traj.isEnded());
+
+  traj.gotoPosition(Vect<2, s32>(0, -400));
+  while(!traj.isEnded());
+
+  traj.gotoPosition(Vect<2, s32>(0, 0));
+  while(!traj.isEnded());
 
   /// Test trajectory
   // robot.lock();

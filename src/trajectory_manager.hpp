@@ -30,7 +30,6 @@ private:
   Vect<2, s32> _src;
   Vect<2, s32> _dst;
 
-  Mode _mod;
   bool _backward;
 
   struct CurvTrajectoryData {
@@ -90,13 +89,18 @@ public:
     FASTER
   };
 
+private:
+  Mode _mod;
+
 public:
   //! \brief Constructor
   //! \param robot : A robot controller with dist/angle asserv
   //! \param pos : A device to get the x,y,angle position of the robot
   TrajectoryManager(Output< Vect<2, s32> >& robot, Input< Vect<2, s32> >& odo, Input< Vect<2, s32> >& pos, PidFilter& pid_r, PidFilter& pid_c);
   
-  void setMode(Mode m);
+  void setMode(Mode m) {
+    _mod = m;
+  }
 
   //! \brief Set the new point to reach from current position, with a curve
   //! \param pos : Point to reach
