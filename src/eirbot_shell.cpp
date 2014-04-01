@@ -105,7 +105,8 @@ void cmd_odo_config(void) {
   odo.setImpPerDeg(de);
 }
 
-extern TrajectoryManager traj;
+#include "curv_trajectory_manager.hpp"
+extern CurvTrajectoryManager traj;
 
 void cmd_trajectory(void) {
   Vect<2, s32> dst;
@@ -129,5 +130,5 @@ void cmd_trajectory(void) {
     io << "\n";
   }
 
-  traj.gotoPosition(dst, dist_center);
+  traj.gotoCurvPosition(dst, dist_center);
 }

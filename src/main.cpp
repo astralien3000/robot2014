@@ -8,7 +8,7 @@
 #include <system/scheduler.hpp>
 #include "fpga.hpp"
 
-#include "trajectory_manager.hpp"
+#include "curv_trajectory_manager.hpp"
 
 #include "strategy.hpp"
 
@@ -19,7 +19,7 @@ Scheduler& sched = Scheduler::instance();
 
 PidFilter pid_rt;
 PidFilter pid_ct;
-TrajectoryManager traj(robot, odo, pos, pid_rt, pid_ct);
+CurvTrajectoryManager traj(robot, odo, pos, pid_rt, pid_ct);
 
 FpgaUartStream rds_stream("rds_stream", UART_TX_1_DATA, UART_TX_1_OCUP, UART_RX_1_DATA, UART_RX_1_AVA);
 
@@ -32,8 +32,8 @@ void control_init(void) {
   Task t([](void) {
       //motc_l.setValue(cmd_l);
       //motc_r.setValue(cmd_r);
-      //robot.setValue(_cmd);
-      traj.update();
+      robot.setValue(_cmd);
+      //traj.update();
     });
 
   t.setPeriod(8000);
@@ -222,36 +222,79 @@ int main(int argc, char* argv[]) {
   enc_r.inverse();
     
   pid_ct.setGains(1000, 50, 100);
-  pid_ct.setMaxIntegral(100);
+  pid_ct.setMaxIntegral(25600);
   pid_ct.setOutShift(11);
 
-  pid_rt.setGains(10, 0, 0);
-  pid_rt.setMaxIntegral(1000);
-  pid_rt.setOutShift(12);
+  pid_rt.setGains(100, 0, 0);
+  pid_rt.setMaxIntegral(25600);
+  pid_rt.setOutShift(6);
 
   // Init
   //pwm bas 1300
   //pwm haut 490
-  traj.setMode(TrajectoryManager::FASTER);
 
-  s16 dummy = 0;
-  while(!dummy) {
-    io << "GO ?\n";
+  //robot.lock();
+
+  traj.setMode(TrajectoryManager::FORWARD);
+  s32 x = 0;
+  s32 y = 0;
+  while(1) {
+    s8 dummy = 0;
     io >> dummy;
-    io << dummy << "\n";
+    dummy = 0;
+    _cmd.coord(1) -= 90 << 4;
+    while(Math::abs(odo.getValue().coord(1) - _cmd.coord(1)) > 10) {
+      s32 a = odo.getValue().coord(1);
+      io << "angle " << (a >> 4) << " " << (a & 0x0F) << "\n";
+      io << "cmd angle " << (_cmd.coord(1) >> 4) << "\n";
+      io << "distance " << odo.getValue().coord(0) << "\n";
+      io << "cmd distance " << _cmd.coord(0) << "\n";
+      io << "left encoder " << enc_l.getValue() << "\n";
+      io << "left motor " << MOT_L << "\n";
+      io << "right encoder " << enc_r.getValue() << "\n";
+      io << "right motor " << MOT_R << "\n";
+    }
+
+    // s16 dummy = 0;
+    // while(!dummy) {
+    //   io << "GO ?\n";
+    //   io >> dummy;
+    //   io << dummy << "\n";
+    // }
+
+    // io << "X[" << x << "] = ";
+    // io >> x;
+    // io << x << "\n";
+
+    // io << "Y[" << y << "] = ";
+    // io >> y;
+    // io << y << "\n";
+
+    // traj.gotoPosition(Vect<2, s32>(x, y));
+
+    // while(!traj.isEnded()) {
+    //   io << MOT_L << " " << MOT_R << "\n";
+    // }
   }
+  // traj.setMode(TrajectoryManager::BACKWARD);
+  // traj.gotoCurvPosition(Vect<2, s32>(1250, -250), -250, false);
+  // while(!traj.isEnded());
 
-  traj.gotoPosition(Vect<2, s32>(-400, -400));
-  while(!traj.isEnded());
+  // traj.setMode(TrajectoryManager::BACKWARD);
+  // traj.gotoPosition(Vect<2, s32>(1250, -600));
+  // while(!traj.isEnded());
 
-  traj.gotoPosition(Vect<2, s32>(-400, 0));
-  while(!traj.isEnded());
+  // traj.gotoPosition(Vect<2, s32>(-400, -400));
+  // while(!traj.isEnded());
 
-  traj.gotoPosition(Vect<2, s32>(0, -400));
-  while(!traj.isEnded());
+  // traj.gotoPosition(Vect<2, s32>(-400, 0));
+  // while(!traj.isEnded());
 
-  traj.gotoPosition(Vect<2, s32>(0, 0));
-  while(!traj.isEnded());
+  // traj.gotoPosition(Vect<2, s32>(0, -400));
+  // while(!traj.isEnded());
+
+  // traj.gotoPosition(Vect<2, s32>(0, 0));
+  // while(!traj.isEnded());
 
   /// Test trajectory
   // robot.lock();

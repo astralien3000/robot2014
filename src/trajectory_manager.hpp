@@ -18,69 +18,20 @@
 #include <filter/quadramp_filter.hpp>
 
 class TrajectoryManager {
-private:
+protected:
   Output< Vect<2, s32> >& _robot;
   Input< Vect<2, s32> >& _pos;
   Input< Vect<2, s32> >& _odo;
 
-  PidFilter& _pid_r;
-  PidFilter& _pid_c;
-  DiffFilter _diff_d;
-
-  Vect<2, s32> _src;
-  Vect<2, s32> _dst;
-
-  bool _backward;
-
-  struct CurvTrajectoryData {
-    Vect<2, s32> _cen; // Center of the circle's curve
-    s32 _dst_angle;
-    s32 _ray;
-    s32 _way_angle;
-
-    inline CurvTrajectoryData()
-      : _cen(0,0), _dst_angle(0), _ray(0), _way_angle(0) {
-
-    }
-  };
-
-  struct RectTrajectoryData {
-    Vect<2, s32> _nor; // Normal of the Src->Dst segment
-
-    inline RectTrajectoryData(void)
-      : _nor(0,0) {
-
-    }
-  };
-
-  union TrajectoryData {
-    RectTrajectoryData rect;
-    CurvTrajectoryData curv;
-
-    inline TrajectoryData(void)
-      : curv() {
-
-    }
-  };
-
-  TrajectoryData _data;
-
-  s32 _dist_cmd = 0;
-  s32 _angle_cmd = 0;
-
   enum TrajectoryState {
     STOP,
+    REACH_ANGLE,
+    FOLLOW_TRAJECTORY,
+    NEAR_END,
 
-    REACH_ANGLE_CURV,
-    FOLLOW_TRAJECTORY_CURV,
-    NEAR_END_CURV,
-
-    REACH_ANGLE_RECT,
-    FOLLOW_TRAJECTORY_RECT,
-    NEAR_END_RECT
+    ////////
+    MAX_STATES
   };
-
-  TrajectoryState _state;
 
 public:
   enum Mode {
@@ -89,46 +40,81 @@ public:
     FASTER
   };
 
-private:
-  Mode _mod;
-
 public:
   //! \brief Constructor
   //! \param robot : A robot controller with dist/angle asserv
+  //! \param odo : A device measuring distance and angle
   //! \param pos : A device to get the x,y,angle position of the robot
-  TrajectoryManager(Output< Vect<2, s32> >& robot, Input< Vect<2, s32> >& odo, Input< Vect<2, s32> >& pos, PidFilter& pid_r, PidFilter& pid_c);
+  TrajectoryManager(Output< Vect<2, s32> >& robot, Input< Vect<2, s32> >& odo, Input< Vect<2, s32> >& pos);
   
-  void setMode(Mode m) {
-    _mod = m;
-  }
-
-  //! \brief Set the new point to reach from current position, with a curve
-  //! \param pos : Point to reach
-  //! \param pseudo_ray : Distance between the center of the circle and the segment between Source and Destionation point
-  //! \param way : true for going in the trigonometric way
-  void gotoPosition(Vect<2, s32> pos, s32 pseudo_ray, bool way = true);
-
-  //! \brief Set the new point to reach from current position
-  void gotoPosition(Vect<2, s32> pos);
-  
-  //! \brief interrupt function
-  void update(void);
+  void setMode(Mode m);
 
   //! \brief Return if the robot reached destination
   bool isEnded(void);
 
+  //! \brief Reset command and stop the robot.
   void reset(void);
 
+protected:
+  Vect<2, s32> _src;
+  Vect<2, s32> _dst;
+  bool _backward;
+
+  s32 _dist_cmd = 0;
+  s32 _angle_cmd = 0;
+
+  Mode _mod;
+
+protected:
+  TrajectoryState _state;
+  Array<MAX_STATES, void (*)(TrajectoryManager&)> _state_handlers;
+  Array<MAX_STATES, void (*)(TrajectoryManager&)> _state_change_handlers;
+
+public:
+  //! \brief interrupt function
+  void update(void);
+
 private:
+  //! \brief Do not move !
   void update_stop(void);
 
-  void update_reach_angle(void);
-  void update_follow_trajectory(void);
-  void update_near_end(void);
-
-  void update_reach_angle_rect(void);
-  void update_follow_trajectory_rect(void);
-  void update_near_end_rect(void);
+  static void _update_stop(TrajectoryManager& t);
 };
+
+// TODO MOVE
+#include "devices.hpp"
+
+
+inline s32 nearest_cmd_angle(s32 angle, s32 cmd) {
+  s32 res = (angle % 360);
+  angle -= res;
+  cmd = ((cmd + 180) % 360) - 180;
+
+  if(180 < res - cmd) {
+    angle += 360;
+  }
+  else if(res - cmd < -180) {
+    angle -= 360;
+  }
+
+  return angle + cmd;
+}
+
+#warning "TODO : REMOVE THIS !!!"
+#define REACH_ANGLE_RECT REACH_ANGLE
+#define REACH_ANGLE_CURV REACH_ANGLE
+
+#define NEAR_END_RECT NEAR_END
+#define NEAR_END_CURV NEAR_END
+
+#define FOLLOW_TRAJECTORY_RECT FOLLOW_TRAJECTORY
+#define FOLLOW_TRAJECTORY_CURV FOLLOW_TRAJECTORY
+
+#define update_reach_angle_rect update_reach_angle
+#define update_reach_angle_curv update_reach_angle
+#define update_follow_trajectory_rect update_follow_trajectory
+#define update_follow_trajectory_curv update_follow_trajectory
+#define update_near_end_rect update_near_end
+#define update_near_end_curv update_near_end
 
 #endif//TRAJECTORY_MANAGER_HPP
