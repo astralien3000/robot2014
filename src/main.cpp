@@ -32,8 +32,8 @@ void control_init(void) {
   Task t([](void) {
       //motc_l.setValue(cmd_l);
       //motc_r.setValue(cmd_r);
-      robot.setValue(_cmd);
-      //traj.update();
+      //robot.setValue(_cmd);
+      traj.update();
     });
 
   t.setPeriod(8000);
@@ -225,9 +225,9 @@ int main(int argc, char* argv[]) {
   pid_ct.setMaxIntegral(25600);
   pid_ct.setOutShift(11);
 
-  pid_rt.setGains(100, 0, 0);
+  pid_rt.setGains(40, 0, 0);
   pid_rt.setMaxIntegral(25600);
-  pid_rt.setOutShift(6);
+  pid_rt.setOutShift(14);
 
   // Init
   //pwm bas 1300
@@ -239,42 +239,26 @@ int main(int argc, char* argv[]) {
   s32 x = 0;
   s32 y = 0;
   while(1) {
-    s8 dummy = 0;
-    io >> dummy;
-    dummy = 0;
-    _cmd.coord(1) -= 90 << 4;
-    while(Math::abs(odo.getValue().coord(1) - _cmd.coord(1)) > 10) {
-      s32 a = odo.getValue().coord(1);
-      io << "angle " << (a >> 4) << " " << (a & 0x0F) << "\n";
-      io << "cmd angle " << (_cmd.coord(1) >> 4) << "\n";
-      io << "distance " << odo.getValue().coord(0) << "\n";
-      io << "cmd distance " << _cmd.coord(0) << "\n";
-      io << "left encoder " << enc_l.getValue() << "\n";
-      io << "left motor " << MOT_L << "\n";
-      io << "right encoder " << enc_r.getValue() << "\n";
-      io << "right motor " << MOT_R << "\n";
+    s16 dummy = 0;
+    while(!dummy) {
+      io << "GO ?\n";
+      io >> dummy;
+      io << dummy << "\n";
     }
 
-    // s16 dummy = 0;
-    // while(!dummy) {
-    //   io << "GO ?\n";
-    //   io >> dummy;
-    //   io << dummy << "\n";
-    // }
+    io << "X[" << x << "] = ";
+    io >> x;
+    io << x << "\n";
 
-    // io << "X[" << x << "] = ";
-    // io >> x;
-    // io << x << "\n";
+    io << "Y[" << y << "] = ";
+    io >> y;
+    io << y << "\n";
 
-    // io << "Y[" << y << "] = ";
-    // io >> y;
-    // io << y << "\n";
+    traj.gotoPosition(Vect<2, s32>(x, y));
 
-    // traj.gotoPosition(Vect<2, s32>(x, y));
-
-    // while(!traj.isEnded()) {
-    //   io << MOT_L << " " << MOT_R << "\n";
-    // }
+    while(!traj.isEnded()) {
+      //io << MOT_L << " " << MOT_R << "\n";
+    }
   }
   // traj.setMode(TrajectoryManager::BACKWARD);
   // traj.gotoCurvPosition(Vect<2, s32>(1250, -250), -250, false);

@@ -36,8 +36,12 @@ void TrajectoryManager::setMode(Mode m) {
   _mod = m;
 }
 
+inline s32 deg2raw(s32 val) {
+  return val << 4;
+}
+
 void TrajectoryManager::update_stop() {
-  _robot.setValue(Vect<2, s32>(_dist_cmd, _angle_cmd * 10));
+  _robot.setValue(Vect<2, s32>(_dist_cmd, deg2raw(_angle_cmd)));
 }
 
 void TrajectoryManager::_update_stop(TrajectoryManager& t) {
