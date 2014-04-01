@@ -33,6 +33,12 @@ private:
   //! \brief Normal vector of the Src->Dst segment
   Vect<2, s32> _nor;
 
+  //! \brief Segment Src->Dst
+  Vect<2, s32> _seg;
+
+  //! \brief Distance between Src and Dst
+  s32 _seg_len;
+
 private:
   //! \brief First part of the trajectory : face the destination
   void update_reach_angle(void);

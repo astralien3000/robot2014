@@ -235,31 +235,47 @@ int main(int argc, char* argv[]) {
 
   //robot.lock();
 
+  // traj.setMode(TrajectoryManager::FASTER);
+  // s32 x = 0;
+  // s32 y = 0;
+  // while(1) {
+  //   s16 dummy = 0;
+  //   while(!dummy) {
+  //     io << "GO ?\n";
+  //     io >> dummy;
+  //     io << dummy << "\n";
+  //     io << "pos " << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
+  //   }
+
+  //   io << "X[" << x << "] = ";
+  //   io >> x;
+  //   io << x << "\n";
+
+  //   io << "Y[" << y << "] = ";
+  //   io >> y;
+  //   io << y << "\n";
+
+  //   traj.gotoPosition(Vect<2, s32>(x, y));
+
+  //   while(!traj.isEnded()) {
+  //     //io << MOT_L << " " << MOT_R << "\n";
+  //     io << "pos " << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
+  //   }
+  // }
+
+  traj.setMode(TrajectoryManager::BACKWARD);
+  traj.gotoDistance(500);
+  while(!traj.isEnded());
+
   traj.setMode(TrajectoryManager::FORWARD);
-  s32 x = 0;
-  s32 y = 0;
-  while(1) {
-    s16 dummy = 0;
-    while(!dummy) {
-      io << "GO ?\n";
-      io >> dummy;
-      io << dummy << "\n";
-    }
+  traj.gotoAngle(-90);
+  while(!traj.isEnded());
 
-    io << "X[" << x << "] = ";
-    io >> x;
-    io << x << "\n";
+  traj.setMode(TrajectoryManager::FASTER);
+  traj.gotoDistance(-500);
+  while(!traj.isEnded());
 
-    io << "Y[" << y << "] = ";
-    io >> y;
-    io << y << "\n";
 
-    traj.gotoPosition(Vect<2, s32>(x, y));
-
-    while(!traj.isEnded()) {
-      //io << MOT_L << " " << MOT_R << "\n";
-    }
-  }
   // traj.setMode(TrajectoryManager::BACKWARD);
   // traj.gotoCurvPosition(Vect<2, s32>(1250, -250), -250, false);
   // while(!traj.isEnded());

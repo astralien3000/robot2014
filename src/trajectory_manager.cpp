@@ -22,6 +22,10 @@ void TrajectoryManager::update(void) {
   if(_state_handlers[_state]) {
     _state_handlers[_state](*this);
   }
+  else {
+    _state = STOP;
+    _state_handlers[_state](*this);
+  }
 }
 
 bool TrajectoryManager::isEnded(void) {
