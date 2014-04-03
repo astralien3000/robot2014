@@ -2,11 +2,11 @@
 #define MY_WORLD_HPP
 
 #include <base/integer.hpp>
-#include <world.hpp>
-#include <point.hpp>
-#include <aabb.hpp>
-#include <segment.hpp>
-#include <circle.hpp>
+#include <geometry/world.hpp>
+#include <geometry/point.hpp>
+#include <geometry/aabb.hpp>
+#include <geometry/segment.hpp>
+#include <geometry/circle.hpp>
 
 static const u8 WORLD_SIZE = 20;
 

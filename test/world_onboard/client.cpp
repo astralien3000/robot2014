@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "my_world.hpp"
-#include <collision.hpp>
+#include <geometry/collision.hpp>
 #include <cstring>
 #include <sstream>
 
