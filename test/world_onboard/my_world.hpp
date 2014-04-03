@@ -55,6 +55,6 @@ extern Circle my_pmi;
 extern Circle ennemy_robot;
 extern Circle ennemy_pmi;
 
-void fill_world(World<WORLD_SIZE>& world);
+void fill_world(World<WORLD_SIZE, AABB>& world);
 
 #endif//MY_WORLD_HPP
