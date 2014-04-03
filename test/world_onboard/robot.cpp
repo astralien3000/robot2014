@@ -4,6 +4,7 @@
 #include <hardware/timer.hpp>
 
 #include <avr/io.h>
+#include "my_world.hpp"
 
 inline bool isOn(u16 p) {
   return (PORTB & (1<<p));
@@ -51,18 +52,26 @@ volatile s32 y;
 volatile s32 dest_x;
 volatile s32 dest_y;
 
+World<WORLD_SIZE, AABB> myw;
+
 void update(void) {
+  s32 nx = x, ny = y;
   if(y > dest_y) {
-    y -= 5;
+    ny -= 5;
   }
   else if(y < dest_y) {
-    y += 5;
+    ny += 5;
   }
   else if(x > dest_x) {
-    x -= 5;
+    nx -= 5;
   }
   else if(x < dest_x) {
-    x += 5;
+    nx += 5;
+  }
+  Point p(nx, ny);
+  if(!myw.collide(p)) {
+    x = nx;
+    y = ny;
   }
 }
 
@@ -72,6 +81,9 @@ int main(int argc, char** argv) {
   
   DDRB = (1<<PB7) | (1<<PB4) | (1<<PB5);
   Aversive::init();
+  
+  fill_world(myw);
+  
   BufferedUartStream<0>& str = BufferedUartStream<0>::instance();
   str.setMode(Stream::BINARY);
   Interrupts::init();
