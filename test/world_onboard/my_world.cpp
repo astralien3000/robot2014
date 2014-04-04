@@ -45,7 +45,7 @@ Circle my_pmi(0, 1100, 10);
 Circle ennemy_robot(-30, 1100, 10);
 Circle ennemy_pmi(30, 1100, 10);
 
-void fill_world(World<WORLD_SIZE>& world) {
+void fill_world(World<WORLD_SIZE, AABB>& world) {
   world.addShape(&top);
   world.addShape(&bottom);
   world.addShape(&left);

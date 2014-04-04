@@ -25,7 +25,7 @@ SASIAE_CFLAGS=$(GEN_CFLAGS) -DQT_CORE_LIB -fpic
 AVR_CFLAGS=$(GEN_CFLAGS) -fno-threadsafe-statics -D__STDC_LIMIT_MACROS -O3
 
 ## Include
-GEN_INCLUDE= -I../../src/world -I$(AVERSIVE_ROOT)/include
+GEN_INCLUDE= -I$(AVERSIVE_ROOT)/include
 SASIAE_INCLUDE= $(GEN_INCLUDE)/sasiae -I/usr/include/qt5 -I/usr/include/qt5/QtCore
 AVR_INCLUDE= $(GEN_INCLUDE)/avr
 
@@ -76,7 +76,7 @@ avr: compile
 	$(CC) $(CFLAGS) $(INCLUDE) -o $(BUILD_DIR)/$@ -c $<
 
 compile: make_build_dir $(OBJ)
-	$(CC) $(CFLAGS) -o $(EXEC) $(addprefix $(BUILD_DIR)/, $(OBJ)) ../../src/world/*.cpp $(INCLUDE) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $(EXEC) $(addprefix $(BUILD_DIR)/, $(OBJ)) $(INCLUDE) $(LDFLAGS)
 
 make_build_dir:
 	mkdir -p $(BUILD_DIR)
@@ -90,10 +90,10 @@ mrproper: clean
 	rm -rf $(GEN_EXEC)_*.elf $(GEN_EXEC)_*.hex $(CLIENT_EXEC)
 
 CLIENT_CC=g++
-CLIENT_CFLAGS=--std=c++11 -Wall -Wextra -I../../../aversive++/include/common -I../../src/world -g
-CLIENT_LDFLAGS=-lsfml-graphics -lsfml-window -lsfml-system
+CLIENT_CFLAGS=--std=c++11 -Wall -Wextra -I../../../aversive++/include/common -g
+CLIENT_LDFLAGS=-L../../../aversive++/build -laversive_sasiae -lsfml-graphics -lsfml-window -lsfml-system
 
-$(CLIENT_EXEC): client.cpp my_world.cpp ../../src/world/*.cpp com.cpp
+$(CLIENT_EXEC): client.cpp my_world.cpp com.cpp
 	$(CLIENT_CC) $(CLIENT_CFLAGS) -o $@ $^ $(CLIENT_LDFLAGS)
 
 load_board: atmega2560

@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "my_world.hpp"
-#include <collision.hpp>
+#include <geometry/collision.hpp>
 #include <cstring>
 #include <sstream>
 
@@ -95,7 +95,7 @@ void draw_shape(const Shape* s) {
   }
 }
 
-void draw_world(const World<WORLD_SIZE>& world) {
+void draw_world(const World<WORLD_SIZE, AABB>& world) {
   col = WORLD_COLOR;
   world.doForeach(draw_shape);
 }
@@ -223,7 +223,7 @@ int main(int argc, char** argv)
 			 sf::Color::Black, 3.f, sf::Color::Red);
   
   bool hw_on = false;
-  World<WORLD_SIZE> world;
+  World<WORLD_SIZE, AABB> world;
   fill_world(world);
   
   AABB button(WIN_WIDTH - 200, 0, 200, 50);
