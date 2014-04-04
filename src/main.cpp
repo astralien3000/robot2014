@@ -59,33 +59,32 @@ void trajectory_reset(void) {
 }
 
 bool toggle = false;
-/*
+
 void set_angle(s32 new_angle) {
-  s32 old_angle = odo.getValue().coord(1);
-  s32 new_zero = old_angle - new_angle;
+  s32 old_angle = odo.getValue().coord(1) >> 4;
+  s32 new_zero = new_angle - old_angle;
   //s32 dist = odo.getValue().coord(0);
 
   s32 cur_dist = odo.getValue().coord(0);
 
   io << "Show zero\n";
-  _cmd = Vect<2, s32>(cur_dist, new_zero);
-  while(odo.getValue().coord(1) != new_zero) {
-  }
+  traj.gotoAngle(new_zero);
+  while((odo.getValue().coord(1) >> 4) != -new_zero);
 
+  io << "reset...\n";
   robot.lock();
   fpga_reset();
   fpga_config();
-  robot.setValue(Vect<2,s32>(0,0));
-  _cmd = Vect<2, s32>(0, 0);
+  trajectory_reset();
   robot.unlock();  
 
   while(odo.getValue().coord(1) != 0) {
   }
   
   io << "Go back to angle\n";
-  _cmd = Vect<2, s32>(0, new_angle);
-  while(odo.getValue().coord(1) != new_angle) {
-  }
+  io << new_angle << "\n";
+  traj.gotoAngle(-new_angle);
+  while((odo.getValue().coord(1) >> 4) != new_angle);
   io << "angle ok\n";
 }
 
@@ -94,33 +93,24 @@ enum CoordCalib {
   Y = 1
 };
 
-void goto_wall(bool backward = false) {
+void goto_wall(void) {
   io << "goto wall\n";
 
-  if(backward) {
-    _cmd.coord(0) = -3000;  
-  }
-  else {
-    _cmd.coord(0) = 3000;  
-  }
+  traj.gotoDistance(-3000);
 
-  while(!robot.getValue()) {
-  }
+  while(!robot.getValue());
 
   io << "wall touched\n";
   
-  if(backward) {
-    _cmd.coord(0) = odo.getValue().coord(0) - 10;
-  }
-  else {
-    _cmd.coord(0) = odo.getValue().coord(0) + 10;
-  }
+  traj.gotoDistance(-20);
 
   robot.unlock();
 
-  while(!robot.getValue()) {
-  }
+  while(!robot.getValue());
+
   io << "touching wall\n";
+  traj.reset();
+  robot.unlock();
 }
 
 void match_init(bool red_side) {
@@ -128,56 +118,35 @@ void match_init(bool red_side) {
 
   traj_mode = false;
 
-  // Goto wall
-  goto_wall(true);
-  
-  // Reset X and angle
-  fpga_reset();
-  fpga_config();
+  io << "Goto wall\n";
+  goto_wall();
+  io << "Reset X and angle\n";
+  set_angle(A_INIT);
   pos.setX(X_INIT);
-
-  // Go far from the wall
-  s32 angle = odo.getValue().coord(1);
-  s32 dist = odo.getValue().coord(0);
-
-  _cmd.coord(0) = dist + 600;
-  _cmd.coord(1) = 0;
-
-  while(odo.getValue().coord(0) < dist + 100) {
-    robot.unlock();
-    io << ".";
-  }
-
-  while(odo.getValue().coord(0) != dist + 600) {
-  }
-
-  //set_angle(angle + A_INIT);
-
-  // Face buffet
-  angle = ANGLE_CALIB;
-
-  while(odo.getValue().coord(1) != angle) {
-    _cmd.coord(1) = angle;
-  }
-
-  // Goto buffet
-  goto_wall(true);
   
-  // Reset Y
+  io << "Go far from the wall\n";
+  traj.gotoDistance(700);
+  while(!traj.isEnded()) {
+    robot.unlock();
+  }
+
+  io << "Face buffet\n";
+  traj.gotoAngle(-90);
+  while(!traj.isEnded());
+
+  io << "Goto buffet\n";
+  goto_wall();
+  
+  io << "Reset Y\n";
   pos.setY(Y_INIT);
 
-  // Go far from the wall
-  s32 cur_dist = odo.getValue().coord(0);
-
-  _cmd.coord(0) = 300;
-  _cmd.coord(1) = angle;
-
-  while(odo.getValue().coord(0) < cur_dist + 100) {
+  io << "Go far from the wall\n";
+  traj.gotoDistance(500);
+  while(!traj.isEnded()) {
     robot.unlock();
   }
-
-  while(odo.getValue().coord(0) != 300) {
-  }
+  
+  io << "Done !\n";
 }
 
 void side_init(bool red_side) {
@@ -196,23 +165,26 @@ void side_init(bool red_side) {
     ANGLE_CALIB = YELLOW_ANGLE_CALIB;
   }
 }
-*/
+
 
 int main(int argc, char* argv[]) {
   (void)argc;
   (void)argv;
 
+  // Need to be the first thing to be done (for security)
+  fpga_init();
+  MOT_R = 0;
+  MOT_L = 0;
+
   Aversive::init();
   asserv_init();
-  fpga_init();
+
+  robot.lock();
 
   //io.setMode(Stream::BINARY);
   rds_stream.setMode(Stream::BINARY);
   file.setMode(Stream::BINARY);
   
-  MOT_R = 0;
-  MOT_L = 0;
-
   cmd.coord(0) = 0;
   cmd.coord(1) = 0;
 
@@ -223,17 +195,82 @@ int main(int argc, char* argv[]) {
     
   pid_ct.setGains(1000, 50, 100);
   pid_ct.setMaxIntegral(25600);
-  pid_ct.setOutShift(11);
+  pid_ct.setOutShift(10);
 
-  pid_rt.setGains(40, 0, 0);
-  pid_rt.setMaxIntegral(25600);
+  pid_rt.setGains(20, 0, 0);
+  pid_rt.setMaxIntegral(100000);
   pid_rt.setOutShift(14);
+
+  robot.unlock();
 
   // Init
   //pwm bas 1300
   //pwm haut 490
 
-  //robot.lock();
+  // while(1) {
+  //   io << "pos " << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
+  // }
+
+  qramp_a.setFirstOrderLimit(15,15);
+  qramp_a.setSecondOrderLimit(2,2);
+
+  qramp_d.setFirstOrderLimit(5,5);
+  qramp_d.setSecondOrderLimit(1,2);
+
+  traj.setMode(TrajectoryManager::FASTER);
+
+  s16 dummy = 0;
+  while(!dummy) {
+    io << "GO ?\n";
+    io >> dummy;
+  }
+
+  side_init(true);
+  match_init(true);
+  
+  robot.lock();
+  io << "Place me please <3\n";
+  io >> dummy;
+
+  qramp_a.setFirstOrderLimit(30, 30);
+  qramp_a.setSecondOrderLimit(4,4);
+
+  qramp_d.setFirstOrderLimit(10,10);
+  qramp_d.setSecondOrderLimit(2,2);
+
+  trajectory_reset();
+  robot.unlock();
+
+  traj.gotoPosition(BEGIN_POINT);
+  while(!traj.isEnded());
+
+  traj.gotoPosition(FIRST_FIRE_POINT);
+  while(!traj.isEnded());
+
+  traj.gotoPosition(BEGIN_POINT);
+  while(!traj.isEnded());
+
+  traj.gotoPosition(SECOND_FIRE_POINT);
+  while(!traj.isEnded());  
+
+  traj.gotoPosition(FRONT_FRESQ_POINT);
+  while(!traj.isEnded());  
+
+  traj.setMode(TrajectoryManager::BACKWARD);
+  traj.gotoPosition(FRESQ_POINT);
+  while(!robot.getValue());  
+
+  traj.setMode(TrajectoryManager::FASTER);
+  traj.gotoDistance(500);
+  while(!traj.isEnded()) {
+    robot.unlock();
+  } 
+
+  // set_angle(90);
+  // traj.setMode(TrajectoryManager::BACKWARD);
+  // traj.gotoPosition(Vect<2, s32>(500, 0));
+  // while(!traj.isEnded());
+  
 
   // traj.setMode(TrajectoryManager::FASTER);
   // s32 x = 0;
@@ -263,18 +300,29 @@ int main(int argc, char* argv[]) {
   //   }
   // }
 
-  traj.setMode(TrajectoryManager::BACKWARD);
-  traj.gotoDistance(500);
-  while(!traj.isEnded());
+  // s16 dummy = 0;
+  // while(!dummy) {
+  //   io << "GO ?\n";
+  //   io >> dummy;
+  // }
 
-  traj.setMode(TrajectoryManager::FORWARD);
-  traj.gotoAngle(-90);
-  while(!traj.isEnded());
+  // traj.setMode(TrajectoryManager::FORWARD);
+  // traj.gotoCurvPosition(Vect<2, s32>(0, 500), 0, false);
+  // //traj.gotoPosition(Vect<2, s32>(0, 500));
+  // while(!traj.isEnded());
 
-  traj.setMode(TrajectoryManager::FASTER);
-  traj.gotoDistance(-500);
-  while(!traj.isEnded());
+  // io << "pos " << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
 
+  // traj.setMode(TrajectoryManager::BACKWARD);
+  // traj.gotoCurvPosition(Vect<2, s32>(0, 0), 0, true);
+  // //traj.gotoPosition(Vect<2, s32>(0, 500));
+  // while(!traj.isEnded());
+
+  // io << "pos " << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
+  // while(1) {
+  //   io >> dummy;
+  //   io << "angle " << (odo.getValue().coord(0) >> 4) << "\n";
+  // }
 
   // traj.setMode(TrajectoryManager::BACKWARD);
   // traj.gotoCurvPosition(Vect<2, s32>(1250, -250), -250, false);

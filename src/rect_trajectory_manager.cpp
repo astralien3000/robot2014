@@ -21,33 +21,23 @@ void RectTrajectoryManager::_update_follow_trajectory(TrajectoryManager& t) {
   reinterpret_cast<RectTrajectoryManager&>(t).update_follow_trajectory();
 }
 
+void RectTrajectoryManager::_update_follow_trajectory_dist(TrajectoryManager& t) {
+  reinterpret_cast<RectTrajectoryManager&>(t).update_follow_trajectory_dist();
+}
+
 void RectTrajectoryManager::_update_near_end(TrajectoryManager& t) {
   reinterpret_cast<RectTrajectoryManager&>(t).update_near_end();
 }
 
 void RectTrajectoryManager::gotoDistance(s32 dist) {
-  Vect<2, s32> pos = _pos.getValue();
-  s32 angle = raw2deg(_odo.getValue().coord(1));
-  if(_state == NEAR_END) {
-    pos = _dst;
-    angle = _angle_cmd;
-  }
+  _state_handlers[REACH_ANGLE] = 0;
+  _state_handlers[FOLLOW_TRAJECTORY] = RectTrajectoryManager::_update_follow_trajectory_dist;
+  _state_handlers[NEAR_END] = RectTrajectoryManager::_update_near_end;
 
-  TrajectoryManager::Mode save = _mod;
-  if(dist < 0) {
-    setMode(TrajectoryManager::BACKWARD);
-    pos.coord(0) -= (double)dist * Math::cos<Math::DEGREE, double>(angle);
-    pos.coord(1) -= (double)dist * Math::sin<Math::DEGREE, double>(angle);
-  }
-  else {
-    setMode(TrajectoryManager::FORWARD);
-    pos.coord(0) += (double)dist * Math::cos<Math::DEGREE, double>(angle);
-    pos.coord(1) += (double)dist * Math::sin<Math::DEGREE, double>(angle);
-  }
-  io << pos.coord(0) << " " << pos.coord(1) << "\n";
-  io << dist << " " << angle << "\n";
-  gotoPosition(pos);
-  setMode(save);
+  _dist_cmd = _odo.getValue().coord(0) + dist;
+  _angle_cmd = raw2deg(_odo.getValue().coord(1));
+
+  _state = FOLLOW_TRAJECTORY;
 }
 
 void RectTrajectoryManager::gotoAngle(s32 angle) {
@@ -143,6 +133,14 @@ void RectTrajectoryManager::update_follow_trajectory(void) {
     }
     
     //io << "Near end...\n";
+  }
+}
+
+void RectTrajectoryManager::update_follow_trajectory_dist(void) {
+  _robot.setValue(Vect<2, s32>(_dist_cmd, deg2raw(_angle_cmd)));
+  
+  if(Math::abs(_odo.getValue().coord(0) - _dist_cmd) < 100) {
+    _state = NEAR_END;
   }
 }
 

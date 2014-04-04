@@ -1,8 +1,5 @@
 #include "asserv.hpp"
 
-#include <device/output_converter.hpp>
-#include <device/input_converter.hpp>
-
 #include "devices.hpp"
 #include "filters.hpp"
 #include "fpga.hpp"
@@ -55,12 +52,12 @@ void asserv_init(void) {
   // MotorControl
   diff_l.setDelta(1);
   pid_l.setGains(200, 0, 0);
-  pid_l.setMaxIntegral(1000);
+  pid_l.setMaxIntegral(0);
   pid_l.setOutShift(10);
 
   diff_r.setDelta(1);
   pid_r.setGains(200, 0, 0);
-  pid_r.setMaxIntegral(1000);
+  pid_r.setMaxIntegral(0);
   pid_r.setOutShift(10);
 
   // Odometer
@@ -74,16 +71,16 @@ void asserv_init(void) {
 
   // Robot
   pid_a.setGains(480, 8, 0);
-  pid_a.setMaxIntegral(4096);
-  pid_a.setOutShift(7);
+  pid_a.setMaxIntegral(6000);
+  pid_a.setOutShift(6);
   
-  pid_d.setGains(300, 8, 80);
-  pid_d.setMaxIntegral(2000);
+  pid_d.setGains(600, 8, 0);
+  pid_d.setMaxIntegral(16000);
   pid_d.setOutShift(6);
 
   qramp_a.setFirstOrderLimit(30,30);
   qramp_a.setSecondOrderLimit(4,4);
 
   qramp_d.setFirstOrderLimit(10,10);
-  qramp_d.setSecondOrderLimit(2,4);
+  qramp_d.setSecondOrderLimit(2,8);
 }

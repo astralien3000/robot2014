@@ -45,11 +45,13 @@ private:
 
   //! \brief Main part of the trajectory
   void update_follow_trajectory(void);
+  void update_follow_trajectory_dist(void);
 
   //! \brief What to do if robot is near the destination
   void update_near_end(void);
 
   static void _update_reach_angle(TrajectoryManager&);
   static void _update_follow_trajectory(TrajectoryManager&);
+  static void _update_follow_trajectory_dist(TrajectoryManager&);
   static void _update_near_end(TrajectoryManager&);
 };

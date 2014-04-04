@@ -54,7 +54,7 @@ public:
 
   //! \brief Reset command and stop the robot.
   void reset(void);
-
+  
 protected:
   Vect<2, s32> _src;
   Vect<2, s32> _dst;
