@@ -4,10 +4,10 @@
 # User Configuration
 
 ## The root aversive directory
-AVERSIVE_ROOT=/home/astralien3000/aversive--
+AVERSIVE_ROOT=../../../aversive++
 
 ## Your project's object .o files
-OBJ=main.o fpga.o asserv.o eirbot_shell.o secure_robot.o skating_detector.o position_manager.o trajectory_manager.o curv_trajectory_manager.o rect_trajectory_manager.o
+OBJ=robot.o my_world.o
 
 ## Your executable file name
 GEN_EXEC=robot
@@ -21,7 +21,7 @@ AVR_CC=avr-g++
 
 ## Flags
 GEN_CFLAGS=-Wall -Wextra --std=c++11
-SASIAE_CFLAGS=$(GEN_CFLAGS) -DQT_CORE_LIB -fpic -g
+SASIAE_CFLAGS=$(GEN_CFLAGS) -DQT_CORE_LIB -fpic
 AVR_CFLAGS=$(GEN_CFLAGS) -fno-threadsafe-statics -D__STDC_LIMIT_MACROS -O3
 
 ## Include
@@ -76,7 +76,7 @@ avr: compile
 	$(CC) $(CFLAGS) $(INCLUDE) -o $(BUILD_DIR)/$@ -c $<
 
 compile: make_build_dir $(OBJ)
-	$(CC) $(CFLAGS) -o $(EXEC) $(addprefix $(BUILD_DIR)/, $(OBJ)) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $(EXEC) $(addprefix $(BUILD_DIR)/, $(OBJ)) $(INCLUDE) $(LDFLAGS)
 
 make_build_dir:
 	mkdir -p $(BUILD_DIR)
@@ -84,26 +84,20 @@ make_build_dir:
 clean:
 	rm -rf $(shell find . -name "*~" -o -name "#*#" -o -name "*.o") $(GEN_BUILD_DIR)
 
+CLIENT_EXEC=client
+
 mrproper: clean
-	rm -rf $(GEN_EXEC)_*.elf
+	rm -rf $(GEN_EXEC)_*.elf $(GEN_EXEC)_*.hex $(CLIENT_EXEC)
 
-########################################
-# Load
-ELF=$(EXEC)
-HEX=robot.hex
-DEV=/dev/ttyUSB0
+CLIENT_CC=g++
+CLIENT_CFLAGS=--std=c++11 -Wall -Wextra -I../../../aversive++/include/common -g
+CLIENT_LDFLAGS=-L../../../aversive++/build -laversive_sasiae -lsfml-graphics -lsfml-window -lsfml-system
 
-OBJCOPY=avr-objcopy
+$(CLIENT_EXEC): client.cpp my_world.cpp com.cpp
+	$(CLIENT_CC) $(CLIENT_CFLAGS) -o $@ $^ $(CLIENT_LDFLAGS)
 
-ELF=robot_atmega128.elf
+load_board: atmega2560
+	@./deploy.sh
 
-$(HEX): $(ELF)
-	$(OBJCOPY) -O ihex $(ELF) $(HEX)
-
-load_unioc: atmega128 $(HEX)
-	sudo avarice -j $(DEV) --erase --program -f $(HEX)
-#	sudo avrdude -cjtagmkI -p$(MMCU) -P $(DEV) -U flash:w:$(HEX) -D
-
-load_arduino: atmega2560 $(HEX)
-	sudo avrdude -cwiring -patmega2560 -P /dev/ttyACM0 -U flash:w:$(HEX) -D
-
+test: load_board $(CLIENT_EXEC)
+	@sudo ./$(CLIENT_EXEC) 2> /dev/null

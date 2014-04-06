@@ -3,6 +3,8 @@
 
 #include <device/input.hpp>
 
+#include <base/integer.hpp>
+
 //! \brief A virtual device which returns true if skating is detected.
 /*!  
   
@@ -14,18 +16,19 @@
 */
 class SkatingDetector : public Input<bool> {
 private:
-  Input<s32>& _encInt;
-  Input<s32>& _encExt;
-  int _limit;
-  int _oldInt;
-  int _oldExt;
-  int _lastRatio;
+  Input<s32>& _enc_int;
+  Input<s32>& _enc_ext;
+  s32 _limit;
+  s32 _old_int;
+  s32 _old_ext;
+  s32 _last_ratio;
 
 public:
-  SkatingDetector(Input<s32>&, Input<s32>&, int);
+  SkatingDetector(Input<s32>& enc_int, Input<s32>& enc_ext, s32 limit);
 
   bool getValue(void);
-  int getLastRatio(void);
+
+  s32 getLastRatio(void);
 };
 
 #endif//SKATING_DETECTOR_HPP

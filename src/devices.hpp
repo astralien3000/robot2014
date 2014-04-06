@@ -6,10 +6,16 @@
 #include <device/eirbot2014/odometer.hpp>
 #include <device/controller/motor_controller.hpp>
 #include <device/controller/robot_controller.hpp>
-#include <device/eirbot2014/position_manager.hpp>
+//#include <device/eirbot2014/position_manager.hpp>
 
 #include <device/stream/uart_stream.hpp>
 #include <device/stream/eeprom_stream.hpp>
+#include <device/stream/fpga_uart_stream.hpp>
+
+#include "skating_detector.hpp"
+#include "secure_robot.hpp"
+
+#include "position_manager.hpp"
 
 ////////////////////////////////////////
 // Physical devices
@@ -18,6 +24,9 @@
 extern Encoder<volatile u32> enc_l;
 extern Encoder<volatile u32> enc_r;
 
+extern Encoder<volatile u32> enc_mot_l;
+extern Encoder<volatile u32> enc_mot_r;
+
 //// Motors
 extern Motor<volatile s8> mot_l;
 extern Motor<volatile s8> mot_r;
@@ -25,6 +34,7 @@ extern Motor<volatile s8> mot_r;
 //// Communication
 extern UartStream<0> io;
 extern EepromStream file;
+extern FpgaUartStream rds_stream;
 
 ////////////////////////////////////////
 // Virtual devices
@@ -38,7 +48,10 @@ extern Odometer odo;
 extern PositionManager pos;
 
 // Robot's movement controller
-extern RobotController robot;
+extern SecureRobot robot;
 
+// Skating Detectors
+extern SkatingDetector skd_l;
+extern SkatingDetector skd_r;
 
 #endif//DEVICES_HPP

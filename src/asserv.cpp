@@ -1,8 +1,5 @@
 #include "asserv.hpp"
 
-#include <device/output_converter.hpp>
-#include <device/input_converter.hpp>
-
 #include "devices.hpp"
 #include "filters.hpp"
 #include "fpga.hpp"
@@ -30,56 +27,60 @@ QuadrampFilter qramp_a;
 Encoder<volatile u32> enc_l("left_encoder", &ENC_L);
 Encoder<volatile u32> enc_r("right_encoder", &ENC_R);
 
+Encoder<volatile u32> enc_mot_l("left_motor_encoder", &ENC_MOT_L);
+Encoder<volatile u32> enc_mot_r("right_motor_encoder", &ENC_MOT_R);
+
 Motor<volatile s8> mot_l("left_motor", &MOT_L);
 Motor<volatile s8> mot_r("right_motor", &MOT_R);
-
-InputConverter<s32, volatile u32> enc_conv_l(enc_l);
-InputConverter<s32, volatile u32> enc_conv_r(enc_r);
-
-OutputConverter<s32, volatile s8> mot_conv_l(mot_l);
-OutputConverter<s32, volatile s8> mot_conv_r(mot_r);
   
-MotorController motc_l(mot_conv_l, enc_conv_l, id, diff_l, pid_l);
-MotorController motc_r(mot_conv_r, enc_conv_r, id, diff_r, pid_r);
+MotorController motc_l(mot_l, enc_l, id, diff_l, pid_l);
+MotorController motc_r(mot_r, enc_r, id, diff_r, pid_r);
 
-Odometer odo(enc_conv_l, enc_conv_r);
+Odometer odo(enc_l, enc_r);
 
-RobotController robot(motc_l, motc_r, odo, qramp_d, id, pid_d, qramp_a, id, pid_a);
+RobotController _robot(motc_l, motc_r, odo, qramp_d, id, pid_d, qramp_a, id, pid_a);
+SecureRobot robot(_robot, odo, skd_l, skd_r, mot_l, mot_r);
+
+SkatingDetector skd_l(enc_mot_l, enc_l, 2);
+SkatingDetector skd_r(enc_mot_r, enc_r, 2);
+
+PositionManager pos(POSX_FPGA, POSY_FPGA, ROT_FPGA);
 
 void asserv_init(void) {
   id.setGains(1, 0, 0);
 
   // MotorControl
-  diff_l.setDelta(4);
-  pid_l.setGains(900, 0, 0);
-  pid_l.setMaxIntegral(1000);
-  pid_l.setOutShift(11);
-  //qramp_l.setFirstOrderLimit(80,80);
-  //qramp_l.setSecondOrderLimit(2,2);
+  diff_l.setDelta(1);
+  pid_l.setGains(200, 0, 0);
+  pid_l.setMaxIntegral(0);
+  pid_l.setOutShift(10);
 
-  diff_r.setDelta(4);
-  pid_r.setGains(1000, 0, 0);
-  pid_r.setMaxIntegral(1000);
-  pid_r.setOutShift(11);
-  //qramp_r.setFirstOrderLimit(80,80);
-  //qramp_r.setSecondOrderLimit(2,2);
+  diff_r.setDelta(1);
+  pid_r.setGains(200, 0, 0);
+  pid_r.setMaxIntegral(0);
+  pid_r.setOutShift(10);
 
   // Odometer
-  odo.setImpPerCm(100);
-  odo.setDistEncoders(3);
+  odo.setImpPerUnit(81);
+  odo.setAngleMultiplicator(8);
+  odo.setImpPerDeg(133);
+
+  // Position
+  pos.setImpPerUnitX(82);
+  pos.setImpPerUnitY(82);
 
   // Robot
-  pid_a.setGains(120, 1, 50);
-  pid_a.setMaxIntegral(10000);
-  pid_a.setOutShift(4);
+  pid_a.setGains(480, 8, 0);
+  pid_a.setMaxIntegral(6000);
+  pid_a.setOutShift(6);
   
-  pid_d.setGains(70, 1, 20);
-  pid_d.setMaxIntegral(1000);
-  pid_d.setOutShift(4);
+  pid_d.setGains(600, 8, 0);
+  pid_d.setMaxIntegral(16000);
+  pid_d.setOutShift(6);
 
-  qramp_a.setFirstOrderLimit(100,100);
-  qramp_a.setSecondOrderLimit(10,10);
+  qramp_a.setFirstOrderLimit(30,30);
+  qramp_a.setSecondOrderLimit(4,4);
 
-  qramp_d.setFirstOrderLimit(3,3);
-  qramp_d.setSecondOrderLimit(1,1);
+  qramp_d.setFirstOrderLimit(10,10);
+  qramp_d.setSecondOrderLimit(2,8);
 }

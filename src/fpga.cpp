@@ -1,24 +1,36 @@
 #include "fpga.hpp"
 
 #if defined (__AVR_ATmega128__)
+#define F_CPU 16000000l
+
 #include <util/delay.h>
 #include <avr/io.h>
 
 #include <hardware/xmem.hpp>
+#include <hardware/interrupts.hpp>
 #endif
 
-void fpga_init(void) {
-#if defined (__AVR_ATmega128__)
-  // External memory initialization
-  Xmem::instance().init();
-  // FPGA manual reste
-  DDRB |= (1<<0); 
+void fpga_reset(void) {
+  DDRB |= (1<<0);
   PORTB &= ~(1<<0);
   _delay_ms(500);
   PORTB |= (1<<0);
   _delay_ms(1);
   PORTB &= ~(1<<0);
+  _delay_ms(1);
+}
+
+void fpga_init(void) {
+#if defined (__AVR_ATmega128__)
+  // External memory initialization
+  Xmem::instance().init();
+  fpga_reset();
+  fpga_config();
 #endif
+}
+
+void fpga_config(void) {
+  RELATION = 15100;
 }
 
 ///////////////////////////////////////////////

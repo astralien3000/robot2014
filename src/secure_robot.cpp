@@ -1,36 +1,63 @@
 #include "secure_robot.hpp"
 
 
-SecureRobot::SecureRobot(Output< Vect<2, s32> >& robot, Input<bool>& skd_l, Input<bool>& skd_r, Input< Vect<2, s32> >& odometer) : _robot(robot), _skd_l(skd_l), _skd_r(skd_r) {
-  this->_state = false;
-  this->_odo = odometer;
-  Task check([this](void) {
-      if (this->_state)
-	return; //do not update _state while unlock() is not called
-      this->_state = this->_skd_l.getValue() || this->_skd_r.getValue();
-      if (this->_state) {
-	this->setValue(this->_odo.getValue());
-      }
-    });
-  check.setRepeat();
-  check.setPeriod(100000); //check 10 times per second if robot is skating
-  Scheduler::instance().addTask(check);
+SecureRobot::SecureRobot(Output< Vect<2, s32> >& robot, Input< Vect<2, s32> >& odo, Input<bool>& skd_l, Input<bool>& skd_r, Output<s32>& mot_l, Output<s32>& mot_r)
+  : _robot(robot), _odo(odo),
+    _skd_l(skd_l), _skd_r(skd_r),
+    _mot_l(mot_l), _mot_r(mot_r) {
+  _state = false;
+  _last_update = 0;
+  _sk_dur = 0;
+  _lockable = true;
 }
 
-bool SecureRobot::getValue(void) { //what is the best solution ?
-  return this->_state;
-  //return (this->_skd_l.getValue() && this->_skd_r.getValue());
+void SecureRobot::update(void) {
+  if (_state)
+    return;
+
+  if(_skd_l.getValue() || _skd_r.getValue()) {
+    if(_lockable) {
+      _state = (2 < ++_sk_dur);
+    }
+  }
+  else {
+    if(0 < _sk_dur) {
+      --_sk_dur;
+    }
+  }
+
+  if (_state) {
+    _robot.setValue(_odo.getValue());
+  }
+}
+
+bool SecureRobot::getValue(void) {
+  return _state;
 }
 
 void SecureRobot::setValue(Vect<2, s32> command) {
-  if (this->_state) {
+  update();
+  if (_state) {
     //robot is skating, send "DO NOT MOVE"
-    this->_robot.setValue(this->_odo.getValue());
-  } else {
-    this->_robot.setValue(command);
+    _mot_l.setValue(0);
+    _mot_r.setValue(0);
+  }
+  else {
+    _robot.setValue(command);
   }
 }
 
 void SecureRobot::unlock(void) {
-  this->_state = false;
+  _state = false;
+  _sk_dur = 0;
+}
+
+void SecureRobot::lock(void) {
+  if(_lockable) {
+    _state = true;
+  }
+}
+
+void SecureRobot::setLockable(bool val) {
+  _lockable = val;
 }
