@@ -1,50 +1,85 @@
 #include "astar.hpp"
-#include "ncurses.h"
+#include <geometry/world.hpp>
+#include <geometry/point.hpp>
+#include <geometry/segment.hpp>
+#include <geometry/circle.hpp>
+#include <geometry/aabb.hpp>
+#include "../test/astar_onboard/my_world.hpp"
 
 Astar::Astar(uint8_t mesh) {
   this->mesh = mesh;
+  this->mesh = 100;
+  fill_world(this->world);
 }
 
 Vect<2, s32>* Astar::getTrajectory(Vect<2, s32> &source, Vect<2, s32> &target) {
-  this->beginX = (source[0] + 132) / mesh;
-  this->beginY = (source[1] + 82) / mesh;
-  this->targetX = (target[0] + 132) / mesh;
-  this->targetY = (target[1] + 82) / mesh;
+  this->targetX_real = target[0];
+  this->targetY_real = target[1];
+
+  if (source[0] < -1250)
+    source[0] = -1250;
+  if (source[0] > 1250)
+    source[0] = 1250;
+  if (source[1] < -750)
+    source[1] = -750;
+  if (source[1] > 750)
+    source[1] = 750;
+    if (target[0] < -1250)
+    target[0] = -1250;
+  if (target[0] > 1250)
+    target[0] = 1250;
+  if (target[1] < -750)
+    target[1] = -750;
+  if (target[1] > 750)
+    target[1] = 750;
+
+  this->beginX = convertX_real2simple(source[0]);
+  this->beginY = convertY_real2simple(source[1]);
+  this->targetX = convertX_real2simple(target[0]);
+  this->targetY = convertY_real2simple(target[1]);
+  if (isObstacle(targetX, targetY))
+    return 0;
+
   nodes[0].setXY(beginX, beginY);
   nodes[0].setCost(0);
   nodes[0].setPred(0);
-  nodes[0].setOpen();
   this->nbNode = 1;
 
-  std::cout << (int) beginX << " " << (int) beginY << " -> " << (int) targetX << " " << (int) targetY << std::endl;
   return loop();
+}
+
+uint8_t Astar::getPathLengh(void) {
+  return this->pathLengh;
 }
 
 Vect<2, s32>* Astar::loop(void) {
   uint8_t val;
   uint8_t minVal;
-  uint8_t minNode;
-  while (this->keepGoing()) {
+  uint8_t minNode = 0;
+  while (this->keepGoing(minNode)) {
     minVal = 255;
     for (uint8_t i=0; i<this->nbNode; i++) {
-      //std::cout << (int)nodes[i].x() << " " << (int)nodes[i].y() << " cost: " << nodes[i].cost() + distance(&nodes[i]) << std::endl;
       if (!(nodes[i].isClosed()) && (val = nodes[i].cost() + distance(&nodes[i])) <= minVal) {
 	minVal = val;
 	minNode = i;
       }
     }
-    //std::cout << "min: " << (int)nodes[minNode].x() << " " << (int)nodes[minNode].y() << " : " << (int)minVal << std::endl;
 
-    this->debug(&nodes[0], &nodes[minNode]);
-
-    // if (nodes[minNode].x() == targetX && nodes[minNode].y() == targetY)
-    //   return makePath(&nodes[0], &nodes[minNode]);
+    if (minVal == 255) {
+      for (uint8_t i=0; i<this->nbNode; i++) {
+	if ((val = distance(&nodes[i])) <= minVal) {
+	  minVal = val;
+	  minNode = i;
+	}
+      }
+      return makePath(&nodes[0], &nodes[minNode]);
+    }
 
     nodes[minNode].setClosed();
     if (updateNeighbors(minNode))
       return makePath(&nodes[0], &nodes[nbNode-1]);
   }
-  return NULL;
+  return makePath(&nodes[0], &nodes[minNode]);
 }
 
 bool Astar::updateNeighbors(uint8_t node) {
@@ -76,9 +111,8 @@ bool Astar::updateNeighbors(uint8_t node) {
 	nnode->setXY(x, y);
 	nnode->setCost(possibleCost);
 	nnode->setPred(node);
-	nnode->setOpen();
 	if (x == targetX && y == targetY)
-	  return true;
+	  return true; //means "ok, you can stop the loop !"
       } else {
 	if (possibleCost < nnode->cost()) {
 	  nnode->setCost(possibleCost);
@@ -90,48 +124,40 @@ bool Astar::updateNeighbors(uint8_t node) {
   return false;
 }
 
-bool Astar::keepGoing(void) {
-  return (this->nbNode < Node::MAX_NB);
+bool Astar::keepGoing(uint8_t minNode) {
+  return (this->nbNode < Node::MAX_NB || this->nodes[nodes[minNode].pred()].cost() == Node::MAX_COST);
 }
 
 Vect<2, s32>* Astar::makePath(Node *source, Node *target) {
   pathLengh = 0;
   Node *cursor = target;
   Node *previous = cursor;
-  int8_t curDx = -2;
-  int8_t curDy = -2;
+  Node *preprevious = previous;
+  int8_t curDx = 0;
+  int8_t curDy = 0;
 
-  this->debug(source, target);
 
   while (cursor != source) {    
-    //std::cout << "{ " << (int)cursor->x() << " , " << (int)cursor->y() << " }" << std::endl;
     if (cursor->x() - previous->x() != curDx ||
 	cursor->y() - previous->y() != curDy) {
-      path[pathLengh][0] = cursor->x();
-      path[pathLengh][1] = cursor->y();
+      if (previous->x() == targetX && previous->y() == targetY) {
+	path[pathLengh][0] = targetX_real;
+	path[pathLengh][1] = targetY_real;
+      } else {
+	path[pathLengh][0] = convertX_simple2real(previous->x());
+	path[pathLengh][1] = convertY_simple2real(previous->y());
+      }
       pathLengh++;
-      std::cout << "{ " << (int)cursor->x() << " , " << (int)cursor->y() << " }" << std::endl;
-      //std::cout << (int)curDx << ", " << (int)curDy << std::endl;
     }
     curDx = cursor->x() - previous->x();
     curDy = cursor->y() - previous->y();
+    preprevious = previous;
     previous = cursor;
     cursor = &nodes[cursor->pred()];
   }
 
-  for (uint8_t i=0; i<pathLengh; i++) {
-
-  }
-
-  std::cout << (int)nbNode << " nodes used" << std::endl;
   return path;
 }
-
-/*
-uint8_t Astar::distance(Node *source, Node *target) {
-  return distance(source->x(), source->(y), target->x(), target->y());
-}
-*/
 
 uint8_t Astar::distance(Node *node) {
   return distance(node->x(), node->y(), targetX, targetY);
@@ -156,57 +182,25 @@ bool Astar::newNode(Node **node, uint8_t x, uint8_t y) {
 }
 
 bool Astar::isObstacle(uint8_t x, uint8_t y) {
-  if (x>24 || y>15)
+  if (x>25 || y>15)
     return true;
-  static uint8_t obstaclesX[13] = {4, 5, 6, 6, 6, 6, 11, 11, 11, 11, 11, 12, 13};
-  static uint8_t obstaclesY[13] = {6, 6, 6, 5, 4, 3, 3, 4, 5, 6, 7, 3, 3};
-  for (uint8_t i=0; i<13; i++) {
-    if (obstaclesX[i] == x && obstaclesY[i] == y)
-      return true;
-  }
-  return false;
+  Circle robot(convertX_simple2real(x), convertY_simple2real(y), 240);
+  return this->world.collide(robot);
 }
 
-void Astar::debug(Node *source, Node *target) {
-  Node *cursor = target;
-
-  initscr();
-  start_color();
-  init_pair(1, COLOR_RED,     COLOR_BLACK);
-  init_pair(2, COLOR_GREEN,   COLOR_BLACK);
-  init_pair(3, COLOR_WHITE,   COLOR_BLACK);
-  init_pair(4, COLOR_YELLOW,     COLOR_BLACK);
-
-  for (uint8_t x=0; x<26; x++) {
-    for (uint8_t y=0; y<17; y++) {
-      if (isObstacle(x, y)) {
-	  attron(COLOR_PAIR(4));
-	  mvprintw(1*x, 2*y, "o");
-	  mvprintw(1*x, 2*y + 50, "o");
-      }
-    }
-  }
-
-  for (uint8_t i=0; i<nbNode; i++) {
-    if (isObstacle(nodes[i].x(), nodes[i].y()))
-      attron(COLOR_PAIR(1));
-    else if (nodes[i].isClosed())
-      attron(COLOR_PAIR(3));
-    else
-      attron(COLOR_PAIR(2));
-    mvprintw(1*nodes[i].x(), 2*nodes[i].y(), "%d", nodes[i].cost() + distance(&nodes[i]));
-    mvprintw(1*nodes[i].x(), 2*nodes[i].y() + 50, "%d", nodes[i].cost());
-  }
-
-  while (cursor != source) {
-    attron(COLOR_PAIR(1));
-    mvprintw(1*cursor->x(), 2*cursor->y(), "%d", cursor->cost() + distance(cursor));
-    mvprintw(1*cursor->x(), 2*cursor->y() + 50, "%d", cursor->cost());
-    
-    cursor = &nodes[cursor->pred()];
-  }
-
-  refresh();
-  getch();
-  endwin();
+uint8_t Astar::convertX_real2simple(s32 x) {
+  return (x+130) / mesh;
 }
+
+uint8_t Astar::convertY_real2simple(s32 y) {
+  return (y+80) / mesh;
+}
+
+s32 Astar::convertX_simple2real(uint8_t x) {
+  return x*mesh - 125;
+}
+
+s32 Astar::convertY_simple2real(uint8_t y) {
+  return y*mesh - 75;
+}
+
