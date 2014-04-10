@@ -21,7 +21,7 @@ PidFilter pid_rt;
 PidFilter pid_ct;
 CurvTrajectoryManager traj(robot, odo, pos, pid_rt, pid_ct);
 
-FpgaUartStream rds_stream("rds_stream", UART_TX_1_DATA, UART_TX_1_OCUP, UART_RX_1_DATA, UART_RX_1_AVA);
+FpgaUartStream rds_io("rds_stream", UART_TX_1_DATA, UART_TX_1_OCUP, UART_RX_1_DATA, UART_RX_1_AVA);
 
 Vect<2, s32> _cmd(0,0);
 bool traj_mode = true;
@@ -36,7 +36,7 @@ void control_init(void) {
       traj.update();
     });
 
-  t.setPeriod(8000);
+  t.setPeriod(64000);
   t.setRepeat();
   sched.addTask(t);
 
@@ -182,7 +182,7 @@ int main(int argc, char* argv[]) {
   robot.lock();
 
   //io.setMode(Stream::BINARY);
-  rds_stream.setMode(Stream::BINARY);
+  rds_io.setMode(Stream::BINARY);
   file.setMode(Stream::BINARY);
   
   cmd.coord(0) = 0;
@@ -210,6 +210,48 @@ int main(int argc, char* argv[]) {
   // while(1) {
   //   io << "pos " << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
   // }
+
+  u8 num = 0;
+  u8 angle[2] = {0};
+  u8 dist[2] = {0};
+  while(1) {
+    io << "BEGIN ?\n";
+    u8 d;
+    io >> d;
+
+    io << "Waiting for rds...\n";
+    rds_io << 'p';
+    
+    rds_io >> num;
+    io << num << " robot(s) detected\n";
+
+    for(int i = 0 ; i < num ; i++) {
+      rds_io >> angle[i];
+      rds_io >> dist[i];
+    }
+
+    for(int i = 0 ; i < num ; i++) {
+      io << i << " angle " << angle[i] << "\n";
+      io << i << " dist " << dist[i] << "\n";
+    }
+
+    if(num) {
+      s16 a = ((s16)angle[0]*2);
+      if(180 < a) {
+	a -= 360;
+      }
+      io << "angle to reach : " << a << "\n";
+      
+      io << "GO ?\n";
+      u8 c;
+      io >> c;
+
+      traj.gotoAngle(-(odo.getValue().coord(1) >> 4) - a);
+      while(!traj.isEnded());
+    }
+  }
+
+  while(1);
 
   qramp_a.setFirstOrderLimit(15,15);
   qramp_a.setSecondOrderLimit(2,2);
