@@ -7,7 +7,7 @@
 AVERSIVE_ROOT=../../../aversive--
 
 ## Your project's object .o files
-OBJ=node.o astar.o main.o
+OBJ=node.o astar.o main.o my_world.o
 
 ## Your executable file name
 GEN_EXEC=robot

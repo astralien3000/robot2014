@@ -4,7 +4,7 @@
 #include <geometry/segment.hpp>
 #include <geometry/circle.hpp>
 #include <geometry/aabb.hpp>
-#include "../test/astar_onboard/my_world.hpp"
+#include "my_world.hpp"
 
 Astar::Astar(uint8_t mesh) {
   this->mesh = mesh;
@@ -132,7 +132,6 @@ Vect<2, s32>* Astar::makePath(Node *source, Node *target) {
   pathLengh = 0;
   Node *cursor = target;
   Node *previous = cursor;
-  Node *preprevious = previous;
   int8_t curDx = 0;
   int8_t curDy = 0;
 
@@ -151,7 +150,6 @@ Vect<2, s32>* Astar::makePath(Node *source, Node *target) {
     }
     curDx = cursor->x() - previous->x();
     curDy = cursor->y() - previous->y();
-    preprevious = previous;
     previous = cursor;
     cursor = &nodes[cursor->pred()];
   }

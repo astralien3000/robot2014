@@ -1,10 +1,10 @@
 #include "node.hpp"
-#include "aversive--/include/common/base/integer.hpp"
-#include "aversive--/include/common/math/saturate.hpp"
-#include "aversive--/include/common/math/vect.hpp"
-#include <iostream>
-
-//g++ -std=c++11 main_astar.cpp astar.cpp node.cpp -Iaversive--/include/common/ -lncurses -o astar
+#include <base/integer.hpp>
+#include <math/saturate.hpp>
+#include <math/vect.hpp>
+#include <geometry/world.hpp>
+#include <geometry/aabb.hpp>
+#include "my_world.hpp"
 
 class Astar {
 private:
