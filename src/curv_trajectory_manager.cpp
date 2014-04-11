@@ -49,15 +49,15 @@ void CurvTrajectoryManager::gotoCurvPosition(Vect<2, s32> pos, s32 pseudo_ray, b
   _dst = pos;
 
   Vect<2, s32> dir = _dst - _src;
-  io << "direction (" << dir.coord(0) << ", " << dir.coord(1) << ")\n";
+  //io << "direction (" << dir.coord(0) << ", " << dir.coord(1) << ")\n";
   Vect<2, s32> mid = _src + dir / 2;
-  io << "middle (" << mid.coord(0) << ", " << mid.coord(1) << ")\n";
+  //io << "middle (" << mid.coord(0) << ", " << mid.coord(1) << ")\n";
   Vect<2, s32> nor = (normal(dir) * 256) / dir.norm();
-  io << "normal (" << nor.coord(0) << ", " << nor.coord(1) << ")\n";
+  //io << "normal (" << nor.coord(0) << ", " << nor.coord(1) << ")\n";
 
   _cen = mid + (pseudo_ray * nor) / 256;
   _ray = (_src - _cen).norm();
-  io << "center (" << _cen.coord(0) << ", " << _cen.coord(1) << ")\n";
+  //io << "center (" << _cen.coord(0) << ", " << _cen.coord(1) << ")\n";
 
   Vect<2, s32> dst_ray = _dst - _cen;
   _dst_angle = Math::atan2<Math::DEGREE>(dst_ray.coord(1), dst_ray.coord(0));
@@ -93,7 +93,7 @@ void CurvTrajectoryManager::gotoCurvPosition(Vect<2, s32> pos, s32 pseudo_ray, b
   _dist_cmd = _odo.getValue().coord(0);
 
   _state = REACH_ANGLE;
-  io<< "Reach angle...\n";
+  //io<< "Reach angle...\n";
 }
 
 void CurvTrajectoryManager::update_reach_angle(void) {
@@ -101,7 +101,7 @@ void CurvTrajectoryManager::update_reach_angle(void) {
 
   if(Math::abs(_odo.getValue().coord(1) - deg2raw(_angle_cmd)) < 50) {
     _state = FOLLOW_TRAJECTORY;
-    io << "Follow trajectory...\n";
+    //io << "Follow trajectory...\n";
   }
 }
 
@@ -146,7 +146,7 @@ void CurvTrajectoryManager::update_follow_trajectory(void) {
       _angle_cmd = nearest_cmd_angle(raw2deg(_odo.getValue().coord(1)),-(_dst_angle + _way_angle));
     }
 
-    io << "Near end...\n";
+    //io << "Near end...\n";
   }
 }
 
@@ -155,6 +155,6 @@ void CurvTrajectoryManager::update_near_end(void) {
   
   if(Math::abs(_odo.getValue().coord(0) - _dist_cmd) < 20) {
     _state = STOP;
-    io << "Stop !\n";
+    //io << "Stop !\n";
   }
 }

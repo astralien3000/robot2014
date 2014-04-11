@@ -81,9 +81,6 @@ private:
   static void _update_stop(TrajectoryManager& t);
 };
 
-// TODO MOVE
-#include "devices.hpp"
-
 inline s32 nearest_cmd_angle(s32 angle, s32 cmd) {
   s32 res = (angle % 360);
   angle -= res;

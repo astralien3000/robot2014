@@ -13,8 +13,8 @@ TrajectoryManager::TrajectoryManager(Output< Vect<2, s32> >& robot, Input< Vect<
 }
 
 void TrajectoryManager::reset(void) {
-  _dist_cmd = odo.getValue().coord(0);
-  _angle_cmd = odo.getValue().coord(1)/10;
+  _dist_cmd = _odo.getValue().coord(0);
+  _angle_cmd = _odo.getValue().coord(1)/10;
   _state = STOP;
 }
 
