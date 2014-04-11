@@ -131,7 +131,7 @@ void match_init(bool red_side) {
   }
 
   io << "Face buffet\n";
-  traj.gotoAngle(A_INIT);
+  traj.gotoAngle(ANGLE_CALIB);
   while(!traj.isEnded());
 
   io << "Goto buffet\n";

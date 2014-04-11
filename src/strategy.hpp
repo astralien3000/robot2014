@@ -23,7 +23,7 @@ static const s32 YELLOW_DIST_2_INIT = -700;
 static const s32 YELLOW_A_INIT = 0;
 static const s32 YELLOW_X_INIT = (table_width - robot_height) / 2;
 static const s32 YELLOW_Y_INIT = (table_height - robot_height) / 2 - buffet_height + center_y_offset;
-static const s32 YELLOW_ANGLE_CALIB = 90;
+static const s32 YELLOW_ANGLE_CALIB = -90;
 
 // GENERAL
 
