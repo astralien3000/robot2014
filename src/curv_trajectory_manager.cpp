@@ -39,7 +39,7 @@ void CurvTrajectoryManager::gotoCurvPosition(Vect<2, s32> pos, s32 pseudo_ray, b
     _way_angle = 90;
   }
 
-  if(_state == NEAR_END_CURV || _state == NEAR_END_RECT) {
+  if(_state == NEAR_END) {
     _src = _dst;
   }
   else {
@@ -92,7 +92,7 @@ void CurvTrajectoryManager::gotoCurvPosition(Vect<2, s32> pos, s32 pseudo_ray, b
 
   _dist_cmd = _odo.getValue().coord(0);
 
-  _state = REACH_ANGLE_CURV;
+  _state = REACH_ANGLE;
   io<< "Reach angle...\n";
 }
 
@@ -100,7 +100,7 @@ void CurvTrajectoryManager::update_reach_angle(void) {
   _robot.setValue(Vect<2, s32>(_dist_cmd, deg2raw(_angle_cmd)));
 
   if(Math::abs(_odo.getValue().coord(1) - deg2raw(_angle_cmd)) < 50) {
-    _state = FOLLOW_TRAJECTORY_CURV;
+    _state = FOLLOW_TRAJECTORY;
     io << "Follow trajectory...\n";
   }
 }
@@ -135,7 +135,7 @@ void CurvTrajectoryManager::update_follow_trajectory(void) {
   _robot.setValue(Vect<2, s32>(_odo.getValue().coord(0) + dist_err, deg2raw(angle_cmd + angle_err - a)));
 
   if(Math::abs(_dst_angle - ray_angle) < 5) {
-    _state = NEAR_END_CURV;
+    _state = NEAR_END;
     
     _dist_cmd = _odo.getValue().coord(0) + pos_err.norm();
 

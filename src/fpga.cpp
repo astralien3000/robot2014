@@ -11,6 +11,7 @@
 #endif
 
 void fpga_reset(void) {
+#if defined (__AVR_ATmega128__)
   DDRB |= (1<<0);
   PORTB &= ~(1<<0);
   _delay_ms(500);
@@ -18,6 +19,7 @@ void fpga_reset(void) {
   _delay_ms(1);
   PORTB &= ~(1<<0);
   _delay_ms(1);
+#endif
 }
 
 void fpga_init(void) {
@@ -30,7 +32,9 @@ void fpga_init(void) {
 }
 
 void fpga_config(void) {
+#if defined (__AVR_ATmega128__)
   RELATION = 15100;
+#endif
 }
 
 ///////////////////////////////////////////////

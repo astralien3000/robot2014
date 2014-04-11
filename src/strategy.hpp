@@ -10,19 +10,25 @@ static const s32 buffet_height = 300;
 
 
 // RED
+static const s32 RED_DIST_INIT = -3000;
+static const s32 RED_DIST_2_INIT = 700;
 static const s32 RED_A_INIT = 0;
 static const s32 RED_X_INIT = -(table_width - robot_height) / 2;
 static const s32 RED_Y_INIT = (table_height - robot_height) / 2 - buffet_height + center_y_offset;
 static const s32 RED_ANGLE_CALIB = 90;
 
 // YELLOW
-static const s32 YELLOW_A_INIT = 180;
+static const s32 YELLOW_DIST_INIT = 3000;
+static const s32 YELLOW_DIST_2_INIT = -700;
+static const s32 YELLOW_A_INIT = 0;
 static const s32 YELLOW_X_INIT = (table_width - robot_height) / 2;
 static const s32 YELLOW_Y_INIT = (table_height - robot_height) / 2 - buffet_height + center_y_offset;
 static const s32 YELLOW_ANGLE_CALIB = 90;
 
 // GENERAL
 
+static s32 DIST_INIT = -3000;
+static s32 DIST_2_INIT = 700;
 static s32 A_INIT = 180;
 static s32 X_INIT = (table_width - robot_height) / 2;
 static s32 Y_INIT = (table_height - robot_height) / 2 - buffet_height;

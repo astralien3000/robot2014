@@ -8,7 +8,7 @@
 
 Astar::Astar(uint8_t mesh) {
   this->mesh = mesh;
-  this->mesh = 100;
+  this->mesh = 10;
   fill_world(this->world);
 }
 
@@ -16,22 +16,22 @@ Vect<2, s32>* Astar::getTrajectory(Vect<2, s32> &source, Vect<2, s32> &target) {
   this->targetX_real = target[0];
   this->targetY_real = target[1];
 
-  if (source[0] < -1250)
-    source[0] = -1250;
-  if (source[0] > 1250)
-    source[0] = 1250;
-  if (source[1] < -750)
-    source[1] = -750;
-  if (source[1] > 750)
-    source[1] = 750;
-    if (target[0] < -1250)
-    target[0] = -1250;
-  if (target[0] > 1250)
-    target[0] = 1250;
-  if (target[1] < -750)
-    target[1] = -750;
-  if (target[1] > 750)
-    target[1] = 750;
+  if (source[0] < -125)
+    source[0] = -125;
+  if (source[0] > 125)
+    source[0] = 125;
+  if (source[1] < -75)
+    source[1] = -75;
+  if (source[1] > 75)
+    source[1] = 75;
+    if (target[0] < -125)
+    target[0] = -125;
+  if (target[0] > 125)
+    target[0] = 125;
+  if (target[1] < -75)
+    target[1] = -75;
+  if (target[1] > 75)
+    target[1] = 75;
 
   this->beginX = convertX_real2simple(source[0]);
   this->beginY = convertY_real2simple(source[1]);
@@ -182,7 +182,8 @@ bool Astar::newNode(Node **node, uint8_t x, uint8_t y) {
 bool Astar::isObstacle(uint8_t x, uint8_t y) {
   if (x>25 || y>15)
     return true;
-  Circle robot(convertX_simple2real(x), convertY_simple2real(y), 240);
+  return false;
+  Circle robot(10*convertX_simple2real(x), 10*convertY_simple2real(y), 240);
   return this->world.collide(robot);
 }
 

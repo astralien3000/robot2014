@@ -3,7 +3,7 @@
 
 TrajectoryManager::TrajectoryManager(Output< Vect<2, s32> >& robot, Input< Vect<2, s32> >& odo, Input< Vect<2, s32> >& pos)
   : _robot(robot), _pos(pos), _odo(odo), 
-    _state(STOP), _mod(FASTER) {
+    _mod(FASTER), _state(STOP) {
 
   for(s16 i = 0 ; i < MAX_STATES ; i++) {
     _state_handlers[i] = 0;

@@ -84,7 +84,6 @@ private:
 // TODO MOVE
 #include "devices.hpp"
 
-
 inline s32 nearest_cmd_angle(s32 angle, s32 cmd) {
   s32 res = (angle % 360);
   angle -= res;
@@ -99,22 +98,5 @@ inline s32 nearest_cmd_angle(s32 angle, s32 cmd) {
 
   return angle + cmd;
 }
-
-#warning "TODO : REMOVE THIS !!!"
-#define REACH_ANGLE_RECT REACH_ANGLE
-#define REACH_ANGLE_CURV REACH_ANGLE
-
-#define NEAR_END_RECT NEAR_END
-#define NEAR_END_CURV NEAR_END
-
-#define FOLLOW_TRAJECTORY_RECT FOLLOW_TRAJECTORY
-#define FOLLOW_TRAJECTORY_CURV FOLLOW_TRAJECTORY
-
-#define update_reach_angle_rect update_reach_angle
-#define update_reach_angle_curv update_reach_angle
-#define update_follow_trajectory_rect update_follow_trajectory
-#define update_follow_trajectory_curv update_follow_trajectory
-#define update_near_end_rect update_near_end
-#define update_near_end_curv update_near_end
 
 #endif//TRAJECTORY_MANAGER_HPP

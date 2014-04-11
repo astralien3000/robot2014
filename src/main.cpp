@@ -65,7 +65,7 @@ void set_angle(s32 new_angle) {
   s32 new_zero = new_angle - old_angle;
   //s32 dist = odo.getValue().coord(0);
 
-  s32 cur_dist = odo.getValue().coord(0);
+  //s32 cur_dist = odo.getValue().coord(0);
 
   io << "Show zero\n";
   traj.gotoAngle(new_zero);
@@ -93,16 +93,16 @@ enum CoordCalib {
   Y = 1
 };
 
-void goto_wall(void) {
+void goto_wall(s32 dist) {
   io << "goto wall\n";
 
-  traj.gotoDistance(-3000);
+  traj.gotoDistance(dist);
 
   while(!robot.getValue());
 
   io << "wall touched\n";
   
-  traj.gotoDistance(-20);
+  traj.gotoDistance(-dist/100);
 
   robot.unlock();
 
@@ -119,23 +119,23 @@ void match_init(bool red_side) {
   traj_mode = false;
 
   io << "Goto wall\n";
-  goto_wall();
+  goto_wall(DIST_INIT);
   io << "Reset X and angle\n";
   set_angle(A_INIT);
   pos.setX(X_INIT);
   
   io << "Go far from the wall\n";
-  traj.gotoDistance(700);
+  traj.gotoDistance(DIST_2_INIT);
   while(!traj.isEnded()) {
     robot.unlock();
   }
 
   io << "Face buffet\n";
-  traj.gotoAngle(-90);
+  traj.gotoAngle(A_INIT);
   while(!traj.isEnded());
 
   io << "Goto buffet\n";
-  goto_wall();
+  goto_wall(-3000);
   
   io << "Reset Y\n";
   pos.setY(Y_INIT);
@@ -152,6 +152,8 @@ void match_init(bool red_side) {
 void side_init(bool red_side) {
   if(red_side) {
     io << "Init RED side\n";
+    DIST_INIT = RED_DIST_INIT;
+    DIST_2_INIT = RED_DIST_2_INIT;
     A_INIT = RED_A_INIT;
     X_INIT = RED_X_INIT;
     Y_INIT = RED_Y_INIT;
@@ -159,6 +161,8 @@ void side_init(bool red_side) {
   }
   else {
     io << "Init YELLOW side\n";
+    DIST_INIT = YELLOW_DIST_INIT;
+    DIST_2_INIT = YELLOW_DIST_2_INIT;
     A_INIT = YELLOW_A_INIT;
     X_INIT = YELLOW_X_INIT;
     Y_INIT = YELLOW_Y_INIT;
@@ -203,56 +207,6 @@ int main(int argc, char* argv[]) {
 
   robot.unlock();
 
-  // Init
-  //pwm bas 1300
-  //pwm haut 490
-
-  // while(1) {
-  //   io << "pos " << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
-  // }
-
-  u8 num = 0;
-  u8 angle[2] = {0};
-  u8 dist[2] = {0};
-  while(1) {
-    io << "BEGIN ?\n";
-    u8 d;
-    io >> d;
-
-    io << "Waiting for rds...\n";
-    rds_io << 'p';
-    
-    rds_io >> num;
-    io << num << " robot(s) detected\n";
-
-    for(int i = 0 ; i < num ; i++) {
-      rds_io >> angle[i];
-      rds_io >> dist[i];
-    }
-
-    for(int i = 0 ; i < num ; i++) {
-      io << i << " angle " << angle[i] << "\n";
-      io << i << " dist " << dist[i] << "\n";
-    }
-
-    if(num) {
-      s16 a = ((s16)angle[0]*2);
-      if(180 < a) {
-	a -= 360;
-      }
-      io << "angle to reach : " << a << "\n";
-      
-      io << "GO ?\n";
-      u8 c;
-      io >> c;
-
-      traj.gotoAngle(-(odo.getValue().coord(1) >> 4) - a);
-      while(!traj.isEnded());
-    }
-  }
-
-  while(1);
-
   qramp_a.setFirstOrderLimit(15,15);
   qramp_a.setSecondOrderLimit(2,2);
 
@@ -267,8 +221,8 @@ int main(int argc, char* argv[]) {
     io >> dummy;
   }
 
-  side_init(true);
-  match_init(true);
+  side_init(dummy==1);
+  match_init(dummy==1);
   
   robot.lock();
   io << "Place me please <3\n";
@@ -308,354 +262,7 @@ int main(int argc, char* argv[]) {
     robot.unlock();
   } 
 
-  // set_angle(90);
-  // traj.setMode(TrajectoryManager::BACKWARD);
-  // traj.gotoPosition(Vect<2, s32>(500, 0));
-  // while(!traj.isEnded());
-  
-
-  // traj.setMode(TrajectoryManager::FASTER);
-  // s32 x = 0;
-  // s32 y = 0;
-  // while(1) {
-  //   s16 dummy = 0;
-  //   while(!dummy) {
-  //     io << "GO ?\n";
-  //     io >> dummy;
-  //     io << dummy << "\n";
-  //     io << "pos " << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
-  //   }
-
-  //   io << "X[" << x << "] = ";
-  //   io >> x;
-  //   io << x << "\n";
-
-  //   io << "Y[" << y << "] = ";
-  //   io >> y;
-  //   io << y << "\n";
-
-  //   traj.gotoPosition(Vect<2, s32>(x, y));
-
-  //   while(!traj.isEnded()) {
-  //     //io << MOT_L << " " << MOT_R << "\n";
-  //     io << "pos " << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
-  //   }
-  // }
-
-  // s16 dummy = 0;
-  // while(!dummy) {
-  //   io << "GO ?\n";
-  //   io >> dummy;
-  // }
-
-  // traj.setMode(TrajectoryManager::FORWARD);
-  // traj.gotoCurvPosition(Vect<2, s32>(0, 500), 0, false);
-  // //traj.gotoPosition(Vect<2, s32>(0, 500));
-  // while(!traj.isEnded());
-
-  // io << "pos " << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
-
-  // traj.setMode(TrajectoryManager::BACKWARD);
-  // traj.gotoCurvPosition(Vect<2, s32>(0, 0), 0, true);
-  // //traj.gotoPosition(Vect<2, s32>(0, 500));
-  // while(!traj.isEnded());
-
-  // io << "pos " << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
-  // while(1) {
-  //   io >> dummy;
-  //   io << "angle " << (odo.getValue().coord(0) >> 4) << "\n";
-  // }
-
-  // traj.setMode(TrajectoryManager::BACKWARD);
-  // traj.gotoCurvPosition(Vect<2, s32>(1250, -250), -250, false);
-  // while(!traj.isEnded());
-
-  // traj.setMode(TrajectoryManager::BACKWARD);
-  // traj.gotoPosition(Vect<2, s32>(1250, -600));
-  // while(!traj.isEnded());
-
-  // traj.gotoPosition(Vect<2, s32>(-400, -400));
-  // while(!traj.isEnded());
-
-  // traj.gotoPosition(Vect<2, s32>(-400, 0));
-  // while(!traj.isEnded());
-
-  // traj.gotoPosition(Vect<2, s32>(0, -400));
-  // while(!traj.isEnded());
-
-  // traj.gotoPosition(Vect<2, s32>(0, 0));
-  // while(!traj.isEnded());
-
-  /// Test trajectory
-  // robot.lock();
-  // while(1) {
-  //   dummy = 0;
-  //   while(!dummy) {
-  //     io << "GO ?\n";
-  //     io >> dummy;
-  //     io << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
-  //   }
-    
-  //   trajectory_reset();
-  //   robot.unlock();
-  //   traj.gotoPosition(Vect<2, s32>(0, 0));
-  //   while(!traj.isEnded()) {
-  //     //io << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
-  //   }
-  //   robot.lock();
-  // }
-
-  /// Test asserv
-  // while(1) {
-  //   dummy = 0;
-  //   while(!dummy) {
-  //     cmd_l = 0;
-  //     cmd_r = 0;
-
-  //     io << "GO ?\n";
-  //     io >> dummy;
-  //     io << pid_l.lastOut() << "\n";
-  //   }
-  //   io << "OK GO ! GO ! GO !\n";
-    
-  //   if(dummy == 1) {
-  //     cmd_l = 1000;
-  //     cmd_r = 1000;
-  //     _cmd = Vect<2,s32>(500, 0);
-  //   }    
-  //   else if(dummy == 2) {
-  //     cmd_l = -1000;
-  //     cmd_r = -1000;
-  //     _cmd = Vect<2,s32>(0, 0);
-  //   }    
-  //   else if(dummy == 3) {
-  //     _cmd = Vect<2,s32>(0, -900);
-  //   }    
-  //   else if(dummy == 4) {
-  //     _cmd = Vect<2,s32>(0, 900);
-  //   }    
-  //   else if(dummy == 5) {
-  //     _cmd = Vect<2,s32>(400, 900);
-  //   }    
-
-  //   dummy = 0;
-  //   io << "STOP ?\n";
-  //   io >> dummy;
-  // }
-
-  // u16 pwm = 0;
-  // while(1) {
-  //   io << "pwm ?\n";
-  //   io >> pwm;
-  //   io << pwm << "\n";
-  //   SERVO1 = pwm;
-  //   SERVO2 = pwm;
-  //   SERVO3 = pwm;
-  //   SERVO4 = pwm;
-  //   SERVO5 = pwm;
-  //   SERVO6 = pwm;
-  //   SERVO7 = pwm;
-  //   SERVO8 = pwm;
-  //   SERVO9 = pwm;
-  //   SERVO10 = pwm;
-  //   SERVO11 = pwm;
-  //   SERVO12 = pwm;
-  //   SERVO13 = pwm;
-  //   SERVO14 = pwm;
-  //   SERVO15 = pwm;
-  //   SERVO16 = pwm;
-  // }
-
-  // while(1) {
-  //   u8 c = 0;
-  //   //while(!UART_RX_1_AVA);
-  //   //c = UART_RX_1_DATA;
-  //   rds_stream >> c;
-
-  //   rds_stream << c << "\n";
-  //   //UART_TX_1_DATA = c+1;
-  //   //_delay_ms(500);
-  // }
-
-  // /// Test RDS
-  // while(1) {
-  //   u8 rds_num = 0;
-  //   u8 rds_angle[2] = {0,0};
-  //   u8 rds_dist[2] = {0,0};
-  //   s16 angle[2] = {0,0};
-  //   s16 dist[2] = {0,0};
-
-  //   Uart<0>::instance().send('p');
-
-  //   Uart<0>::instance().recv(rds_num);
-  //   for(u8 nb=0; nb<rds_num; nb++) {
-  //     Uart<0>::instance().recv(rds_angle[nb]);
-  //     Uart<0>::instance().recv(rds_dist[nb]);
-  //   }
-  //   bool send = false;
-  //   if (send) {
-  //     _delay_ms(2);
-  //     Uart<0>::instance().send(rds_num);
-  //     _delay_ms(2);
-  //   }
-    
-  //   if(rds_num) {
-  //     if (send) {
-  // 	Uart<0>::instance().send(rds_angle[0]);
-  // 	_delay_ms(2);
-  // 	Uart<0>::instance().send(rds_dist[0]);
-  // 	_delay_ms(2);
-  //     }
-
-      
-  //     angle[0] = (((s16)rds_angle[0]) * 2);
-  //     if(180 < angle[0]) {
-  // 	angle[0] -= 360;
-  //     }
-  //     dist[0] = rds_dist[0];
-  //     u8 target = 0;
-  //     if (rds_num == 2) {
-  // 	angle[1] = (((s16)rds_angle[1]) * 2);
-  // 	if(180 < angle[1]) {
-  // 	  angle[1] -= 360;
-  // 	}
-  // 	dist[1] = rds_dist[1];
-  // 	if (rds_dist[1] > rds_dist[0]) {
-  // 	  target = 1;
-  // 	}
-  //     }
-      
-  //     _cmd.coord(1) += angle[target]*10;
-  //     while((odo.getValue().coord(1)/64) != (_cmd.coord(1)/64));
-  //     _cmd.coord(0) += dist[target]*10 -400;
-  //     while((odo.getValue().coord(0)/256) != (_cmd.coord(0)/256));
-  //     _delay_ms(500);
-  //   }
-  // }
-
-  // s16 side = 0;
-  // while(!dummy) {
-  //   io << "side ?\n";
-  //   io >> side;
-  //   io << "side : " << side << "\n";
-  //   side_init(side);
-  //   io << "begin calibrate ?\n";
-  //   io >> dummy;
-  // }
-
-  // qramp_a.setFirstOrderLimit(5,5);
-  // qramp_d.setFirstOrderLimit(5,5);
-  
-  // match_init(side);
-
-  // pid_d.setMaxIntegral(0);
-  // pid_a.setMaxIntegral(0);
-
-  // dummy = 0;
-  // while(dummy) {
-  //   io >> dummy;
-  // }
-
-  // robot.lock();
-  // // The user can place the robot at the spawn
-  // io << "Place me please <3 \n";
-  // dummy = 0;
-
-  // while(!dummy) {
-  //   io >> dummy;
-  //   io << _cmd.coord(0) << " " << _cmd.coord(1) << "\n";
-  //   _cmd = odo.getValue();
-  // }
-
-  // traj.reset();
-  // traj_mode = true;
-  // pid_a.reset();
-  // pid_d.reset();
-  // robot.unlock();
-
-  // qramp_a.setFirstOrderLimit(10,10);
-  // qramp_d.setFirstOrderLimit(10,10);
-
-  // traj.gotoPosition(Vect<2, s32>(-800, 200));
-  // robot.unlock();
-  // while(!traj.isEnded()) {
-  //   robot.unlock();
-  // }
-
-  // pid_d.setMaxIntegral(1000);
-  // pid_a.setMaxIntegral(1000);
-
-  // traj.gotoPosition(Vect<2, s32>(0, 450));
-  // while(!traj.isEnded());
-
-  // traj.gotoPosition(Vect<2, s32>(0, 1200));
-  // while(!robot.getValue());
-
-  // traj_mode = false;
-  // s32 new_dist = odo.getValue().coord(0) - 200;
-  // _cmd = Vect<2, s32>(new_dist, odo.getValue().coord(1));
-
-  // while(odo.getValue().coord(0) > new_dist + 150) {
-  //   robot.unlock();
-  // }
-
-  // while(odo.getValue().coord(0) > new_dist + 20);
-
-  // traj.reset();
-  // traj_mode = true;
-
-  // traj.gotoPosition(Vect<2, s32>(-700, 0));
-
-  while(1);
-
-  // while(1) {
-  //   s16 dummy = 0;
-  //   while(!dummy) {
-  //     io >> dummy;
-  //   }
-
-  //   traj.gotoPosition(Vect<2, s32>(1500, 0));
-  //   while(!traj.isEnded());
-  //   traj.gotoPosition(Vect<2, s32>(2000, -500), -500);
-  //   while(!traj.isEnded());
-  //   traj.gotoPosition(Vect<2, s32>(2000, -1000));
-  //   while(!traj.isEnded());
-  //   traj.gotoPosition(Vect<2, s32>(500, -1000));
-  //   while(!traj.isEnded());
-  //   traj.gotoPosition(Vect<2, s32>(0, -500), -500);
-  //   while(!traj.isEnded());
-  //   traj.gotoPosition(Vect<2, s32>(0, 0));
-  // }
-
-  while(Aversive::sync()) {
-    if(traj.isEnded()) {
-      //traj.gotoPosition(Vect<2, s32>(2000, -1000));
-    }
-
-    // if(traj.isEnded()) {
-    //   if(toggle) {
-    // 	traj.gotoPosition(Vect<2, s32>(0, 0), 0);
-    //   }
-    //   else {
-    // 	traj.gotoPosition(Vect<2, s32>(0, -800), 0);
-    //   }
-    //   toggle = !toggle;
-    //   //cmd_trajectory();
-    // }
-
-    //cmd_print_infos();
-    //cmd_print_pos();
-    //cmd_pid_set();
-    //cmd_dist_angle();
-    //cmd_odo_config();
-    
-    if(robot.getValue()) {
-      io << "Skating !!! \n";
-      s32 dummy;
-      io >> dummy;
-      robot.unlock();
-    }
-  }
+  while(Aversive::sync());
 
   Aversive::setReturnCode(0);
   return Aversive::exit();
