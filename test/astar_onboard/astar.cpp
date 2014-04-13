@@ -8,7 +8,7 @@
 
 Astar::Astar(uint8_t mesh) {
   this->mesh = mesh;
-  this->mesh = 10;
+  this->mesh = 100;
   fill_world(this->world);
 }
 
@@ -16,22 +16,22 @@ Vect<2, s32>* Astar::getTrajectory(Vect<2, s32> &source, Vect<2, s32> &target) {
   this->targetX_real = target[0];
   this->targetY_real = target[1];
 
-  if (source[0] < -125)
-    source[0] = -125;
-  if (source[0] > 125)
-    source[0] = 125;
-  if (source[1] < -75)
-    source[1] = -75;
-  if (source[1] > 75)
-    source[1] = 75;
-    if (target[0] < -125)
-    target[0] = -125;
-  if (target[0] > 125)
-    target[0] = 125;
-  if (target[1] < -75)
-    target[1] = -75;
-  if (target[1] > 75)
-    target[1] = 75;
+  if (source[0] < -1250)
+    source[0] = -1250;
+  if (source[0] > 1250)
+    source[0] = 1250;
+  if (source[1] < -750)
+    source[1] = -750;
+  if (source[1] > 750)
+    source[1] = 750;
+    if (target[0] < -1250)
+    target[0] = -1250;
+  if (target[0] > 1250)
+    target[0] = 1250;
+  if (target[1] < -750)
+    target[1] = -750;
+  if (target[1] > 750)
+    target[1] = 750;
 
   this->beginX = convertX_real2simple(source[0]);
   this->beginY = convertY_real2simple(source[1]);
@@ -59,7 +59,7 @@ Vect<2, s32>* Astar::loop(void) {
   while (this->keepGoing(minNode)) {
     minVal = 255;
     for (uint8_t i=0; i<this->nbNode; i++) {
-      if (!(nodes[i].isClosed()) && (val = nodes[i].cost() + distance(&nodes[i])) <= minVal) {
+      if (!(nodes[i].isClosed()) && (val = nodes[i].cost() + distance(&nodes[i])) < minVal) {
 	minVal = val;
 	minNode = i;
       }
@@ -183,23 +183,23 @@ bool Astar::isObstacle(uint8_t x, uint8_t y) {
   if (x>25 || y>15)
     return true;
   return false;
-  Circle robot(10*convertX_simple2real(x), 10*convertY_simple2real(y), 240);
+  Circle robot(convertX_simple2real(x), convertY_simple2real(y), 240);
   return this->world.collide(robot);
 }
 
 uint8_t Astar::convertX_real2simple(s32 x) {
-  return (x+130) / mesh;
+  return (x+1300) / mesh;
 }
 
 uint8_t Astar::convertY_real2simple(s32 y) {
-  return (y+80) / mesh;
+  return (y+800) / mesh;
 }
 
 s32 Astar::convertX_simple2real(uint8_t x) {
-  return x*mesh - 125;
+  return x*mesh - 1250;
 }
 
 s32 Astar::convertY_simple2real(uint8_t y) {
-  return y*mesh - 75;
+  return y*mesh - 750;
 }
 

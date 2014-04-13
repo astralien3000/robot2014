@@ -1,6 +1,6 @@
 #include "node.hpp"
 
-Node::Node(void) : b(0), a(0) {}
+Node::Node(void) : a(0), b(0) {}
 
 void Node::init(void) {
   this->a = 0;

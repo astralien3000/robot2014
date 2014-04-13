@@ -16,8 +16,8 @@ private:
   uint8_t beginY;
   uint8_t targetX;
   uint8_t targetY;
-  uint8_t targetX_real;
-  uint8_t targetY_real;
+  int16_t targetX_real;
+  int16_t targetY_real;
   uint8_t mesh;
   uint8_t nbNode;
   Vect<2, s32>* loop(void);

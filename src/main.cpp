@@ -7,6 +7,7 @@
 #include <hardware/interrupts.hpp>
 #include <system/scheduler.hpp>
 #include "fpga.hpp"
+#include "astar.hpp"
 
 #include "curv_trajectory_manager.hpp"
 
@@ -152,24 +153,63 @@ void match_init(bool red_side) {
 void side_init(bool red_side) {
   if(red_side) {
     io << "Init RED side\n";
+
+    // Init
     DIST_INIT = RED_DIST_INIT;
     DIST_2_INIT = RED_DIST_2_INIT;
     A_INIT = RED_A_INIT;
     X_INIT = RED_X_INIT;
     Y_INIT = RED_Y_INIT;
     ANGLE_CALIB = RED_ANGLE_CALIB;
+
+    // Strategy
+    BEGIN_POINT = RED_BEGIN_POINT;
+    FIRST_FIRE_POINT = RED_FIRST_FIRE_POINT;
+    SECOND_FIRE_POINT = RED_SECOND_FIRE_POINT;
+    FRONT_FRESQ_POINT = RED_FRONT_FRESQ_POINT;
+    FRESQ_POINT = RED_FRESQ_POINT;
+
+    ADV_SECOND_FIRE_POINT = RED_ADV_SECOND_FIRE_POINT;
+    ADV_BEFORE_FIRST_POINT = RED_ADV_BEFORE_FIRST_POINT;
+    ADV_FIRST_FIRE_POINT = RED_ADV_FIRST_FIRE_POINT;
+
+    ADV_BEFORE_THIRD_POINT = RED_ADV_BEFORE_THIRD_POINT;
+    ADV_THIRD_FIRE_POINT = RED_ADV_THIRD_FIRE_POINT;
+    THIRD_FIRE_POINT = RED_THIRD_FIRE_POINT;
+
   }
   else {
     io << "Init YELLOW side\n";
+
+    // Init
     DIST_INIT = YELLOW_DIST_INIT;
     DIST_2_INIT = YELLOW_DIST_2_INIT;
     A_INIT = YELLOW_A_INIT;
     X_INIT = YELLOW_X_INIT;
     Y_INIT = YELLOW_Y_INIT;
     ANGLE_CALIB = YELLOW_ANGLE_CALIB;
+
+    // Strategy
+    BEGIN_POINT = YELLOW_BEGIN_POINT;
+    FIRST_FIRE_POINT = YELLOW_FIRST_FIRE_POINT;
+    SECOND_FIRE_POINT = YELLOW_SECOND_FIRE_POINT;
+    FRONT_FRESQ_POINT = YELLOW_FRONT_FRESQ_POINT;
+    FRESQ_POINT = YELLOW_FRESQ_POINT;
+
+    ADV_SECOND_FIRE_POINT = YELLOW_ADV_SECOND_FIRE_POINT;
+    ADV_BEFORE_FIRST_POINT = YELLOW_ADV_BEFORE_FIRST_POINT;
+    ADV_FIRST_FIRE_POINT = YELLOW_ADV_FIRST_FIRE_POINT;
+
+    ADV_BEFORE_THIRD_POINT = YELLOW_ADV_BEFORE_THIRD_POINT;
+    ADV_THIRD_FIRE_POINT = YELLOW_ADV_THIRD_FIRE_POINT;
+    THIRD_FIRE_POINT = YELLOW_THIRD_FIRE_POINT;
+
   }
 }
 
+#include <device/eirbot2014/rds.hpp>
+
+Rds rds("", rds_io);
 
 int main(int argc, char* argv[]) {
   (void)argc;
@@ -216,15 +256,86 @@ int main(int argc, char* argv[]) {
   traj.setMode(TrajectoryManager::FASTER);
 
   s16 dummy = 0;
-  while(!dummy) {
-    io << "GO ?\n";
-    io >> dummy;
-  }
+  io << "Side \n";
+  io >> dummy;
+  io << dummy << "\n";
 
   side_init(dummy==1);
   match_init(dummy==1);
-  
+
   robot.lock();
+
+  // while(!dummy) {
+  //   io << "GO ?\n";
+  //   io >> dummy;
+  //   io << dummy << "\n";
+
+  //   Vect<2, s32> adv_pos(0,0);
+
+  //   s16 go = 0;
+  //   while(!go) {
+  //     rds.update();
+  //     List<2, Vect<2, s32> > adv = rds.getValue();
+
+  //     io << adv.usedSpace() << "\n";
+  //     for(int i = 0 ; i < adv.usedSpace() ; i++) {
+  // 	io << "dist " << adv.get(i).coord(0) << "\n";
+  // 	io << "angle " << adv.get(i).coord(1) << "\n";
+  // 	s32 abs_angle = adv.get(i).coord(1) + (odo.getValue().coord(1) >> 4);
+  // 	s32 rel_x = (s32)(adv.get(i).coord(0) * Math::cos<Math::DEGREE, double>(abs_angle));
+  // 	s32 rel_y = (s32)(adv.get(i).coord(0) * Math::sin<Math::DEGREE, double>(abs_angle));
+
+  // 	s32 abs_x = pos.getValue().coord(0) + rel_x * 10;
+  // 	s32 abs_y = pos.getValue().coord(1) + rel_y * 10;
+
+  // 	io << "x " << abs_x << "\n";
+  // 	io << "y " << abs_y << "\n";
+  // 	adv_pos.coord(0) = abs_x;
+  // 	adv_pos.coord(1) = abs_y;
+  //     }
+
+  //     io << "Go ?\n";
+  //     io >> go;
+  //     io << go << "\n";
+
+  //   }
+
+
+  //   World<WORLD_SIZE, AABB> world;
+  //   Circle adv_shape(adv_pos, 500);
+  //   world.addShape(&adv_shape);
+
+  //   Astar astar(42, world);
+  //   Vect<2, s32> *path;
+  //   s32 targetX;
+  //   s32 targetY;
+  //   s32 nextX;
+  //   s32 nextY;
+
+  //   dummy = 0;
+  //   while (!dummy) {
+  //     io << "choose X then Y\n";
+  //     io >> targetX;
+  //     io >> targetY;
+  //     io << "going to " << targetX << " " << targetY << "\n";
+  //     path = astar.getTrajectory(pos.getValue(), Vect<2, s32>(targetX, targetY));
+  //     io << "GO ?\n";
+  //     io >> dummy;
+  //   }
+
+  //   for (uint8_t i = astar.getPathLengh(); i>0; i--) {
+  //     nextX = path[i-1][0];
+  //     nextY = path[i-1][1];
+  //     io << "goto " << nextX << " " << nextY << " ?\n";
+  //     robot.unlock();
+  //     traj.gotoPosition(Vect<2, s32>(nextX, nextY));
+  //     while(!traj.isEnded());
+  //     robot.lock();
+  //   }
+
+  //   world.removeShape(&adv_shape);
+  // }
+  
   io << "Place me please <3\n";
   io >> dummy;
 
@@ -236,6 +347,8 @@ int main(int argc, char* argv[]) {
 
   trajectory_reset();
   robot.unlock();
+
+  traj.gotoDistance(300);
 
   traj.gotoPosition(BEGIN_POINT);
   while(!traj.isEnded());
@@ -262,7 +375,60 @@ int main(int argc, char* argv[]) {
     robot.unlock();
   } 
 
-  while(Aversive::sync());
+  traj.setMode(TrajectoryManager::FASTER);
+  traj.gotoPosition(FRONT_FRESQ_POINT);
+  while(!robot.getValue());
+
+  traj.setMode(TrajectoryManager::FASTER);
+  traj.gotoPosition(ADV_SECOND_FIRE_POINT);
+  while(!robot.getValue());
+  
+  traj.gotoPosition(ADV_BEFORE_FIRST_POINT);
+  while(!robot.getValue());
+
+  traj.gotoPosition(ADV_FIRST_FIRE_POINT);
+  while(!robot.getValue());
+
+  traj.gotoPosition(ADV_BEFORE_THIRD_POINT);
+  while(!robot.getValue());
+
+  traj.gotoPosition(ADV_THIRD_FIRE_POINT);
+  while(!robot.getValue());
+
+  traj.gotoPosition(THIRD_FIRE_POINT);
+  while(!robot.getValue());
+  
+  while(1);
+
+  // World<WORLD_SIZE, AABB> world;
+  // Astar astar(42, world);
+  // Vect<2, s32> *path;
+  // s32 targetX;
+  // s32 targetY;
+  // s32 nextX;
+  // s32 nextY;
+  // while(Aversive::sync()) {
+  //   dummy = 0;
+  //   while (!dummy) {
+  //     io << "choose X then Y\n";
+  //     io >> targetX;
+  //     io >> targetY;
+  //     io << "going to " << targetX << " " << targetY << "\n";
+  //     path = astar.getTrajectory(pos.getValue(), Vect<2, s32>(targetX, targetY));
+  //     io << "GO ?\n";
+  //     io >> dummy;
+  //   }
+
+  //   for (uint8_t i = astar.getPathLengh(); i>0; i--) {
+  //     nextX = path[i-1][0];
+  //     nextY = path[i-1][1];
+  //     io << "goto " << nextX << " " << nextY << " ?\n";
+  //     robot.unlock();
+  //     traj.gotoPosition(Vect<2, s32>(nextX, nextY));
+  //     while(!traj.isEnded());
+  //     robot.lock();
+  //   }
+  // }
 
   Aversive::setReturnCode(0);
   return Aversive::exit();

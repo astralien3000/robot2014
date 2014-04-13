@@ -8,7 +8,7 @@
 
 class Astar {
 private:
-  World<WORLD_SIZE, AABB> world;
+  World<WORLD_SIZE, AABB>& world;
   Node nodes[Node::MAX_NB];
   Vect<2, s32> path[8];
   uint8_t pathLengh;
@@ -16,8 +16,8 @@ private:
   uint8_t beginY;
   uint8_t targetX;
   uint8_t targetY;
-  uint8_t targetX_real;
-  uint8_t targetY_real;
+  int16_t targetX_real;
+  int16_t targetY_real;
   uint8_t mesh;
   uint8_t nbNode;
   Vect<2, s32>* loop(void);
@@ -33,7 +33,7 @@ private:
   s32 convertX_simple2real(uint8_t x);
   s32 convertY_simple2real(uint8_t y);
 public:
-  Astar(uint8_t mesh);
-  Vect<2, s32>* getTrajectory(Vect<2, s32> &source, Vect<2, s32> &target);
+  Astar(uint8_t mesh, World<WORLD_SIZE, AABB>& w);
+  Vect<2, s32>* getTrajectory(Vect<2, s32> &&source, Vect<2, s32> &&target);
   uint8_t getPathLengh(void);
 };

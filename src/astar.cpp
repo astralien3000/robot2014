@@ -6,13 +6,14 @@
 #include <geometry/aabb.hpp>
 #include "my_world.hpp"
 
-Astar::Astar(uint8_t mesh) {
+Astar::Astar(uint8_t mesh, World<WORLD_SIZE, AABB>& w)
+  : world(w) {
   this->mesh = mesh;
   this->mesh = 100;
   fill_world(this->world);
 }
 
-Vect<2, s32>* Astar::getTrajectory(Vect<2, s32> &source, Vect<2, s32> &target) {
+Vect<2, s32>* Astar::getTrajectory(Vect<2, s32> &&source, Vect<2, s32> &&target) {
   this->targetX_real = target[0];
   this->targetY_real = target[1];
 
@@ -40,6 +41,7 @@ Vect<2, s32>* Astar::getTrajectory(Vect<2, s32> &source, Vect<2, s32> &target) {
   if (isObstacle(targetX, targetY))
     return 0;
 
+  nodes[0].init();
   nodes[0].setXY(beginX, beginY);
   nodes[0].setCost(0);
   nodes[0].setPred(0);
@@ -59,7 +61,7 @@ Vect<2, s32>* Astar::loop(void) {
   while (this->keepGoing(minNode)) {
     minVal = 255;
     for (uint8_t i=0; i<this->nbNode; i++) {
-      if (!(nodes[i].isClosed()) && (val = nodes[i].cost() + distance(&nodes[i])) <= minVal) {
+      if (!(nodes[i].isClosed()) && (val = nodes[i].cost() + distance(&nodes[i])) < minVal) {
 	minVal = val;
 	minNode = i;
       }
@@ -187,18 +189,18 @@ bool Astar::isObstacle(uint8_t x, uint8_t y) {
 }
 
 uint8_t Astar::convertX_real2simple(s32 x) {
-  return (x+130) / mesh;
+  return (x+1300) / mesh;
 }
 
 uint8_t Astar::convertY_real2simple(s32 y) {
-  return (y+80) / mesh;
+  return (y+800) / mesh;
 }
 
 s32 Astar::convertX_simple2real(uint8_t x) {
-  return x*mesh - 125;
+  return x*mesh - 1250;
 }
 
 s32 Astar::convertY_simple2real(uint8_t y) {
-  return y*mesh - 75;
+  return y*mesh - 750;
 }
 
