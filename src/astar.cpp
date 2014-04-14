@@ -34,6 +34,7 @@ Vect<2, s32>* Astar::getTrajectory(Vect<2, s32> &&source, Vect<2, s32> &&target)
   if (target[1] > 750)
     target[1] = 750;
 
+  this->pathLengh = 0;
   this->beginX = convertX_real2simple(source[0]);
   this->beginY = convertY_real2simple(source[1]);
   this->targetX = convertX_real2simple(target[0]);
@@ -184,7 +185,7 @@ bool Astar::newNode(Node **node, uint8_t x, uint8_t y) {
 bool Astar::isObstacle(uint8_t x, uint8_t y) {
   if (x>25 || y>15)
     return true;
-  Circle robot(convertX_simple2real(x), convertY_simple2real(y), 240);
+  Circle robot(convertX_simple2real(x), convertY_simple2real(y), 250);
   return this->world.collide(robot);
 }
 
