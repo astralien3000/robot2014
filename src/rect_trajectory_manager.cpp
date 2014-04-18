@@ -122,7 +122,8 @@ void RectTrajectoryManager::update_follow_trajectory(void) {
 
   _robot.setValue(Vect<2, s32>(_odo.getValue().coord(0) + dist_err, deg2raw(_angle_cmd - angle_err)));
 
-  if(scal(pos_err, pos_err) < 10000 + Math::abs(ndiff)) {
+  //if(scal(pos_err, pos_err) < 10000 + Math::abs(ndiff)) {
+  if(scal(pos_err, pos_err) < 10000) {
     _state = NEAR_END;
 
     if(_backward) {
