@@ -225,14 +225,15 @@ void check_for_collision(void) {
   rds.update();
   List<2, Vect<2, s32> > adv = rds.getValue();
   bool can_unlock = true;
+  io << "detected : " << adv.usedSpace() << "\n";
   for (int i=0; i<adv.usedSpace(); i++) {
     if (adv.get(i).coord(0) < 60 &&
-	(adv.get(i).coord(1) < 40 || adv.get(i).coord(1) > 320)) {
+	(adv.get(i).coord(1) < 60 || adv.get(i).coord(1) > 300)) {
       robot.lock();
       can_unlock = false;
     }
   }
-  if (can_unlock) {
+  if (robot.getValue() && can_unlock) {
     trajectory_reset();
     robot.unlock();
   }
@@ -390,10 +391,10 @@ int main(int argc, char* argv[]) {
   // qramp_d.setFirstOrderLimit(10,10);
   // qramp_d.setSecondOrderLimit(2,2);
 
-  qramp_a.setFirstOrderLimit(70, 70);
+  qramp_a.setFirstOrderLimit(40,40);
   qramp_a.setSecondOrderLimit(4,4);
 
-  qramp_d.setFirstOrderLimit(35,35);
+  qramp_d.setFirstOrderLimit(13,13);
   qramp_d.setSecondOrderLimit(2,2);
 
   traj.gotoDistance(300);
@@ -462,11 +463,11 @@ int main(int argc, char* argv[]) {
     robot.unlock();
   }
 
-  qramp_a.setFirstOrderLimit(70, 70);
-  qramp_a.setSecondOrderLimit(8,8);
+  qramp_a.setFirstOrderLimit(40,40);
+  qramp_a.setSecondOrderLimit(4,4);
   
-  qramp_d.setFirstOrderLimit(35,35);
-  qramp_d.setSecondOrderLimit(2,3);
+  qramp_d.setFirstOrderLimit(13,13);
+  qramp_d.setSecondOrderLimit(2,2);
 
   print_pos();
 
