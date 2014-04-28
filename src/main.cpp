@@ -221,6 +221,23 @@ void print_pos(void) {
 
 Rds rds("", rds_io);
 
+void check_for_collision(void) {
+  rds.update();
+  List<2, Vect<2, s32> > adv = rds.getValue();
+  bool can_unlock = true;
+  for (int i=0; i<adv.usedSpace(); i++) {
+    if (adv.get(i).coord(0) < 60 &&
+	(adv.get(i).coord(1) < 40 || adv.get(i).coord(1) > 320)) {
+      robot.lock();
+      can_unlock = false;
+    }
+  }
+  if (can_unlock) {
+    trajectory_reset();
+    robot.unlock();
+  }
+}
+
 int main(int argc, char* argv[]) {
   (void)argc;
   (void)argv;
@@ -380,7 +397,9 @@ int main(int argc, char* argv[]) {
   qramp_d.setSecondOrderLimit(2,2);
 
   traj.gotoDistance(300);
-  while(!traj.isEnded());
+  while(!traj.isEnded()) {
+    check_for_collision();
+  }
 
   // traj.setMode(TrajectoryManager::FASTER);
   
@@ -408,16 +427,22 @@ int main(int argc, char* argv[]) {
 
   traj.setMode(TrajectoryManager::FASTER);
   traj.gotoPosition(FIRST_FIRE_POINT);
-  while(!traj.isEnded());
+  while(!traj.isEnded()) {
+    check_for_collision();
+  }
 
   traj.gotoPosition(BEGIN_POINT);
-  while(!traj.isEnded());
+  while(!traj.isEnded()) {
+    check_for_collision();
+  }
 
   // traj.gotoPosition(SECOND_FIRE_POINT);
   // while(!traj.isEnded());  
 
   traj.gotoPosition(FRONT_FRESQ_POINT);
-  while(!traj.isEnded());  
+  while(!traj.isEnded()) {
+    check_for_collision();
+  }
 
   qramp_a.setFirstOrderLimit(20,20);
   qramp_a.setSecondOrderLimit(1,1);
@@ -435,7 +460,7 @@ int main(int argc, char* argv[]) {
   traj.gotoDistance(300);
   while(!traj.isEnded()) {
     robot.unlock();
-  } 
+  }
 
   qramp_a.setFirstOrderLimit(70, 70);
   qramp_a.setSecondOrderLimit(8,8);
@@ -447,7 +472,9 @@ int main(int argc, char* argv[]) {
 
   traj.setMode(TrajectoryManager::FASTER);
   traj.gotoPosition(FRONT_FRESQ_POINT);
-  while(!traj.isEnded());
+  while(!traj.isEnded()) {
+    check_for_collision();
+  }
 
   // io << "front fresq -->";
   // print_pos();
@@ -466,6 +493,7 @@ int main(int argc, char* argv[]) {
 
   traj.gotoPosition(ADV_BEFORE_FIRST_POINT);
   while(!traj.isEnded()) {
+    check_for_collision();
     if(robot.getValue()) {
       io << "skating !! -->";
       print_pos();
@@ -476,17 +504,23 @@ int main(int argc, char* argv[]) {
   // while(!traj.isEnded());
 
   traj.gotoPosition(ADV_BEFORE_THIRD_POINT);
-  while(!traj.isEnded());
+  while(!traj.isEnded()) {
+    check_for_collision();
+  }
 
   // traj.gotoPosition(ADV_THIRD_FIRE_POINT);
   // while(!traj.isEnded());
 
   traj.gotoPosition(THIRD_FIRE_POINT);
-  while(!traj.isEnded());
+  while(!traj.isEnded()) {
+    check_for_collision();
+  }
 
 
   traj.gotoPosition(BEGIN_POINT);
-  while(!traj.isEnded());
+  while(!traj.isEnded()) {
+    check_for_collision();
+  }
   
   while(1);
 
