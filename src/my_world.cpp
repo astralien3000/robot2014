@@ -9,7 +9,8 @@ Segment right(1500, 1050, 1500, -950);
 AABB red_basket(400, 750, 700, 300);
 AABB yellow_basket(-1100, 750, 700, 300);
 
-Circle center_heart(0, 0, 150);
+//Circle center_heart(0, 0, 150);
+Circle center_heart(0, 0, 250);
 Circle left_heart(-1500, -950, 250);
 Circle right_heart(1500, -950, 250);
 

@@ -1,3 +1,6 @@
+#ifndef RECT_TRAJECTORY_MANAGER_HPP
+#define RECT_TRAJECTORY_MANAGER_HPP
+
 #include "trajectory_manager.hpp"
 
 class RectTrajectoryManager : public TrajectoryManager {
@@ -55,3 +58,5 @@ private:
   static void _update_follow_trajectory_dist(TrajectoryManager&);
   static void _update_near_end(TrajectoryManager&);
 };
+
+#endif//RECT_TRAJECTORY_MANAGER_HPP

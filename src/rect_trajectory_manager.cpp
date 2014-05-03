@@ -102,7 +102,7 @@ void RectTrajectoryManager::gotoPosition(Vect<2, s32> pos) {
 void RectTrajectoryManager::update_reach_angle(void) {
   _robot.setValue(Vect<2, s32>(_dist_cmd, deg2raw(_angle_cmd)));
 
-  if(Math::abs(raw2deg(_odo.getValue().coord(1)) - _angle_cmd) < 2 && Math::abs(_diff_a.doFilter(_odo.getValue().coord(1))) < 10) {
+  if(Math::abs(raw2deg(_odo.getValue().coord(1)) - _angle_cmd) < 4 && Math::abs(_diff_a.doFilter(_odo.getValue().coord(1))) < 15) {
     _state = FOLLOW_TRAJECTORY;
     //io << "Follow trajectory (rect)...\n";
   }

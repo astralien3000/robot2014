@@ -1,3 +1,6 @@
+#ifndef ASTAR_HPP
+#define ASTAR_HPP
+
 #include "node.hpp"
 #include <base/integer.hpp>
 #include <math/saturate.hpp>
@@ -37,3 +40,5 @@ public:
   Vect<2, s32>* getTrajectory(Vect<2, s32> &&source, Vect<2, s32> &&target);
   uint8_t getPathLengh(void);
 };
+
+#endif//ASTAR_HPP

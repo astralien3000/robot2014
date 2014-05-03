@@ -1,3 +1,6 @@
+#ifndef CURV_TRAJECTORY_MANAGER_HPP
+#define CURV_TRAJECTORY_MANAGER_HPP
+
 #include "rect_trajectory_manager.hpp"
 
 class CurvTrajectoryManager : public RectTrajectoryManager {
@@ -52,3 +55,5 @@ private:
   static void _update_follow_trajectory(TrajectoryManager&);
   static void _update_near_end(TrajectoryManager&);
 };
+
+#endif//CURV_TRAJECTORY_MANAGER_HPP
