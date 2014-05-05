@@ -15,6 +15,7 @@ private:
   Node nodes[Node::MAX_NB];
   Vect<2, s32> path[8];
   uint8_t pathLengh;
+  bool pathIsEnded;
   uint8_t beginX;
   uint8_t beginY;
   uint8_t targetX;
@@ -39,6 +40,7 @@ public:
   Astar(uint8_t mesh, World<WORLD_SIZE, AABB>& w);
   Vect<2, s32>* getTrajectory(Vect<2, s32> &&source, Vect<2, s32> &&target);
   uint8_t getPathLengh(void);
+  bool isPathEnded(void);
 };
 
 #endif//ASTAR_HPP
