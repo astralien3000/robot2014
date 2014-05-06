@@ -35,6 +35,7 @@ Vect<2, s32>* Astar::getTrajectory(Vect<2, s32> &&source, Vect<2, s32> &&target)
     target[1] = 750;
 
   this->pathLengh = 0;
+  this->pathIsEnded = false;
   this->beginX = convertX_real2simple(source[0]);
   this->beginY = convertY_real2simple(source[1]);
   this->targetX = convertX_real2simple(target[0]);
@@ -53,6 +54,10 @@ Vect<2, s32>* Astar::getTrajectory(Vect<2, s32> &&source, Vect<2, s32> &&target)
 
 uint8_t Astar::getPathLengh(void) {
   return this->pathLengh;
+}
+
+bool Astar::isPathEnded(void) {
+  return this->pathIsEnded;
 }
 
 Vect<2, s32>* Astar::loop(void) {
@@ -133,6 +138,7 @@ bool Astar::keepGoing(uint8_t minNode) {
 
 Vect<2, s32>* Astar::makePath(Node *source, Node *target) {
   pathLengh = 0;
+  pathIsEnded = false;
   Node *cursor = target;
   Node *previous = cursor;
   int8_t curDx = 0;
@@ -143,6 +149,7 @@ Vect<2, s32>* Astar::makePath(Node *source, Node *target) {
     if (cursor->x() - previous->x() != curDx ||
 	cursor->y() - previous->y() != curDy) {
       if (previous->x() == targetX && previous->y() == targetY) {
+	this->pathIsEnded = true;
 	path[pathLengh][0] = targetX_real;
 	path[pathLengh][1] = targetY_real;
       } else {
