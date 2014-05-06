@@ -4,12 +4,10 @@
 #include "filters.hpp"
 #include "fpga.hpp"
 
-#include "trajectory_manager.hpp"
-
 #include <string.h>
 
-
-UartStream<0> io("stdio");
+UartStream<0> _io("stdio");
+FormattedStream& io = _io;
 
 // EepromStream file("eeprom");
 

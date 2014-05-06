@@ -1,9 +1,9 @@
 #ifndef TRAJECTORY_HPP
 #define TRAJECTORY_HPP
 
-#include "curv_trajectory_manager.hpp"
+#include "rect_trajectory_manager.hpp"
 
-extern CurvTrajectoryManager traj;
+extern RectTrajectoryManager traj;
 
 void control_init(void);
 void trajectory_reset(void);

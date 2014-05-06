@@ -32,8 +32,8 @@ extern Motor<volatile s8> mot_l;
 extern Motor<volatile s8> mot_r;
 
 //// Communication
-extern UartStream<0> io;
-extern EepromStream file;
+extern FormattedStream& io;
+//extern EepromStream file;
 extern FpgaUartStream rds_stream;
 
 ////////////////////////////////////////

@@ -57,6 +57,16 @@ int main(int argc, char* argv[]) {
   mot_l.inverse();
   enc_r.inverse();
 
+  while(1) {
+    s16 dummy = 0;
+    io >> dummy;
+    // io << "angle = " << (odo.getValue().coord(1) >> 4) << "\n";
+    // io << "    dist  = " << odo.getValue().coord(0) << "\n";
+    io << "x = " << pos.getValue().coord(0) << "\n";
+    io << "  y  = " << pos.getValue().coord(1) << "\n";
+  }
+
+  /*
   robot.unlock();
 
   qramp_a.setFirstOrderLimit(15,15);
@@ -75,12 +85,14 @@ int main(int argc, char* argv[]) {
   side_init(dummy==1);
   match_init(dummy==1);
 
+  print_pos();
+
   robot.lock();
   print_sp();
   io << "Place me please <3\n";
   io >> dummy;
   
-  traj.setMode(TrajectoryManager::FORWARD);
+  traj.setMode(TrajectoryManager::FASTER);
   traj.reset();
   trajectory_reset();
   robot.unlock();
@@ -91,11 +103,14 @@ int main(int argc, char* argv[]) {
   qramp_d.setFirstOrderLimit(13,13);
   qramp_d.setSecondOrderLimit(2,2);
 
-
+  print_pos();
+  
   traj.gotoDistance(300);
   while(!traj.isEnded()) {
-    check_for_collision();
+    //check_for_collision();
   }
+
+  print_pos();
 
   io << "Conf\n";
   MasterAction::setPositionManager(pos);
@@ -107,12 +122,16 @@ int main(int argc, char* argv[]) {
   traj.gotoPosition(act1.controlPoint());
   while(!traj.isEnded());
 
+  print_pos();
+
   io << "Do action\n";
   act1.doAction();
   io << "DONE\n";
 
-  avoidance_goto(act2.controlPoint());
-
+  print_pos();
+  avoidance_goto(Vect<2, s32>(-600, 0));
+  print_pos();
+  while(1);
   // io << "Goto2\n";
   // traj.gotoPosition(act2.controlPoint());
   // while(!traj.isEnded());
@@ -120,7 +139,7 @@ int main(int argc, char* argv[]) {
   io << "Do action2\n";
   act2.doAction();
   io << "DONE2\n";
-
+  */
   while(1);
 
   Aversive::setReturnCode(0);

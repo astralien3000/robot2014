@@ -32,12 +32,12 @@ static const s32 YELLOW_ANGLE_CALIB = -90;
 
 // GENERAL
 
-static s32 DIST_INIT = -3000;
-static s32 DIST_2_INIT = 700;
-static s32 A_INIT = 180;
-static s32 X_INIT = (table_width - robot_height) / 2;
-static s32 Y_INIT = (table_height - robot_height) / 2 - buffet_height;
-static s32 ANGLE_CALIB = -90;
+static s32 DIST_INIT = 0;
+static s32 DIST_2_INIT = 0;
+static s32 A_INIT = 0;
+static s32 X_INIT = 0;
+static s32 Y_INIT = 0;
+static s32 ANGLE_CALIB = 0;
 
 ///////////////////////////////////////////////////////////////////////
 

@@ -6,7 +6,7 @@
 
 PidFilter pid_rt;
 PidFilter pid_ct;
-CurvTrajectoryManager traj(robot, odo, pos, pid_rt, pid_ct);
+RectTrajectoryManager traj(robot, odo, pos, pid_rt);
 
 static Scheduler& sched = Scheduler::instance();
 

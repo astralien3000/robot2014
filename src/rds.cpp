@@ -9,7 +9,7 @@ FpgaUartStream rds_io("rds_stream", UART_TX_1_DATA, UART_TX_1_OCUP, UART_RX_1_DA
 Rds rds("", rds_io);
 
 void rds_init(void) {
-  rds_io.setMode(Stream::BINARY);
+  //rds_io.setMode(Stream::BINARY);
 }
 
 void check_for_collision(void) {

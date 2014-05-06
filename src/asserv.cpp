@@ -61,9 +61,11 @@ void asserv_init(void) {
   pid_r.setOutShift(10);
 
   // Odometer
-  odo.setImpPerUnit(81);
-  odo.setAngleMultiplicator(8);
-  odo.setImpPerDeg(133);
+  odo.setDistanceMultiplicator(10);
+  odo.setImpPerUnit(835);
+
+  odo.setAngleMultiplicator(80);
+  odo.setImpPerDeg(1327);
 
   // Position
   pos.setImpPerUnitX(82);
