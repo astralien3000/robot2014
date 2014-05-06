@@ -26,6 +26,8 @@ public:
     The priority should be 0 or less if it has been done.
     
    */
+  //! \todo Add the const attribute to it?
+  //! \todo Should not it be abstract?
   virtual s16 priority(void);
 
   //! \brief Gives a point to reach to do the action
@@ -34,6 +36,8 @@ public:
     The doAction function will be called just after the point has been reached.
 
    */
+  //! \todo Add the const attribute to it?
+  //! \todo Should not it be abstract?
   virtual Vect<2, s32> controlPoint(void);
 
   //! \brief Do the action
@@ -42,6 +46,8 @@ public:
     The action must check if there is no collisions.
 
    */
+  //! \todo Change the return type to an enum or an integer to specify an error code if one occured.
+  //! \todo Should not it be abstract?
   virtual void doAction(void);
 
 
