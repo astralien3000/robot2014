@@ -57,16 +57,6 @@ int main(int argc, char* argv[]) {
   mot_l.inverse();
   enc_r.inverse();
 
-  while(1) {
-    s16 dummy = 0;
-    io >> dummy;
-    // io << "angle = " << (odo.getValue().coord(1) >> 4) << "\n";
-    // io << "    dist  = " << odo.getValue().coord(0) << "\n";
-    io << "x = " << pos.getValue().coord(0) << "\n";
-    io << "  y  = " << pos.getValue().coord(1) << "\n";
-  }
-
-  /*
   robot.unlock();
 
   qramp_a.setFirstOrderLimit(15,15);
@@ -139,7 +129,7 @@ int main(int argc, char* argv[]) {
   io << "Do action2\n";
   act2.doAction();
   io << "DONE2\n";
-  */
+
   while(1);
 
   Aversive::setReturnCode(0);
