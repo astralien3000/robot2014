@@ -1,0 +1,1 @@
+../../src/eirbot_shell.hpp
