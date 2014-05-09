@@ -63,6 +63,9 @@ public:
 
   static Side side;
 
+protected:
+  static u8 _fruit;
+  
 private:
   //! \brief Position manager common to all actions
   static Input< Vect<2, s32> >* _pos;
