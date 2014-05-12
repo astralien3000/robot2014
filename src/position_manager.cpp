@@ -3,18 +3,22 @@
 PositionManager::PositionManager(s32& pos_x_reg, s32& pos_y_reg, u16& a_reg)
   : _x((volatile s32&)pos_x_reg), _y((volatile s32&)pos_y_reg),
     _a((volatile u16&)a_reg),
+    _imp_per_u_x(1), _imp_per_u_y(1),
+    _x_mul(1), _y_mul(1),
     _off_x(0), _off_y(0), _off_a(0) {
 }
 
 PositionManager::PositionManager(volatile s32& pos_x_reg, volatile s32& pos_y_reg, volatile u16& a_reg)
   : _x(pos_x_reg), _y(pos_y_reg),
     _a(a_reg),
+    _imp_per_u_x(1), _imp_per_u_y(1),
+    _x_mul(1), _y_mul(1),
     _off_x(0), _off_y(0), _off_a(0) {
 }
 
 Vect<2, s32> PositionManager::getValue(void) {
-  return Vect<2, s32>(_off_x + _x / _imp_per_u_x, 
-  		      _off_y + _y / _imp_per_u_y);
+  return Vect<2, s32>(_off_x + (_x_mul * _x) / _imp_per_u_x, 
+  		      _off_y + (_y_mul * _y) / _imp_per_u_y);
 }
 
 s16 PositionManager::angle(void) {
@@ -28,6 +32,14 @@ void PositionManager::setImpPerUnitX(s32 val) {
 
 void PositionManager::setImpPerUnitY(s32 val) {
   _imp_per_u_y = val;
+}
+
+void PositionManager::setMultiplicatorX(s32 val) {
+  _x_mul = val;
+}
+
+void PositionManager::setMultiplicatorY(s32 val) {
+  _y_mul = val;
 }
 
 void PositionManager::setAngle(s16 val) {

@@ -16,13 +16,24 @@ void fpga_config(void);
 
 static const u32 UART_BAUD = 115200;
 
-#define ENC_R      (*(volatile u32*)0x80A0)
-#define ENC_L      (*(volatile u32*)0x8098)
-#define ENC_MOT_R  (*(volatile u32*)0x809C)
-#define ENC_MOT_L  (*(volatile u32*)0x8094)
+#define ENC_R_ADDR 0x80A0
+#define ENC_R      (*(volatile u32*)ENC_R_ADDR)
 
-#define MOT_R      (*(volatile s8*)0x8000)
-#define MOT_L      (*(volatile s8*)0x8001)
+#define ENC_L_ADDR 0x8098
+#define ENC_L      (*(volatile u32*)ENC_L_ADDR)
+
+#define ENC_MOT_R_ADDR 0x809C
+#define ENC_MOT_R  (*(volatile u32*)ENC_MOT_R_ADDR)
+
+#define ENC_MOT_L_ADDR 0x8094
+#define ENC_MOT_L  (*(volatile u32*)ENC_MOT_L_ADDR)
+
+#define MOT_R_ADDR 0x8000
+#define MOT_R      (*(volatile s8*)MOT_R_ADDR)
+
+#define MOT_L_ADDR 0x8001
+#define MOT_L      (*(volatile s8*)MOT_L_ADDR)
+
 #define RESET_FPGA (*(volatile u8*)0x807F)
 
 #define RELATION   (*(volatile u32*)0x8024)

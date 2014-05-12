@@ -10,6 +10,8 @@
 
 static Scheduler& sched = Scheduler::instance();
 
+Vect<2, s32> cmd(0, 0);
+
 int main(int argc, char* argv[]) {
   (void)argc;
   (void)argv;
@@ -25,6 +27,24 @@ int main(int argc, char* argv[]) {
 
   mot_l.inverse();
   enc_r.inverse();
+
+  Task t([](void) {
+      robot.setValue(cmd);
+    });
+
+  t.setPeriod(64000);
+  t.setRepeat();
+  sched.addTask(t);
+
+  io << "----------------\n";
+  io << "angle = " << (odo.getValue().coord(1) >> 4) << "\n";
+  io << "dist  = " << odo.getValue().coord(0) << "\n";
+  io << "x = " << pos.getValue().coord(0) << "\n";
+  io << "y  = " << pos.getValue().coord(1) << "\n";
+
+  cmd.coord(0) = 1900 - 300 - 250;
+  robot.unlock();
+  Interrupts::init();
 
   while(Aversive::sync()) {
     s16 dummy = 0;

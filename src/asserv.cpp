@@ -24,14 +24,20 @@ QuadrampFilter qramp_d;
 QuadrampFilter qramp_a;
 
 // Global devices
-Encoder<volatile u32> enc_l("left_encoder", &ENC_L);
-Encoder<volatile u32> enc_r("right_encoder", &ENC_R);
+//Encoder<volatile u32> enc_l("left_encoder", &ENC_L);
+//Encoder<volatile u32> enc_r("right_encoder", &ENC_R);
+decltype(enc_l) enc_l("left_encoder");
+decltype(enc_r) enc_r("right_encoder");
 
-Encoder<volatile u32> enc_mot_l("left_motor_encoder", &ENC_MOT_L);
-Encoder<volatile u32> enc_mot_r("right_motor_encoder", &ENC_MOT_R);
+//Encoder<volatile u32> enc_mot_l("left_motor_encoder", &ENC_MOT_L);
+//Encoder<volatile u32> enc_mot_r("right_motor_encoder", &ENC_MOT_R);
+decltype(enc_mot_l) enc_mot_l("left_motor_encoder");
+decltype(enc_mot_r) enc_mot_r("right_motor_encoder");
 
-Motor<volatile s8> mot_l("left_motor", &MOT_L);
-Motor<volatile s8> mot_r("right_motor", &MOT_R);
+// Motor<volatile s8> mot_l("left_motor", &MOT_L);
+// Motor<volatile s8> mot_r("right_motor", &MOT_R);
+decltype(mot_l) mot_l("left_motor");
+decltype(mot_r) mot_r("right_motor");
   
 MotorController motc_l(mot_l, enc_l, id, diff_l, pid_l);
 MotorController motc_r(mot_r, enc_r, id, diff_r, pid_r);
@@ -66,6 +72,12 @@ void asserv_init(void) {
 
   odo.setAngleMultiplicator(80);
   odo.setImpPerDeg(1327);
+
+  // Motors
+  mot_l.setMinCommand(-127);
+  mot_l.setMaxCommand(127);
+  mot_r.setMinCommand(-127);
+  mot_r.setMaxCommand(127);
 
   // Position
   pos.setImpPerUnitX(82);

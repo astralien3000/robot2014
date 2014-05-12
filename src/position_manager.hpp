@@ -18,6 +18,9 @@ public:
   void setImpPerUnitX(s32);
   void setImpPerUnitY(s32);
 
+  void setMultiplicatorX(s32);
+  void setMultiplicatorY(s32);
+
   void setAngle(s16 val);
   void setX(s32);
   void setY(s32);
@@ -30,6 +33,9 @@ private:
 
   s32 _imp_per_u_x;
   s32 _imp_per_u_y;
+
+  s32 _x_mul;
+  s32 _y_mul;
 
   s32 _off_x;
   s32 _off_y;
