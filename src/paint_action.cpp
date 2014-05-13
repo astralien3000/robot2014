@@ -7,8 +7,9 @@ PaintAction::PaintAction(void)
 
 s16 PaintAction::priority(void) {
   s16 dist = (controlPoint() - positionManager().getValue()).norm();
+  // pourquoi à chaque fois je vois un test "dist != 0" ???? si on est bien placé dès le départ on a pas le droit de faire l'action ?
   if(!_done && dist != 0) {
-    return 3000 / dist;
+    return 4000 / dist;
   }
   return 0;
 }

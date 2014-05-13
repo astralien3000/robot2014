@@ -14,7 +14,7 @@ s16 DepositAction::priority(void) {
   if(dist != 0) {
     return 3000 / dist;
   }
-  return 0;
+  return 3000;
 }
 
 Vect<2, s32> DepositAction::controlPoint(void) {

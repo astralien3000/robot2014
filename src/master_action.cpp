@@ -15,7 +15,7 @@ MasterAction::MasterAction(const Vect<2, s32>& pos, s32 angle) {
 s16 MasterAction::priority(void) {
   s16 dist = (controlPoint() - positionManager().getValue()).norm();
   if(!_done && dist != 0) {
-    return 3000 / dist;
+    return 2000 / dist;
   }
   return 0;
 }
