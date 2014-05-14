@@ -17,6 +17,10 @@ void check_for_collision(void) {
   List<2, Vect<2, s32> > adv = rds.getValue();
   bool can_unlock = true;
   io << "detected : " << adv.usedSpace() << "\n";
+
+  world.removeShape(&ennemy_robot);
+  world.removeShape(&ennemy_pmi);
+
   for (int i=0; i< (int)adv.usedSpace(); i++) {
     io << i << " : " << adv.get(i).coord(0) << " , " << adv.get(i).coord(1) << "\n";
     s32 abs_angle = 180 - adv.get(i).coord(1) + (odo.getValue().coord(1) >> 4);
@@ -27,10 +31,18 @@ void check_for_collision(void) {
     io << "rel_x = " << rel_x << " \trel_y = " << rel_y << "\n";
     io << "abs_x = " << abs_x << " \tabs_y = " << abs_y << "\n";
 
+    if (i==0) {
+      ennemy_robot = Circle(abs_x, abs_y, 35);
+      world.addShape(&ennemy_robot);
+    } else {
+      ennemy_pmi = Circle(abs_x, abs_y, 35);
+      world.addShape(&ennemy_pmi);
+    }
+
     if (adv.get(i).coord(0) < 60 &&
 	(adv.get(i).coord(1) < 60 || adv.get(i).coord(1) > 300)) {
       //robot.lock();
-      can_unlock = false;
+      //can_unlock = false;
     }
   }
   if (robot.getValue() && can_unlock) {

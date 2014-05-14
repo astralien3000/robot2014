@@ -17,9 +17,11 @@
 
 #include "master_action.hpp"
 #include "harvest_action.hpp"
+#include "hunt_action.hpp"
 
 MasterAction act1(yellow_top_fire.p(), 180);
 HarvestAction act2(red_tree.centre(), -90);
+HuntAction act3(red_tree.centre(), 4);
 
 #define F_CPU 16000000l
 #include <util/delay.h>
@@ -49,7 +51,7 @@ int main(int argc, char* argv[]) {
 
   robot.lock();
 
-  rds_init();
+  //rds_init();
 
   control_init();
   Interrupts::set();
@@ -57,7 +59,14 @@ int main(int argc, char* argv[]) {
   mot_l.inverse();
   enc_r.inverse();
 
+//TEST ALARACHE BENOIT LANCEBALLE
+  act3.doAction();
+  while(1);
+
+
   robot.unlock();
+
+  
 
   qramp_a.setFirstOrderLimit(15,15);
   qramp_a.setSecondOrderLimit(2,2);

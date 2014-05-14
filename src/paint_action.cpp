@@ -32,9 +32,9 @@ void PaintAction::doAction(void) {
   
   // We stick the painting to the wall
   trajectoryManager().gotoDistance(-3000);
-  while(!_robot.getValue()) {
+  while(!robot().getValue()) {
   }
-  _robot.unlock();
+  robot().unlock();
   trajectoryManager().gotoDistance(150);
   
   // And finally we return to the control point

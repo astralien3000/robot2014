@@ -1,8 +1,7 @@
 #include "deposit_action.hpp"
 #include "devices.hpp"
 
-DepositAction::DepositAction(void)
-  : _done(false) {
+DepositAction::DepositAction(void) {
 }
 
 s16 DepositAction::priority(void) {
@@ -37,9 +36,9 @@ void DepositAction::doAction(void) {
   
   // We stick to the basket
   trajectoryManager().gotoDistance(3000);
-  while(!_robot.getValue()) {
+  while(!robot().getValue()) {
   }
-  _robot.unlock();
+  robot().unlock();
   
   // Actually deposit the fruits now
   _fruit = 0;

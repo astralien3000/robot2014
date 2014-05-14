@@ -1,7 +1,8 @@
 #include "avoidance.hpp"
-
+#include "rds.hpp"
 #include "devices.hpp"
 #include "trajectory.hpp"
+
 
 World<WORLD_SIZE, AABB> world;
 Astar astar(42, world);
@@ -20,7 +21,10 @@ void avoidance_goto(const Vect<2, s32>& target) {
   for (uint8_t i = astar.getPathLengh(); i>0; i--) {
     io << "goto " << path[i-1].coord(0) << " " << path[i-1].coord(1) << "...\n";
     traj.gotoPosition(path[i-1]);
-    while(!traj.isEnded());
+    while(!traj.isEnded()) {
+      check_for_collision();
+      
+    }
   }
 
   io << "DONE !\n";
