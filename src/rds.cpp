@@ -3,6 +3,11 @@
 #include "devices.hpp"
 #include <math/trigo.hpp>
 #include "fpga.hpp"
+#include <geometry/world.hpp>
+
+#include "my_world.hpp"
+
+extern World<WORLD_SIZE, AABB> world;
 
 FpgaUartStream rds_io("rds_stream", UART_TX_1_DATA, UART_TX_1_OCUP, UART_RX_1_DATA, UART_RX_1_AVA);
 
@@ -12,7 +17,7 @@ void rds_init(void) {
   //rds_io.setMode(Stream::BINARY);
 }
 
-void check_for_collision(void) {
+bool check_for_collision(void) {
   rds.update();
   List<2, Vect<2, s32> > adv = rds.getValue();
   bool can_unlock = true;
@@ -49,4 +54,6 @@ void check_for_collision(void) {
     //    trajectory_reset();
     //robot.unlock();
   }
+
+  return adv.usedSpace() > 0;
 }
