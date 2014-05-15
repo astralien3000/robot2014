@@ -60,6 +60,10 @@ int main(int argc, char* argv[]) {
   enc_r.inverse();
 
 //TEST ALARACHE BENOIT LANCEBALLE
+  s16 wait = 0;
+  io << "Enter a number\n";
+  io >> wait;
+  io << "Do action\n";
   act3.doAction();
   while(1);
 
