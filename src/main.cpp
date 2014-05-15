@@ -18,7 +18,10 @@
 #include "master_action.hpp"
 #include "harvest_action.hpp"
 #include "hunt_action.hpp"
+#include "paint_action.hpp"
 
+List<20, Action*> actions;
+PaintAction paint_action;
 MasterAction act1(yellow_top_fire.p(), 180);
 HarvestAction act2(red_tree.centre(), -90);
 HuntAction act3(red_tree.centre(), 4);

@@ -20,11 +20,12 @@ void rds_init(void) {
 bool check_for_collision(void) {
   rds.update();
   List<2, Vect<2, s32> > adv = rds.getValue();
-  bool can_unlock = true;
   io << "detected : " << adv.usedSpace() << "\n";
 
   world.removeShape(&ennemy_robot);
   world.removeShape(&ennemy_pmi);
+
+  bool collision = false;
 
   for (int i=0; i< (int)adv.usedSpace(); i++) {
     io << i << " : " << adv.get(i).coord(0) << " , " << adv.get(i).coord(1) << "\n";
@@ -44,16 +45,16 @@ bool check_for_collision(void) {
       world.addShape(&ennemy_pmi);
     }
 
-    if (adv.get(i).coord(0) < 60 &&
-	(adv.get(i).coord(1) < 60 || adv.get(i).coord(1) > 300)) {
-      //robot.lock();
-      //can_unlock = false;
+    if (adv.get(i).coord(0) < 50 &&
+	(adv.get(i).coord(1) < 40 || adv.get(i).coord(1) > 320)) {
+      collision = true;
     }
-  }
-  if (robot.getValue() && can_unlock) {
-    //    trajectory_reset();
-    //robot.unlock();
+    if (adv.get(i).coord(0) < 100 &&
+	(adv.get(i).coord(1) < 20 || adv.get(i).coord(1) > 340)) {
+      collision = true;
+    }
+
   }
 
-  return adv.usedSpace() > 0;
+  return collision;
 }
