@@ -8,6 +8,6 @@ extern World<WORLD_SIZE, AABB> world;
 extern Astar astar;
 
 void avoidance_init(void);
-void avoidance_goto(const Vect<2, s32>&);
+bool avoidance_goto(const Vect<2, s32>&);
 
 #endif//AVOIDANCE_HPP

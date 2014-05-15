@@ -3,6 +3,11 @@
 #include "devices.hpp"
 #include <math/trigo.hpp>
 #include "fpga.hpp"
+#include <geometry/world.hpp>
+
+#include "my_world.hpp"
+
+extern World<WORLD_SIZE, AABB> world;
 
 FpgaUartStream rds_io("rds_stream", UART_TX_1_DATA, UART_TX_1_OCUP, UART_RX_1_DATA, UART_RX_1_AVA);
 
@@ -12,14 +17,15 @@ void rds_init(void) {
   //rds_io.setMode(Stream::BINARY);
 }
 
-void check_for_collision(void) {
+bool check_for_collision(void) {
   rds.update();
   List<2, Vect<2, s32> > adv = rds.getValue();
-  bool can_unlock = true;
   io << "detected : " << adv.usedSpace() << "\n";
 
   world.removeShape(&ennemy_robot);
   world.removeShape(&ennemy_pmi);
+
+  bool collision = false;
 
   for (int i=0; i< (int)adv.usedSpace(); i++) {
     io << i << " : " << adv.get(i).coord(0) << " , " << adv.get(i).coord(1) << "\n";
@@ -39,14 +45,16 @@ void check_for_collision(void) {
       world.addShape(&ennemy_pmi);
     }
 
-    if (adv.get(i).coord(0) < 60 &&
-	(adv.get(i).coord(1) < 60 || adv.get(i).coord(1) > 300)) {
-      //robot.lock();
-      //can_unlock = false;
+    if (adv.get(i).coord(0) < 50 &&
+	(adv.get(i).coord(1) < 40 || adv.get(i).coord(1) > 320)) {
+      collision = true;
     }
+    if (adv.get(i).coord(0) < 100 &&
+	(adv.get(i).coord(1) < 20 || adv.get(i).coord(1) > 340)) {
+      collision = true;
+    }
+
   }
-  if (robot.getValue() && can_unlock) {
-    //    trajectory_reset();
-    //robot.unlock();
-  }
+
+  return collision;
 }

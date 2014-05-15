@@ -73,6 +73,9 @@ protected:
 public:
   //! \brief interrupt function
   void update(void);
+  inline bool isBackward(void) {
+    return _backward;
+  }
 
 private:
   //! \brief Do not move !
