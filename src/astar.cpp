@@ -164,6 +164,14 @@ Vect<2, s32>* Astar::makePath(Node *source, Node *target) {
     cursor = &nodes[cursor->pred()];
   }
 
+  if (pathLengh == 0 &&
+      distance(beginX, beginY, targetX, targetY) < 3) {
+    path[0][0] = targetX_real;
+    path[0][1] = targetY_real;
+    pathLengh++;
+    this->pathIsEnded = true;
+  }
+
   return path;
 }
 
@@ -192,7 +200,7 @@ bool Astar::newNode(Node **node, uint8_t x, uint8_t y) {
 bool Astar::isObstacle(uint8_t x, uint8_t y) {
   if (x>25 || y>15)
     return true;
-  Circle robot(convertX_simple2real(x), convertY_simple2real(y), 250);
+  Circle robot(convertX_simple2real(x), convertY_simple2real(y), 251); //251 pour éviter les angles des buffets (empirique)
   return this->world.collide(robot);
 }
 
