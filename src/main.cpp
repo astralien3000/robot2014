@@ -19,12 +19,13 @@
 #include "harvest_action.hpp"
 #include "hunt_action.hpp"
 #include "paint_action.hpp"
+#include "strategy.hpp"
 
 List<20, Action*> actions;
 PaintAction paint_action;
 MasterAction act1(yellow_top_fire.p(), 180);
 HarvestAction act2(red_tree.centre(), -90);
-HuntAction act3(red_tree.centre(), 4);
+HuntAction act3(Vect<2, s32>(800, 400), 4);
 
 #define F_CPU 16000000l
 #include <util/delay.h>
@@ -62,18 +63,15 @@ int main(int argc, char* argv[]) {
   mot_l.inverse();
   enc_r.inverse();
 
-//TEST ALARACHE BENOIT LANCEBALLE
-  s16 wait = 0;
-  io << "Enter a number\n";
-  io >> wait;
-  io << "Do action\n";
-  act3.doAction();
-  while(1);
-
+  //TEST ALARACHE BENOIT LANCEBALLE
+  // s16 wait = 0;
+  // io << "Enter a number\n";
+  // io >> wait;
+  // io << "Do action\n";
+  // act3.doAction();
+  // while(1);
 
   robot.unlock();
-
-  
 
   qramp_a.setFirstOrderLimit(15,15);
   qramp_a.setSecondOrderLimit(2,2);
@@ -87,7 +85,7 @@ int main(int argc, char* argv[]) {
   io << "Side \n";
   io >> dummy;
   io << dummy << "\n";
-
+  dummy = 2;
   side_init(dummy==1);
   match_init(dummy==1);
 
@@ -103,10 +101,16 @@ int main(int argc, char* argv[]) {
   trajectory_reset();
   robot.unlock();
 
+  // qramp_a.setFirstOrderLimit(40,40);
+  // qramp_a.setSecondOrderLimit(4,4);
+
+  // qramp_d.setFirstOrderLimit(13,13);
+  // qramp_d.setSecondOrderLimit(2,2);
+
   qramp_a.setFirstOrderLimit(40,40);
   qramp_a.setSecondOrderLimit(4,4);
 
-  qramp_d.setFirstOrderLimit(13,13);
+  qramp_d.setFirstOrderLimit(29,29);
   qramp_d.setSecondOrderLimit(2,2);
 
   print_pos();
@@ -119,32 +123,62 @@ int main(int argc, char* argv[]) {
   print_pos();
 
   io << "Conf\n";
-  MasterAction::setPositionManager(pos);
-  MasterAction::setRobot(robot);
-  MasterAction::setTrajectoryManager(traj);
-  MasterAction::side = YELLOW;
+  Action::setPositionManager(pos);
+  Action::setRobot(robot);
+  Action::setTrajectoryManager(traj);
+  Action::side = YELLOW;
 
-  io << "Goto\n";
-  traj.gotoPosition(act1.controlPoint());
-  while(!traj.isEnded());
+  // TEST STRATEGY
+  // actions.append(&paint_action);
+  // actions.append(&act1);
+  // actions.append(&act2);
+  // actions.append(&act3);
+  // do_your_job();
 
-  print_pos();
+  // TEST BEGIN A FOND !!
+  // traj.gotoPosition(Vect<2, s32>(-100, 500));
+  // while(!traj.isEnded()) {
+  //   if(check_for_collision()) {
+  //     robot.lock();
+  //     io << "over\n";
+  //     while(1);
+  //   }
+  // }
 
-  io << "Do action\n";
-  act1.doAction();
-  io << "DONE\n";
+  // TEST AVOIDANCE / ASTAR
+  // while(1) {
+  //   io << "goto\n";
+  //   avoidance_goto(Vect<2, s32>(1100, -600));
+  //   volatile s32 attente = 0;
+  //   while (attente < 3000000)
+  //     attente++;
+  // }
 
-  print_pos();
-  avoidance_goto(Vect<2, s32>(-600, 0));
-  print_pos();
-  while(1);
-  // io << "Goto2\n";
-  // traj.gotoPosition(act2.controlPoint());
+  // io << "Goto\n";
+  // traj.gotoPosition(act1.controlPoint());
   // while(!traj.isEnded());
 
-  io << "Do action2\n";
-  act2.doAction();
-  io << "DONE2\n";
+  // print_pos();
+
+  // io << "Do action\n";
+  // act1.doAction();
+  // io << "DONE\n";
+
+  io << "Goto3\n";
+  traj.gotoPosition(act3.controlPoint());
+  while(!traj.isEnded());
+
+  io << "Do action3\n";
+  act3.doAction();
+  io << "DONE3\n";
+
+  io << "Goto paint";
+  avoidance_goto(paint_action.controlPoint());
+  while(!traj.isEnded());
+
+  io << "Do paint\n";
+  paint_action.doAction();
+  io << "DONE paint\n";
 
   while(1);
 

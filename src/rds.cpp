@@ -29,19 +29,23 @@ bool check_for_collision(void) {
 
   for (int i=0; i< (int)adv.usedSpace(); i++) {
     io << i << " : " << adv.get(i).coord(0) << " , " << adv.get(i).coord(1) << "\n";
-    s32 abs_angle = 180 - adv.get(i).coord(1) + (odo.getValue().coord(1) >> 4);
+    //s32 abs_angle = 180 - adv.get(i).coord(1) + (odo.getValue().coord(1) >> 4);
+    s32 abs_angle = (- adv.get(i).coord(1) - (odo.getValue().coord(1) >> 4))%360;
+
     s32 rel_x = (s32)(adv.get(i).coord(0) * Math::cos<Math::DEGREE, double>(abs_angle));
     s32 rel_y = (s32)(adv.get(i).coord(0) * Math::sin<Math::DEGREE, double>(abs_angle));
     s32 abs_x = pos.getValue().coord(0) + rel_x * 10;
     s32 abs_y = pos.getValue().coord(1) + rel_y * 10;
+    io << "abs_angle = " << abs_angle << "\n";
+    io << "my_angle = " << -(odo.getValue().coord(1) >> 4) << "\n";
     io << "rel_x = " << rel_x << " \trel_y = " << rel_y << "\n";
     io << "abs_x = " << abs_x << " \tabs_y = " << abs_y << "\n";
 
     if (i==0) {
-      ennemy_robot = Circle(abs_x, abs_y, 35);
+      ennemy_robot = Circle(abs_x, abs_y, 300);
       world.addShape(&ennemy_robot);
     } else {
-      ennemy_pmi = Circle(abs_x, abs_y, 35);
+      ennemy_pmi = Circle(abs_x, abs_y, 300);
       world.addShape(&ennemy_pmi);
     }
 

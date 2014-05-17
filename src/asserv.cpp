@@ -46,6 +46,7 @@ Odometer odo(enc_l, enc_r);
 
 RobotController _robot(motc_l, motc_r, odo, qramp_d, id, pid_d, qramp_a, id, pid_a);
 SecureRobot robot(_robot, odo, skd_l, skd_r, mot_l, mot_r);
+//SecureRobot robot(_robot, odo, skd_l, skd_r, motc_l, motc_r);
 
 SkatingDetector skd_l(enc_mot_l, enc_l, 2);
 SkatingDetector skd_r(enc_mot_r, enc_r, 2);

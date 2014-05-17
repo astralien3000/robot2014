@@ -40,6 +40,7 @@ inline void handler_search(void) {
 	s16 prio = action->priority();
 	if (prio > max_prio) {
 	  current_action = action;
+	  max_prio = prio;
 	}
 	io << "prio = " << prio << "\n";
       }));
@@ -72,11 +73,12 @@ inline void handler_reach(void) {
 
 inline void handler_do(void) {
   current_action->doAction();
+  state = SEARCH_ACTION;
 }
 
 
 void do_your_job(void) {
-  state = BEGIN;
+  state = SEARCH_ACTION;
   while(1) {
     if (state == BEGIN) {
       handler_begin();

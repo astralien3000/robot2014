@@ -34,8 +34,12 @@ void PaintAction::doAction(void) {
   trajectoryManager().gotoDistance(-3000);
   while(!robot().getValue()) {
   }
+  trajectoryManager().reset();
   robot().unlock();
-  trajectoryManager().gotoDistance(150);
+  trajectoryManager().gotoDistance(200);
+  while(!trajectoryManager().isEnded()) {
+    robot().unlock();
+  }
   
   // And finally we return to the control point
   trajectoryManager().setMode(TrajectoryManager::FASTER);

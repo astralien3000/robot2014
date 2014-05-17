@@ -54,12 +54,12 @@ void RectTrajectoryManager::gotoPosition(Vect<2, s32> pos) {
   _state_handlers[FOLLOW_TRAJECTORY] = RectTrajectoryManager::_update_follow_trajectory;
   _state_handlers[NEAR_END] = RectTrajectoryManager::_update_near_end;
 
-  if(_state == NEAR_END) {
-    _src = _dst;
-  }
-  else {
-    _src = _pos.getValue();
-  }
+  // if(_state == NEAR_END) {
+  //   _src = _dst;
+  // }
+  // else {
+  _src = _pos.getValue();
+  // }
 
   _dst = pos;
 
