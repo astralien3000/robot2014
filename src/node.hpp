@@ -6,7 +6,7 @@ private:
   uint16_t b;
 public:
   static const uint8_t MAX_COST = 63;
-  static const uint8_t MAX_NB = 255;
+  static const uint8_t MAX_NB = 180;
   static const uint8_t MAX_X = 31;
   static const uint8_t MAX_Y = 15;
   Node(void);
