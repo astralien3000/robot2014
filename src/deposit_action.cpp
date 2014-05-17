@@ -1,6 +1,11 @@
 #include "deposit_action.hpp"
 #include "devices.hpp"
 
+#include "device/servomotor/fpga_servomotor.hpp"
+
+#define F_CPU 16000000l
+#include <util/delay.h>
+
 DepositAction::DepositAction(void) {
 }
 
@@ -11,16 +16,17 @@ s16 DepositAction::priority(void) {
   
   s16 dist = (controlPoint() - positionManager().getValue()).norm();
   if(dist != 0) {
-    return 3000 / dist;
+    return 10000 / dist;
   }
-  return 3000;
+  return 10000;
 }
 
 Vect<2, s32> DepositAction::controlPoint(void) {
-  return Vect<2, s32>(((side == RED) ? 750 : -750), 600);
+  return Vect<2, s32>(((side == RED) ? 750 : -750), 350);
 }
 
 void DepositAction::doAction(void) {
+  io << "DO DEPOSIT\n";
   if((positionManager().getValue() - controlPoint()).norm() > 100) {
     io << "not at a good position\n";
     return;
@@ -41,9 +47,22 @@ void DepositAction::doAction(void) {
   robot().unlock();
   
   // Actually deposit the fruits now
+  FpgaServomotor<volatile u16, SERVO1_ADDR> servo("basket_servo");
+  servo.setMinCommand(1900);
+  servo.setMaxCommand(500);
+  servo.setValue(1000);
+  while(1);
   _fruit = 0;
   
+  // Go far from the basket
+  trajectoryManager().gotoDistance(-200);
+  while(!trajectoryManager().isEnded()) {
+    robot().unlock();
+  }
+
   // And finally we return to the control point
   trajectoryManager().setMode(TrajectoryManager::FASTER);
   trajectoryManager().gotoPosition(Vect<2, s32>(x, 450));
+  while(!trajectoryManager().isEnded()) {
+  }
 }

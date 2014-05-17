@@ -17,15 +17,43 @@
 
 #include "master_action.hpp"
 #include "harvest_action.hpp"
+#include "deposit_action.hpp"
 #include "hunt_action.hpp"
 #include "paint_action.hpp"
 #include "strategy.hpp"
 
 List<20, Action*> actions;
+
+// PAINT
 PaintAction paint_action;
-MasterAction act1(yellow_top_fire.p(), 180);
-HarvestAction act2(red_tree.centre(), -90);
-HuntAction act3(Vect<2, s32>(800, 400), 4);
+
+// FIRE
+MasterAction red_top_fire_action(red_top_fire.p(), 180);
+MasterAction red_mid_fire_action(red_mid_fire.p(), 90);
+MasterAction red_bot_fire_action(red_bot_fire.p(), 0);
+
+MasterAction yellow_top_fire_action(yellow_top_fire.p(), 180);
+MasterAction yellow_mid_fire_action(yellow_mid_fire.p(), -90);
+MasterAction yellow_bot_fire_action(yellow_bot_fire.p(), 0);
+
+// TREE
+HarvestAction red_tree_action(red_tree.centre(), -90);
+HarvestAction yellow_tree_action(yellow_tree.centre(), 90);
+HarvestAction left_tree_action(left_tree.centre(), 0);
+HarvestAction right_tree_action(right_tree.centre(), 180);
+
+// BASKET
+DepositAction basket_action;
+
+// MAMMOUTH (HUNT)
+HuntAction red_mammouth_action(Vect<2, s32>(-800, 400), 2);
+HuntAction yellow_mammouth_action(Vect<2, s32>(800, 400), 4);
+
+// MAMMOUTH (CAPTURE)
+// TODO : 2
+
+// CALIBRATE
+// TODO : 4
 
 #define F_CPU 16000000l
 #include <util/delay.h>
@@ -71,13 +99,22 @@ int main(int argc, char* argv[]) {
   // act3.doAction();
   // while(1);
 
+  // TEST SERVO
+  // while(1) {
+  //   u16 cmd = 0;
+  //   io << "Command ?\n";
+  //   io >> cmd;
+  //   io << cmd << "\n";
+  //   FpgaServomotor<volatile u16, SERVO1_ADDR> servo("basket_servo");
+  //   servo.setMinCommand(1900);
+  //   servo.setMaxCommand(500);
+  //   servo.setValue(1000);
+  // }
+
+
   robot.unlock();
 
-  qramp_a.setFirstOrderLimit(15,15);
-  qramp_a.setSecondOrderLimit(2,2);
-
-  qramp_d.setFirstOrderLimit(5,5);
-  qramp_d.setSecondOrderLimit(1,2);
+  asserv_speed_slow();
 
   traj.setMode(TrajectoryManager::FASTER);
   
@@ -85,14 +122,40 @@ int main(int argc, char* argv[]) {
   io << "Side \n";
   io >> dummy;
   io << dummy << "\n";
-  dummy = 2;
   side_init(dummy==1);
   match_init(dummy==1);
 
-  print_pos();
-
   robot.lock();
-  print_sp();
+
+  io << "Conf\n";
+  Action::setPositionManager(pos);
+  Action::setRobot(robot);
+  Action::setTrajectoryManager(traj);
+  if (dummy == 1)
+    Action::side = RED;
+  else
+    Action::side = YELLOW;
+
+  actions.append(&paint_action);
+
+  actions.append(&red_top_fire_action);
+  actions.append(&red_mid_fire_action);
+  actions.append(&red_bot_fire_action);
+
+  actions.append(&yellow_top_fire_action);
+  actions.append(&yellow_mid_fire_action);
+  actions.append(&yellow_bot_fire_action);
+
+  actions.append(&red_tree_action);
+  actions.append(&yellow_tree_action);
+  actions.append(&left_tree_action);
+  actions.append(&right_tree_action);
+
+  actions.append(&basket_action);
+
+  // actions.append(&red_mammouth_action);
+  // actions.append(&yellow_mammouth_action);
+  
   io << "Place me please <3\n";
   io >> dummy;
   
@@ -101,39 +164,20 @@ int main(int argc, char* argv[]) {
   trajectory_reset();
   robot.unlock();
 
-  // qramp_a.setFirstOrderLimit(40,40);
-  // qramp_a.setSecondOrderLimit(4,4);
+  asserv_speed_normal();
 
-  // qramp_d.setFirstOrderLimit(13,13);
-  // qramp_d.setSecondOrderLimit(2,2);
+  // traj.gotoDistance(300);
+  // while(!traj.isEnded()) {
+  //   //check_for_collision();
+  // }
 
-  qramp_a.setFirstOrderLimit(40,40);
-  qramp_a.setSecondOrderLimit(4,4);
-
-  qramp_d.setFirstOrderLimit(29,29);
-  qramp_d.setSecondOrderLimit(2,2);
-
-  print_pos();
-  
-  traj.gotoDistance(300);
-  while(!traj.isEnded()) {
-    //check_for_collision();
+  traj.gotoDistance(200);
+  while (!traj.isEnded()) {
   }
 
-  print_pos();
-
-  io << "Conf\n";
-  Action::setPositionManager(pos);
-  Action::setRobot(robot);
-  Action::setTrajectoryManager(traj);
-  Action::side = YELLOW;
-
-  // TEST STRATEGY
-  // actions.append(&paint_action);
-  // actions.append(&act1);
-  // actions.append(&act2);
-  // actions.append(&act3);
-  // do_your_job();
+  // TEST STRATEGY 
+  io << "Begin Strategy\n";
+  do_your_job();
 
   // TEST BEGIN A FOND !!
   // traj.gotoPosition(Vect<2, s32>(-100, 500));
@@ -165,11 +209,11 @@ int main(int argc, char* argv[]) {
   // io << "DONE\n";
 
   io << "Goto3\n";
-  traj.gotoPosition(act3.controlPoint());
+  traj.gotoPosition(yellow_mammouth_action.controlPoint());
   while(!traj.isEnded());
 
   io << "Do action3\n";
-  act3.doAction();
+  yellow_mammouth_action.doAction();
   io << "DONE3\n";
 
   io << "Goto paint";

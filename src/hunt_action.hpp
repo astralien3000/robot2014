@@ -13,7 +13,6 @@ public:
 private:
   Vect<2, s32> _pos;
   s16 _number;
-  bool _done;
 };
 
 #endif//HUNT_ACTION_HPP

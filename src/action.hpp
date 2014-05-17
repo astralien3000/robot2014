@@ -17,6 +17,9 @@ enum Side {
 };
 
 class Action {
+protected:
+  bool _done = false;
+
 public:
 
   //! \brief Help the strategy to choose which action to do first
@@ -50,6 +53,9 @@ public:
   //! \todo Should not it be abstract?
   virtual void doAction(void);
 
+  inline void done(void) {
+    _done = true;
+  }
 
 public:
   

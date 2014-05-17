@@ -27,6 +27,7 @@ Vect<2, s32> MasterAction::controlPoint(void) {
 #include "devices.hpp"
 
 void MasterAction::doAction(void) {
+  io << "DO MASTER\n";
   if((positionManager().getValue() - controlPoint()).norm() > 100) {
     io << "not at a good position\n";
     return;
@@ -37,6 +38,8 @@ void MasterAction::doAction(void) {
     anti_side = YELLOW;
   }
 
+  io << "goto x = " << _side_point[anti_side].coord(0);
+  io << " y = " << _side_point[anti_side].coord(1) << "\n";
   trajectoryManager().gotoPosition(_side_point[anti_side]);
   while(!trajectoryManager().isEnded()) {
     // Do sth ?
@@ -44,4 +47,3 @@ void MasterAction::doAction(void) {
 
   _done = true;
 }
-

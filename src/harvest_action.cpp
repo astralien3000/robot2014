@@ -20,9 +20,9 @@ HarvestAction::HarvestAction(const Vect<2, s32>& pos, s32 angle) {
 s16 HarvestAction::priority(void) {
   if (_done)
     return 0;
-  return 0;
+  //return 0;
   // Future improvement ?
-  return 3000/((controlPoint() - positionManager().getValue()).norm() +1);
+  return 10000/((controlPoint() - positionManager().getValue()).norm() +1);
 }
 
 #include "devices.hpp"
@@ -35,10 +35,20 @@ Vect<2, s32> HarvestAction::controlPoint(void) {
 
 
 void HarvestAction::doAction(void) {
+  io << "DO HARVERST\n";
+  trajectoryManager().setMode(TrajectoryManager::FORWARD);
   trajectoryManager().gotoPosition(_end_point);
   while(!trajectoryManager().isEnded()) {
-    
   }
+
+  trajectoryManager().gotoAngle(pos.angle() + 90);
+  while(!trajectoryManager().isEnded()) {
+  }
+
+  trajectoryManager().gotoDistance(200);
+  while(!trajectoryManager().isEnded()) {
+  }
+  
   _fruit = 1;
   _done = true;
 }

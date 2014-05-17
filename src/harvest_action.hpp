@@ -15,7 +15,6 @@ private:
 
   Vect<2, s32> _begin_point;
   Vect<2, s32> _end_point;
-  bool _done;
 
   static const s32 DIST_FROM_WALL = 300;
   static const s32 DIST_FROM_TREE = 300;

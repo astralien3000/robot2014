@@ -17,6 +17,8 @@ bool avoidance_goto(const Vect<2, s32>& target) {
   check_for_collision();
   path = astar.getTrajectory(pos.getValue(), (Vect<2, s32>)target);
 
+  io << "going from : " << pos.getValue()[0] << " " << pos.getValue()[1] << " to " << target[0] << " " << target[1] << "\n";
+
   if (! astar.isPathEnded()) {
     io << "failed to find path\n";
     return false;

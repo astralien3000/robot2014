@@ -99,3 +99,35 @@ void asserv_init(void) {
   qramp_d.setFirstOrderLimit(10,10);
   qramp_d.setSecondOrderLimit(2,8);
 }
+
+void asserv_lockmode_passiv(void) {
+  robot.setLockableMotors(mot_l, mot_r);
+}
+
+void asserv_lockmode_activ(void) {
+  robot.setLockableMotors(motc_l, motc_r);
+}
+
+void asserv_speed_slow(void) {
+  qramp_a.setFirstOrderLimit(15,15);
+  qramp_a.setSecondOrderLimit(2,2);
+
+  qramp_d.setFirstOrderLimit(5,5);
+  qramp_d.setSecondOrderLimit(1,2);
+}
+
+void asserv_speed_normal(void) {
+  qramp_a.setFirstOrderLimit(40,40);
+  qramp_a.setSecondOrderLimit(4,4);
+
+  qramp_d.setFirstOrderLimit(13,13);
+  qramp_d.setSecondOrderLimit(2,2);
+}
+
+void asserv_speed_fast(void) {
+  qramp_a.setFirstOrderLimit(40,40);
+  qramp_a.setSecondOrderLimit(4,4);
+
+  qramp_d.setFirstOrderLimit(29,29);
+  qramp_d.setSecondOrderLimit(2,2);
+}

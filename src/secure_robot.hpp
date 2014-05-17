@@ -25,14 +25,15 @@ private:
 
   Input<bool>& _skd_l;
   Input<bool>& _skd_r;
-  Output<s32>& _mot_l;
-  Output<s32>& _mot_r;
+  Output<s32>* _mot_l;
+  Output<s32>* _mot_r;
 
   bool _state;
   Vect<2, s32> _pos_block;
   s8 _last_update;
   s16 _sk_dur;
   bool _lockable;
+  bool _unlockable;
 
 public:
   SecureRobot(Output< Vect<2, s32> >& robot, Input< Vect<2, s32> >& odo, Input<bool>& skd_l, Input<bool>& skd_r, Output<s32>& mot_l, Output<s32>& mot_r);
@@ -47,6 +48,9 @@ public:
   void lock(void);
 
   void setLockable(bool);
+  void setUnlockable(bool);
+
+  void setLockableMotors(Output<s32>& mot_l, Output<s32>& mot_r);
 };
 
 #endif//SECURE_ROBOT_HPP

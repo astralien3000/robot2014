@@ -1,8 +1,9 @@
 #include "paint_action.hpp"
 #include "devices.hpp"
 
-PaintAction::PaintAction(void)
-  : _done(false) {
+#include "asserv.hpp"
+
+PaintAction::PaintAction(void) {
 }
 
 s16 PaintAction::priority(void) {
@@ -19,6 +20,7 @@ Vect<2, s32> PaintAction::controlPoint(void) {
 }
 
 void PaintAction::doAction(void) {
+  io << "DO PAINT\n";
   if((positionManager().getValue() - controlPoint()).norm() > 100) {
     io << "not at a good position\n";
     return;
@@ -31,11 +33,15 @@ void PaintAction::doAction(void) {
   }
   
   // We stick the painting to the wall
+  asserv_speed_slow();
   trajectoryManager().gotoDistance(-3000);
   while(!robot().getValue()) {
   }
   trajectoryManager().reset();
   robot().unlock();
+
+  // Go far from wall
+  asserv_speed_normal();
   trajectoryManager().gotoDistance(200);
   while(!trajectoryManager().isEnded()) {
     robot().unlock();

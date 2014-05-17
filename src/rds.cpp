@@ -20,6 +20,7 @@ void rds_init(void) {
 bool check_for_collision(void) {
   rds.update();
   List<2, Vect<2, s32> > adv = rds.getValue();
+  io << "i'm at : " << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
   io << "detected : " << adv.usedSpace() << "\n";
 
   world.removeShape(&ennemy_robot);

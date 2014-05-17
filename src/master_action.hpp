@@ -13,7 +13,6 @@ public:
 
 private:
   Vect<2, s32> _side_point[MAX_SIDE];
-  bool _done;
 
   static const s32 DIST_MM = 300;
 

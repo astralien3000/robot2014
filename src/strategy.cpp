@@ -6,25 +6,46 @@
 #include "avoidance.hpp"
 #include "rds.hpp"
 #include "paint_action.hpp"
+#include "master_action.hpp"
+#include "asserv.hpp"
 
 State state;
 extern List<20, Action*> actions;
 extern PaintAction paint_action;
+extern MasterAction red_top_fire_action;
+extern MasterAction yellow_top_fire_action;
 Action* current_action;
 
-inline void handler_begin(void) {
-  traj.gotoDistance(200);
-  while (!traj.isEnded()) {
-  }
-  
-  if (Action::side == RED)
+static void print_pos(void) {
+  io << "(x " << pos.getValue().coord(0) << ", ";
+  io << "y " << pos.getValue().coord(1) << ")\n";
+}
+
+
+inline void handler_begin(void) {  
+  asserv_speed_fast();
+  if (Action::side == RED) {
+    io << "going to yellow fire !\n";
     traj.gotoPosition(yellow_top_fire.p());
-  else
+  } else {
+    io << "going to red fire !\n";
     traj.gotoPosition(red_top_fire.p());
+  }
   while (!traj.isEnded()) {
     //check_for_collision();
     //and make sure ennemy is not boring
+    print_pos();
   }
+  // mettre le feu à done
+  red_top_fire_action.done();
+  yellow_top_fire_action.done();
+
+  traj.gotoPosition(Vect<2, s32>(0, 450));
+  while (!traj.isEnded()) {
+    //hum hum
+  }
+
+  asserv_speed_normal();
 
   traj.gotoPosition(paint_action.controlPoint());
   while (!traj.isEnded()) {
@@ -32,6 +53,16 @@ inline void handler_begin(void) {
   }
 
   paint_action.doAction();
+  traj.gotoPosition(Vect<2, s32>(0, 450));
+  while (!traj.isEnded()) {
+    //pareil
+  }
+  traj.gotoPosition(Vect<2, s32>(-300, 450));
+  while (!traj.isEnded()) {
+    //pareil
+  }
+  
+  state = SEARCH_ACTION;
 }
 
 inline void handler_search(void) {
@@ -78,7 +109,8 @@ inline void handler_do(void) {
 
 
 void do_your_job(void) {
-  state = SEARCH_ACTION;
+  //state = SEARCH_ACTION;
+  state = BEGIN;
   while(1) {
     if (state == BEGIN) {
       handler_begin();

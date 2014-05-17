@@ -5,7 +5,7 @@
 static s16 ANTI_BOUNCE_LIMIT = 100;
 
 HuntAction::HuntAction(const Vect<2, s32>& pos, s32 number)
-: _pos(pos), _number(number), _done(false) {
+: _pos(pos), _number(number) {
   Pin<36> sortie("PE4");//PE4, green
   sortie.setMode(PinMode::OUTPUT);
   sortie.setValue(false);
@@ -18,9 +18,9 @@ s16 HuntAction::priority(void) {
   
   s16 dist = (controlPoint() - positionManager().getValue()).norm();
   if(dist != 0) {
-    return 4000 / dist;
+    return 10000 / dist;
   }
-  return 4000;
+  return 10000;
 }
 
 Vect<2, s32> HuntAction::controlPoint(void) {
@@ -28,6 +28,7 @@ Vect<2, s32> HuntAction::controlPoint(void) {
 }
 
 void HuntAction::doAction(void) {
+  io << "DO HUNT\n";
   /*
   if((positionManager().getValue() - controlPoint()).norm() > 100) {
     io << "not at a good position\n";
