@@ -1,7 +1,7 @@
 #include "deposit_action.hpp"
 #include "devices.hpp"
 
-#include "device/servomotor/fpga_servomotor.hpp"
+#include <device/servomotor/fpga_servomotor.hpp>
 
 #define F_CPU 16000000l
 #include <util/delay.h>
@@ -47,11 +47,9 @@ void DepositAction::doAction(void) {
   robot().unlock();
   
   // Actually deposit the fruits now
-  FpgaServomotor<volatile u16, SERVO1_ADDR> servo("basket_servo");
-  servo.setMinCommand(1900);
-  servo.setMaxCommand(500);
-  servo.setValue(1000);
-  while(1);
+  basket_servo.setValue(BASKET_SERVO_DOWN_CMD);  
+  _delay_ms(1000);
+  basket_servo.setValue(BASKET_SERVO_UP_CMD);  
   _fruit = 0;
   
   // Go far from the basket

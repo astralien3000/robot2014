@@ -11,6 +11,7 @@
 #include "calibrate.hpp"
 #include "trajectory.hpp"
 #include "rds.hpp"
+#include "servo.hpp"
 #include "avoidance.hpp"
 
 #include "curv_trajectory_manager.hpp"
@@ -21,6 +22,8 @@
 #include "hunt_action.hpp"
 #include "paint_action.hpp"
 #include "strategy.hpp"
+
+#include <device/servomotor/fpga_servomotor.hpp>
 
 List<20, Action*> actions;
 
@@ -84,7 +87,7 @@ int main(int argc, char* argv[]) {
   robot.lock();
 
   //rds_init();
-
+  servo_init();
   control_init();
   Interrupts::set();
 
@@ -105,10 +108,27 @@ int main(int argc, char* argv[]) {
   //   io << "Command ?\n";
   //   io >> cmd;
   //   io << cmd << "\n";
-  //   FpgaServomotor<volatile u16, SERVO1_ADDR> servo("basket_servo");
-  //   servo.setMinCommand(1900);
-  //   servo.setMaxCommand(500);
-  //   servo.setValue(1000);
+  //   // SERVO1 = cmd;
+  //   // SERVO2 = cmd;
+  //   // SERVO3 = cmd;
+  //   // SERVO4 = cmd;
+  //   // SERVO5 = cmd;
+  //   // SERVO6 = cmd;
+  //   // SERVO7 = cmd;
+  //   // SERVO8 = cmd;
+  //   // SERVO9 = cmd;
+  //   // SERVO10 = cmd;
+  //   // SERVO11 = cmd;
+  //   // SERVO12 = cmd;
+  //   // SERVO13 = cmd;
+  //   // SERVO14 = cmd;
+  //   // SERVO15 = cmd;
+  //   // SERVO16 = cmd;
+
+  //   FpgaServomotor<volatile u16, SERVO4_ADDR> servo("basket_servo");
+  //   servo.setMinCommand(900);
+  //   servo.setMaxCommand(1650);
+  //   servo.setValue(cmd);
   // }
 
 

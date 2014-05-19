@@ -21,8 +21,15 @@
 
 #include "fpga.hpp"
 
+#include <device/servomotor/fpga_servomotor.hpp>
+
 ////////////////////////////////////////
 // Physical devices
+
+//// Servos
+extern FpgaServomotor<volatile u16, SERVO4_ADDR> basket_servo;
+#define BASKET_SERVO_UP_CMD 1650
+#define BASKET_SERVO_DOWN_CMD 900
 
 //// Incremental Encoders
 //extern Encoder<volatile u32> enc_l;
