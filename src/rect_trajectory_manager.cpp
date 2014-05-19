@@ -49,6 +49,12 @@ void RectTrajectoryManager::gotoAngle(s32 angle) {
   _state = REACH_ANGLE;
 }
 
+void RectTrajectoryManager::lookAt(Vect<2, s32> pos) {
+  Vect<2, s32> dir = pos - _pos.getValue();
+  s32 angle = Math::atan2<Math::DEGREE>(dir.coord(1), dir.coord(0));
+  gotoAngle(angle);
+}
+
 void RectTrajectoryManager::gotoPosition(Vect<2, s32> pos) {
   _state_handlers[REACH_ANGLE] = RectTrajectoryManager::_update_reach_angle;
   _state_handlers[FOLLOW_TRAJECTORY] = RectTrajectoryManager::_update_follow_trajectory;

@@ -27,6 +27,9 @@ public:
   //! \brief Just reach angle (independent from mode)
   void gotoAngle(s32 angle);
 
+  //! \brief Reach angle to look at position (independent from mode)
+  void lookAt(Vect<2, s32> pos);
+
 private:
   //! \brief Filter used to correct error on normal vector
   PidFilter& _pid_r;
