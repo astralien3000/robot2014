@@ -10,6 +10,32 @@ void avoidance_init(void) {
   fill_world(world);
 }
 
+bool check_collision_on_trajectory(Vect<2, s32> source, Vect<2, s32> target) {
+  //TEST AVEC COLLISION SUR SEGMENTS QUI ENCADRENT LA TRAJECTOIRE
+  s32 my_x, my_y, x1, y1, x2, y2, dx, dy;
+  Segment seg;
+  dx = target.coord(0) - source.coord(0);
+  dy = target.coord(1) - source.coord(1);
+
+  x1 = source.coord(0) - dy;
+  y1 = source.coord(1) + dx;
+  x2 = target.coord(0) - dy;
+  y2 = target.coord(1) + dx;
+  seg = Segment(x1, y1, x2, y2);
+  if (world.collide(&seg))
+    return true;
+  
+  x1 = source.coord(0) + dy;
+  y1 = source.coord(1) - dx;
+  x2 = target.coord(0) + dy;
+  y2 = target.coord(1) - dx;
+  seg = Segment(x1, y1, x2, y2); 
+  if (world.collide(&seg))
+    return true;
+  
+  return false;
+}
+
 bool avoidance_goto(const Vect<2, s32>& target) {
   Vect<2, s32> *path;
   io << "begin avoidance\n";
@@ -30,24 +56,16 @@ bool avoidance_goto(const Vect<2, s32>& target) {
     while(!traj.isEnded()) {
       if (update_world()) {
 	io << "DETECTED !\n";
-	// Faire le traitement qu'on a vu avec les doubles segments par trajectoire + cercle robot par rotation.
-	//TEST AVEC COLLISION SUR SEGMENTS QUI ENCADRENT LA TRAJECTOIRE /!\ A placer dans un autre fichier ... ?
-	// s32 my_x, my_y, x1, y1, x2, y2, dx, dy;
-	// Segment seg1, seg2;
-	// my_x = pos.getValue().coord(0);
-	// my_y = pos.getValue().coord(1);
-	// //on teste sur le segment (robot)->(prochain check point)
-	// dx = path[i-1].coord(0) - my_x;
-	// dy = path[i-1].coord(1) - my_y;
-	// x1 = my_x - dy;
-	// y1 = my_y + dx;
-	// x2 = path[i-1].coord(0) - dy;
-	// y2 = path[i-1].coord(1) + dx;
-	// seg1 = Segment(x1, y1, x2, y2);
-	// world.addShape(&seg1);
-	// seg1 = Segment(x1, y1, x2, y2);
-
-       	return false;
+	
+	//premier segment
+	if (check_collision_on_trajectory(pos.getValue(), path[i-1]))
+	  return false;
+	
+	//segments suivants
+	for (uint8_t j = i; j>0; j--) {
+	  if (chek_collision_on_trajectory(path[j-1], path[j]))
+	    return false;
+	}
       }
     }
   }
