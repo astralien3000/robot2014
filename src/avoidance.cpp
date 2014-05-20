@@ -28,8 +28,25 @@ bool avoidance_goto(const Vect<2, s32>& target) {
     io << "goto " << path[i-1].coord(0) << " " << path[i-1].coord(1) << "...\n";
     traj.gotoPosition(path[i-1]);
     while(!traj.isEnded()) {
-      if (check_for_collision()) {
-	io << "COLLISION !\n";
+      if (update_world()) {
+	io << "DETECTED !\n";
+	// Faire le traitement qu'on a vu avec les doubles segments par trajectoire + cercle robot par rotation.
+	//TEST AVEC COLLISION SUR SEGMENTS QUI ENCADRENT LA TRAJECTOIRE /!\ A placer dans un autre fichier ... ?
+	// s32 my_x, my_y, x1, y1, x2, y2, dx, dy;
+	// Segment seg1, seg2;
+	// my_x = pos.getValue().coord(0);
+	// my_y = pos.getValue().coord(1);
+	// //on teste sur le segment (robot)->(prochain check point)
+	// dx = path[i-1].coord(0) - my_x;
+	// dy = path[i-1].coord(1) - my_y;
+	// x1 = my_x - dy;
+	// y1 = my_y + dx;
+	// x2 = path[i-1].coord(0) - dy;
+	// y2 = path[i-1].coord(1) + dx;
+	// seg1 = Segment(x1, y1, x2, y2);
+	// world.addShape(&seg1);
+	// seg1 = Segment(x1, y1, x2, y2);
+
        	return false;
       }
     }

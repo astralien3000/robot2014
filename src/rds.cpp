@@ -4,10 +4,13 @@
 #include <math/trigo.hpp>
 #include "fpga.hpp"
 #include <geometry/world.hpp>
+#include <geometry/segment.hpp>
 
 #include "my_world.hpp"
 
 extern World<WORLD_SIZE, AABB> world;
+
+
 
 FpgaUartStream rds_io("rds_stream", UART_TX_1_DATA, UART_TX_1_OCUP, UART_RX_1_DATA, UART_RX_1_AVA);
 
@@ -17,16 +20,17 @@ void rds_init(void) {
   //rds_io.setMode(Stream::BINARY);
 }
 
-bool check_for_collision(void) {
+void update_world(void) {
   rds.update();
   List<2, Vect<2, s32> > adv = rds.getValue();
+  io << "UPDATE_WORLD\n";
   io << "i'm at : " << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
   io << "detected : " << adv.usedSpace() << "\n";
 
   world.removeShape(&ennemy_robot);
   world.removeShape(&ennemy_pmi);
 
-  bool collision = false;
+  bool detected = false;
 
   for (int i=0; i< (int)adv.usedSpace(); i++) {
     io << i << " : " << adv.get(i).coord(0) << " , " << adv.get(i).coord(1) << "\n";
@@ -50,6 +54,23 @@ bool check_for_collision(void) {
       world.addShape(&ennemy_pmi);
     }
 
+    detected = true;
+  }
+
+  return detected;
+}
+
+bool check_for_collision(void) {
+  rds.update();
+  List<2, Vect<2, s32> > adv = rds.getValue();
+  io << "CHECK_FOR_COLLISION\n";
+  io << "i'm at : " << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
+  io << "detected : " << adv.usedSpace() << "\n";
+
+  bool collision = false;
+
+  for (int i=0; i< (int)adv.usedSpace(); i++) {
+    io << i << " : " << adv.get(i).coord(0) << " , " << adv.get(i).coord(1) << "\n";
     if (adv.get(i).coord(0) < 50 &&
 	(adv.get(i).coord(1) < 40 || adv.get(i).coord(1) > 320)) {
       collision = true;
@@ -58,7 +79,6 @@ bool check_for_collision(void) {
 	(adv.get(i).coord(1) < 20 || adv.get(i).coord(1) > 340)) {
       collision = true;
     }
-
   }
 
   return collision;
