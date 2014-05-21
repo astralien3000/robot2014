@@ -41,7 +41,7 @@ bool avoidance_goto(const Vect<2, s32>& target) {
   Vect<2, s32> *path;
   io << "begin avoidance\n";
 
-  check_for_collision();
+  update_world();
   path = astar.getTrajectory(pos.getValue(), (Vect<2, s32>)target);
 
   io << "going from : " << pos.getValue()[0] << " " << pos.getValue()[1] << " to " << target[0] << " " << target[1] << "\n";
@@ -59,13 +59,23 @@ bool avoidance_goto(const Vect<2, s32>& target) {
 	io << "DETECTED !\n";
 	
 	//premier segment
-	if (check_collision_on_trajectory(pos.getValue(), path[i-1]))
+	if (check_collision_on_trajectory(pos.getValue(), path[i-1])) {
+	  robot.lock();
+	  traj.reset();
+	  trajectory_reset();
+	  robot.unlock();
 	  return false;
+	}
 	
 	//segments suivants
 	for (uint8_t j = i-1; j>0; j--) {
-	  if (check_collision_on_trajectory(path[j], path[j-1]))
+	  if (check_collision_on_trajectory(path[j], path[j-1])) {
+	    robot.lock();
+	    traj.reset();
+	    trajectory_reset();
+	    robot.unlock();
 	    return false;
+	  }
 	}
       }
     }
