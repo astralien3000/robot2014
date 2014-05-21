@@ -20,7 +20,7 @@ void rds_init(void) {
   //rds_io.setMode(Stream::BINARY);
 }
 
-void update_world(void) {
+bool update_world(void) {
   rds.update();
   List<2, Vect<2, s32> > adv = rds.getValue();
   io << "UPDATE_WORLD\n";

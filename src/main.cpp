@@ -86,8 +86,8 @@ int main(int argc, char* argv[]) {
 
   robot.lock();
 
-  //rds_init();
-  servo_init();
+  rds_init();
+  //servo_init();
   control_init();
   Interrupts::set();
 
@@ -195,9 +195,15 @@ int main(int argc, char* argv[]) {
   while (!traj.isEnded()) {
   }
 
+  //TEST_EVITEMENT
+  while (1) {
+    avoidance_goto(Vect<2, s32>(500, -500));
+    io << "NOUVEAU CALCUL\n";
+  }
+
   // TEST STRATEGY 
-  io << "Begin Strategy\n";
-  do_your_job();
+  //io << "Begin Strategy\n";
+  //do_your_job();
 
   // TEST BEGIN A FOND !!
   // traj.gotoPosition(Vect<2, s32>(-100, 500));

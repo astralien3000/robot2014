@@ -2,6 +2,7 @@
 #include "rds.hpp"
 #include "devices.hpp"
 #include "trajectory.hpp"
+#include <geometry/segment.hpp>
 
 World<WORLD_SIZE, AABB> world;
 Astar astar(42, world);
@@ -12,7 +13,7 @@ void avoidance_init(void) {
 
 bool check_collision_on_trajectory(Vect<2, s32> source, Vect<2, s32> target) {
   //TEST AVEC COLLISION SUR SEGMENTS QUI ENCADRENT LA TRAJECTOIRE
-  s32 my_x, my_y, x1, y1, x2, y2, dx, dy;
+  s32 x1, y1, x2, y2, dx, dy;
   Segment seg;
   dx = target.coord(0) - source.coord(0);
   dy = target.coord(1) - source.coord(1);
@@ -22,7 +23,7 @@ bool check_collision_on_trajectory(Vect<2, s32> source, Vect<2, s32> target) {
   x2 = target.coord(0) - dy;
   y2 = target.coord(1) + dx;
   seg = Segment(x1, y1, x2, y2);
-  if (world.collide(&seg))
+  if (world.collide(seg))
     return true;
   
   x1 = source.coord(0) + dy;
@@ -30,7 +31,7 @@ bool check_collision_on_trajectory(Vect<2, s32> source, Vect<2, s32> target) {
   x2 = target.coord(0) + dy;
   y2 = target.coord(1) - dx;
   seg = Segment(x1, y1, x2, y2); 
-  if (world.collide(&seg))
+  if (world.collide(seg))
     return true;
   
   return false;
@@ -62,8 +63,8 @@ bool avoidance_goto(const Vect<2, s32>& target) {
 	  return false;
 	
 	//segments suivants
-	for (uint8_t j = i; j>0; j--) {
-	  if (chek_collision_on_trajectory(path[j-1], path[j]))
+	for (uint8_t j = i-1; j>0; j--) {
+	  if (check_collision_on_trajectory(path[j], path[j-1]))
 	    return false;
 	}
       }

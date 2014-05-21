@@ -7,6 +7,7 @@ extern Rds rds;
 
 void rds_init(void);
 //returns true if at least one robot is detected.
+bool update_world(void);
 bool check_for_collision(void);
 
 #endif//MY_RDS_HPP
