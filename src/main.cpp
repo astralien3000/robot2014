@@ -151,8 +151,9 @@ int main(int argc, char* argv[]) {
   
   while(tirette.getValue()) {
     if(ihm_io.inputUsedSpace() > 0) {
+      io << "used sp = " << ihm_io.inputUsedSpace() << "\n";
       u8 c = ihm_io.getValue();
-      if(c & 1) {
+      if(! (c & 1)) {
 	dummy = 1;
 	io << "RED SIDE\n";
       }
@@ -201,7 +202,18 @@ int main(int argc, char* argv[]) {
   actions.append(&yellow_mammouth_action);
   
   io << "Place me please <3\n";
-  io >> dummy;
+  //io >> dummy;
+  dummy = 0;
+  while(dummy < 100) {
+    if(tirette.getValue()) {
+      dummy++;
+    }
+    else {
+      dummy = 0;
+    }
+  }
+
+  while(tirette.getValue());
   
   traj.setMode(TrajectoryManager::FASTER);
   traj.reset();
