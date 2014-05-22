@@ -4,7 +4,7 @@
 #include "trajectory.hpp"
 #include <geometry/segment.hpp>
 
-#define ROBOT_RADIUS 240
+#define ROBOT_RADIUS 220
 
 World<WORLD_SIZE, AABB> world;
 Astar astar(42, world);
@@ -64,20 +64,20 @@ bool avoidance_goto(const Vect<2, s32>& target) {
 	
 	//premier segment
 	if (check_collision_on_trajectory(pos.getValue(), path[i-1])) {
-	  robot.lock();
-	  traj.reset();
-	  trajectory_reset();
-	  robot.unlock();
+	  //robot.lock();
+	  //traj.reset();
+	  //trajectory_reset();
+	  //robot.unlock();
 	  return false;
 	}
 	
 	//segments suivants
 	for (uint8_t j = i-1; j>0; j--) {
 	  if (check_collision_on_trajectory(path[j], path[j-1])) {
-	    robot.lock();
-	    traj.reset();
-	    trajectory_reset();
-	    robot.unlock();
+	    //robot.lock();
+	    //traj.reset();
+	    //trajectory_reset();
+	    //robot.unlock();
 	    return false;
 	  }
 	}
