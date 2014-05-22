@@ -5,6 +5,7 @@
 
 class HuntAction : public Action {
 public:
+  static const s32 OFFSET = 40;
   HuntAction(const Vect<2, s32>& pos, const Vect<2, s32>& mamouth, s32 number);
   
   s16 priority(void);

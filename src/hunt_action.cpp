@@ -43,7 +43,7 @@ void HuntAction::doAction(void) {
   Vect<2, s32> look = _mamouth;
   look[0] -= OFFSET*_number/2;
   for (int i=0; i<_number; i++) {
-    trajectoryManager.lookAt(look);
+    trajectoryManager().lookAt(look);
     io << "start sending" << i<<"\n";
     sortie.setValue(true);
     s16 anti_bounce = 0;
