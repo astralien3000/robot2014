@@ -24,6 +24,7 @@
 #include "strategy.hpp"
 
 #include <device/servomotor/fpga_servomotor.hpp>
+#include <device/other/pin.hpp>
 
 // IHM
 FpgaUartStream ihm_io("ihm", UART_TX_2_DATA, UART_TX_2_OCUP, UART_RX_2_DATA, UART_RX_2_AVA);
@@ -144,7 +145,7 @@ int main(int argc, char* argv[]) {
   traj.setMode(TrajectoryManager::FASTER);
 
   Pin<37> tirette("tirette");
-  entree.setMode(PinMode::INPUT);
+  tirette.setMode(PinMode::INPUT);
 
   s16 dummy = 0;
   
