@@ -24,6 +24,12 @@
 #include "strategy.hpp"
 
 #include <device/servomotor/fpga_servomotor.hpp>
+#include <device/other/pin.hpp>
+
+// IHM
+FpgaUartStream ihm_io("ihm", UART_TX_2_DATA, UART_TX_2_OCUP, UART_RX_2_DATA, UART_RX_2_AVA);
+
+//
 
 List<20, Action*> actions;
 
@@ -137,11 +143,30 @@ int main(int argc, char* argv[]) {
   asserv_speed_slow();
 
   traj.setMode(TrajectoryManager::FASTER);
-  
+
+  Pin<37> tirette("tirette");
+  tirette.setMode(PinMode::INPUT);
+
   s16 dummy = 0;
-  io << "Side \n";
-  io >> dummy;
-  io << dummy << "\n";
+  
+  while(tirette.getValue()) {
+    if(ihm_io.inputUsedSpace() > 0) {
+      io << "used sp = " << ihm_io.inputUsedSpace() << "\n";
+      u8 c = ihm_io.getValue();
+      if(! (c & 1)) {
+	dummy = 1;
+	io << "RED SIDE\n";
+      }
+      else {
+	dummy = 2;
+	io << "YELLOW SIDE\n";
+      }
+    }
+  }
+
+  // io << "Side \n";
+  // io >> dummy;
+  // io << dummy << "\n";
   side_init(dummy==1);
   match_init(dummy==1);
 
@@ -177,7 +202,18 @@ int main(int argc, char* argv[]) {
   actions.append(&yellow_mammouth_action);
   
   io << "Place me please <3\n";
-  io >> dummy;
+  //io >> dummy;
+  dummy = 0;
+  while(dummy < 100) {
+    if(tirette.getValue()) {
+      dummy++;
+    }
+    else {
+      dummy = 0;
+    }
+  }
+
+  while(tirette.getValue());
   
   traj.setMode(TrajectoryManager::FASTER);
   traj.reset();
