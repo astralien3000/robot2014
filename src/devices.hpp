@@ -53,6 +53,7 @@ extern FpgaMotor<volatile s8, MOT_R_ADDR> mot_r;
 extern FormattedStream& io;
 //extern EepromStream file;
 extern FpgaUartStream rds_stream;
+extern FpgaUartStream ihm_io;
 
 ////////////////////////////////////////
 // Virtual devices

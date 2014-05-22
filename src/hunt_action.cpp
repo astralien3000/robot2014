@@ -33,7 +33,7 @@ void HuntAction::doAction(void) {
     // Let Benoit do its job !
   Pin<36> sortie("PE4");//PE4, green
   sortie.setMode(PinMode::OUTPUT);
-  Pin<38> entree("PE5");//PE5, yellow
+  Pin<38> entree("PE6");//PE6, yellow
   entree.setMode(PinMode::INPUT);
   /*Pin<38> entree2("PE6");
   entree.setMode(PinMode::INPUT);
