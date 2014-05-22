@@ -49,8 +49,8 @@ HarvestAction right_tree_action(right_tree.centre(), 180);
 DepositAction basket_action;
 
 // MAMMOUTH (HUNT)
-HuntAction red_mammouth_action(Vect<2, s32>(800, 400),Vect<2, s32>(800,1050), 2);
-HuntAction yellow_mammouth_action(Vect<2, s32>(-800, 400), Vect<2,s32>(-800,1050), 4);
+HuntAction red_mammouth_action(Vect<2, s32>(700, 400),Vect<2, s32>(600,1050), 4);
+HuntAction yellow_mammouth_action(Vect<2, s32>(-700, 400), Vect<2,s32>(-600,1050), 4);
 
 // MAMMOUTH (CAPTURE)
 // TODO : 2
@@ -196,16 +196,16 @@ int main(int argc, char* argv[]) {
   }
 
   //TEST_EVITEMENT
-  // u8 number_of_cacul = 0;
-  // while (1) {
-  //   avoidance_goto(Vect<2, s32>(500, -500));
-  //   io << "NOUVEAU CALCUL : " << number_of_cacul << "\n";
-  //   number_of_cacul++;
-  // }
+  u8 number_of_cacul = 0;
+  while (1) {
+    avoidance_goto(Vect<2, s32>(-250, -550));
+    io << "NOUVEAU CALCUL : " << number_of_cacul << "\n";
+    number_of_cacul++;
+  }
 
   // TEST STRATEGY 
-  io << "Begin Strategy\n";
-  do_your_job();
+  //io << "Begin Strategy\n";
+  //do_your_job();
 
   // TEST BEGIN A FOND !!
   // traj.gotoPosition(Vect<2, s32>(-100, 500));

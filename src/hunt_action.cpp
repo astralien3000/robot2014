@@ -44,6 +44,7 @@ void HuntAction::doAction(void) {
   look[0] -= OFFSET*_number/2;
   for (int i=0; i<_number; i++) {
     trajectoryManager().lookAt(look);
+    while(!trajectoryManager().isEnded()){};
     io << "start sending" << i<<"\n";
     sortie.setValue(true);
     s16 anti_bounce = 0;
@@ -71,6 +72,7 @@ void HuntAction::doAction(void) {
 	look[0]+=OFFSET;
   }
   io << "finished\n";
-
+  trajectoryManager().gotoDistance(-100);
+  while(trajectoryManager().isEnded()){};
   _done = true;
 }
