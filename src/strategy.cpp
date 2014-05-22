@@ -109,8 +109,9 @@ inline void handler_do(void) {
 
 
 void do_your_job(void) {
-  //state = SEARCH_ACTION;
-  state = BEGIN;
+  state = SEARCH_ACTION;
+  //state = BEGIN;
+  io << "state is " << state << "\n";
   while(1) {
     if (state == BEGIN) {
       handler_begin();

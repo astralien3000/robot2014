@@ -4,6 +4,8 @@
 #include "trajectory.hpp"
 #include <geometry/segment.hpp>
 
+#define ROBOT_RADIUS 240
+
 World<WORLD_SIZE, AABB> world;
 Astar astar(42, world);
 
@@ -18,18 +20,20 @@ bool check_collision_on_trajectory(Vect<2, s32> source, Vect<2, s32> target) {
   dx = target.coord(0) - source.coord(0);
   dy = target.coord(1) - source.coord(1);
 
-  x1 = source.coord(0) - dy;
-  y1 = source.coord(1) + dx;
-  x2 = target.coord(0) - dy;
-  y2 = target.coord(1) + dx;
+  s32 norm = (Vect<2, s32>(dx, dy)).norm();
+
+  x1 = source.coord(0) - dy * ROBOT_RADIUS / norm;
+  y1 = source.coord(1) + dx * ROBOT_RADIUS / norm;
+  x2 = target.coord(0) - dy * ROBOT_RADIUS / norm;
+  y2 = target.coord(1) + dx * ROBOT_RADIUS / norm;
   seg = Segment(x1, y1, x2, y2);
   if (world.collide(seg))
     return true;
   
-  x1 = source.coord(0) + dy;
-  y1 = source.coord(1) - dx;
-  x2 = target.coord(0) + dy;
-  y2 = target.coord(1) - dx;
+  x1 = source.coord(0) + dy * ROBOT_RADIUS / norm;
+  y1 = source.coord(1) - dx * ROBOT_RADIUS / norm;
+  x2 = target.coord(0) + dy * ROBOT_RADIUS / norm;
+  y2 = target.coord(1) - dx * ROBOT_RADIUS / norm;
   seg = Segment(x1, y1, x2, y2); 
   if (world.collide(seg))
     return true;
