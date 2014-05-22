@@ -4,8 +4,8 @@
 
 static s16 ANTI_BOUNCE_LIMIT = 100;
 
-HuntAction::HuntAction(const Vect<2, s32>& pos, s32 number)
-: _pos(pos), _number(number) {
+HuntAction::HuntAction(const Vect<2, s32>& pos, const Vect<2, s32>& mamouth,s32 number)
+: _pos(pos), _mamouth(mamouth), _number(number) {
   Pin<36> sortie("PE4");//PE4, green
   sortie.setMode(PinMode::OUTPUT);
   sortie.setValue(false);
@@ -29,13 +29,8 @@ Vect<2, s32> HuntAction::controlPoint(void) {
 
 void HuntAction::doAction(void) {
   io << "DO HUNT\n";
-  /*
-  if((positionManager().getValue() - controlPoint()).norm() > 100) {
-    io << "not at a good position\n";
-    return;
-  }
-  */
-  // Let Benoit do its job !
+  
+    // Let Benoit do its job !
   Pin<36> sortie("PE4");//PE4, green
   sortie.setMode(PinMode::OUTPUT);
   Pin<38> entree("PE5");//PE5, yellow
@@ -45,8 +40,10 @@ void HuntAction::doAction(void) {
   while(1) {
     io << entree.getValue() << " " << entree2.getValue() << "\n";
     }*/
-
+  Vect<2, s32> look = _mamouth;
+  look[0] -= OFFSET*_number/2;
   for (int i=0; i<_number; i++) {
+    trajectoryManager.lookAt(look);
     io << "start sending" << i<<"\n";
     sortie.setValue(true);
     s16 anti_bounce = 0;
@@ -71,6 +68,7 @@ void HuntAction::doAction(void) {
 	anti_bounce = 0;
       }
     }
+	look[0]+=OFFSET;
   }
   io << "finished\n";
 
