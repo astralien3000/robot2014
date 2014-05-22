@@ -1,6 +1,8 @@
 #include "deposit_action.hpp"
 #include "devices.hpp"
 
+#include "asserv.hpp"
+
 #include <device/servomotor/fpga_servomotor.hpp>
 
 #define F_CPU 16000000l
@@ -41,9 +43,11 @@ void DepositAction::doAction(void) {
   }
   
   // We stick to the basket
+  asserv_speed_slow();
   trajectoryManager().gotoDistance(3000);
   while(!robot().getValue()) {
   }
+  trajectoryManager().reset();
   robot().unlock();
   
   // Actually deposit the fruits now
@@ -53,6 +57,7 @@ void DepositAction::doAction(void) {
   _fruit = 0;
   
   // Go far from the basket
+  asserv_speed_normal();
   trajectoryManager().gotoDistance(-200);
   while(!trajectoryManager().isEnded()) {
     robot().unlock();
