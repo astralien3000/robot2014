@@ -18,9 +18,9 @@ s16 DepositAction::priority(void) {
   
   s16 dist = (controlPoint() - positionManager().getValue()).norm();
   if(dist != 0) {
-    return 10000 / dist;
+    return _fruit * 7000 / dist;
   }
-  return 10000;
+  return _fruit * 7000;
 }
 
 Vect<2, s32> DepositAction::controlPoint(void) {

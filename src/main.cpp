@@ -234,7 +234,7 @@ int main(int argc, char* argv[]) {
   //TEST_EVITEMENT
   u8 number_of_cacul = 0;
   while (1) {
-    avoidance_goto(Vect<2, s32>(-250, -550));
+    avoidance_goto(Vect<2, s32>(1000, -200));
     io << "NOUVEAU CALCUL : " << number_of_cacul << "\n";
     number_of_cacul++;
   }

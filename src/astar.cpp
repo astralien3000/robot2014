@@ -145,7 +145,7 @@ Vect<2, s32>* Astar::makePath(Node *source, Node *target) {
   int8_t curDy = 0;
 
 
-  while (cursor != source) {    
+  while (previous != source) {
     if (cursor->x() - previous->x() != curDx ||
 	cursor->y() - previous->y() != curDy) {
       if (previous->x() == targetX && previous->y() == targetY) {
@@ -164,11 +164,10 @@ Vect<2, s32>* Astar::makePath(Node *source, Node *target) {
     cursor = &nodes[cursor->pred()];
   }
 
-  if (pathLengh == 0 &&
-      distance(beginX, beginY, targetX, targetY) < 3) {
+  if (distance(beginX, beginY, targetX, targetY) < 3) {
     path[0][0] = targetX_real;
     path[0][1] = targetY_real;
-    pathLengh++;
+    pathLengh = 1;
     this->pathIsEnded = true;
   }
 

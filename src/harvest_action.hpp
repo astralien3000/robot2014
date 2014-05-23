@@ -16,8 +16,8 @@ private:
   Vect<2, s32> _begin_point;
   Vect<2, s32> _end_point;
 
-  static const s32 DIST_FROM_WALL = 300;
-  static const s32 DIST_FROM_TREE = 300;
+  static const s32 DIST_FROM_WALL = 280;
+  static const s32 DIST_FROM_TREE = 250;
 };
 
 #endif//HARVEST_ACTION_HPP

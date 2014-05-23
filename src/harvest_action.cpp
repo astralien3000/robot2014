@@ -45,11 +45,11 @@ void HarvestAction::doAction(void) {
   while(!trajectoryManager().isEnded()) {
   }
 
-  trajectoryManager().gotoDistance(200);
+  trajectoryManager().gotoDistance(100);
   while(!trajectoryManager().isEnded()) {
   }
   
-  _fruit = 1;
+  _fruit++;
   _done = true;
 }
 

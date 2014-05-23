@@ -4,11 +4,11 @@
 #include <math/trigo.hpp>
 #include "fpga.hpp"
 #include <geometry/world.hpp>
-#include <geometry/segment.hpp>
 
 #include "my_world.hpp"
 
 extern World<WORLD_SIZE, AABB> world;
+extern World<2, Circle> mini_world;
 
 
 
@@ -29,6 +29,8 @@ bool update_world(void) {
 
   world.removeShape(&ennemy_robot);
   world.removeShape(&ennemy_pmi);
+  mini_world.removeShape(&ennemy_robot);
+  mini_world.removeShape(&ennemy_pmi);
 
   bool detected = false;
 
@@ -41,17 +43,19 @@ bool update_world(void) {
     s32 rel_y = (s32)(adv.get(i).coord(0) * Math::sin<Math::DEGREE, double>(abs_angle));
     s32 abs_x = pos.getValue().coord(0) + rel_x * 10;
     s32 abs_y = pos.getValue().coord(1) + rel_y * 10;
-    io << "abs_angle = " << abs_angle << "\n";
-    io << "my_angle = " << -(odo.getValue().coord(1) >> 4) << "\n";
-    io << "rel_x = " << rel_x << " \trel_y = " << rel_y << "\n";
+    //io << "abs_angle = " << abs_angle << "\n";
+    //io << "my_angle = " << -(odo.getValue().coord(1) >> 4) << "\n";
+    //io << "rel_x = " << rel_x << " \trel_y = " << rel_y << "\n";
     io << "abs_x = " << abs_x << " \tabs_y = " << abs_y << "\n";
 
     if (i==0) {
-      ennemy_robot = Circle(abs_x, abs_y, 300);
+      ennemy_robot = Circle(abs_x, abs_y, 330);
       world.addShape(&ennemy_robot);
+      mini_world.addShape(&ennemy_robot);
     } else {
-      ennemy_pmi = Circle(abs_x, abs_y, 300);
+      ennemy_pmi = Circle(abs_x, abs_y, 330);
       world.addShape(&ennemy_pmi);
+      mini_world.addShape(&ennemy_pmi);
     }
 
     detected = true;
