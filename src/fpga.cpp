@@ -37,6 +37,10 @@ void fpga_config(void) {
 #endif
 }
 
+void fpga_position_reset(void) {
+  RESET = (1 << 1) | (1 << 4) | (1 << 7);
+}
+
 ///////////////////////////////////////////////
 // On UNIOC
 #if defined (__AVR_ATmega128__)

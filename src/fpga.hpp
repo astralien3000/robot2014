@@ -10,9 +10,14 @@ void fpga_init(void);
 void fpga_reset(void);
 void fpga_config(void);
 
+void fpga_position_reset(void);
+
 ///////////////////////////////////////////////
 // On UNIOC
 #if defined (__AVR_ATmega128__)
+
+//(COMPTEURS - RESERVED - DEBBUGER - COUNTEUR - PWM - SERVO - COUNTERROT - TIMER)
+#define RESET   (*(volatile u8*)0x807F)
 
 static const u32 UART_BAUD = 115200;
 

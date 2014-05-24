@@ -54,7 +54,10 @@ void set_angle(s32 new_angle) {
 
   io << "reset...\n";
   robot.lock();
-  fpga_reset();
+  
+  //fpga_reset();
+  fpga_position_reset();
+
   fpga_config();
   trajectory_reset();
   robot.unlock();  

@@ -93,7 +93,7 @@ int main(int argc, char* argv[]) {
   robot.lock();
 
   rds_init();
-  //servo_init();
+  servo_init();
   control_init();
   Interrupts::set();
 
@@ -149,6 +149,18 @@ int main(int argc, char* argv[]) {
 
   s16 dummy = 0;
   
+  dummy = 0;
+  while(dummy < 10) {
+    if(tirette.getValue()) {
+      dummy++;
+      _delay_ms(5);
+    }
+    else {
+      dummy = 0;
+    }
+  }
+
+  dummy = 0;
   while(tirette.getValue()) {
     if(ihm_io.inputUsedSpace() > 0) {
       io << "used sp = " << ihm_io.inputUsedSpace() << "\n";
@@ -204,9 +216,10 @@ int main(int argc, char* argv[]) {
   io << "Place me please <3\n";
   //io >> dummy;
   dummy = 0;
-  while(dummy < 100) {
+  while(dummy < 10) {
     if(tirette.getValue()) {
       dummy++;
+      _delay_ms(5);
     }
     else {
       dummy = 0;
