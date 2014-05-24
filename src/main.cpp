@@ -46,10 +46,10 @@ MasterAction yellow_mid_fire_action(yellow_mid_fire.p(), -90);
 MasterAction yellow_bot_fire_action(yellow_bot_fire.p(), 0);
 
 // TREE
-HarvestAction red_tree_action(red_tree.centre(), -90);
-HarvestAction yellow_tree_action(yellow_tree.centre(), 90);
-HarvestAction left_tree_action(left_tree.centre(), 0);
-HarvestAction right_tree_action(right_tree.centre(), 180);
+HarvestAction red_tree_action(red_tree.centre(), -90, 10);
+HarvestAction yellow_tree_action(yellow_tree.centre(), 90, 0);
+HarvestAction left_tree_action(left_tree.centre(), 0, 0);
+HarvestAction right_tree_action(right_tree.centre(), 0, 10);
 
 // BASKET
 DepositAction basket_action;
@@ -93,7 +93,7 @@ int main(int argc, char* argv[]) {
   robot.lock();
 
   rds_init();
-  //servo_init();
+  servo_init();
   control_init();
   Interrupts::set();
 
@@ -149,6 +149,18 @@ int main(int argc, char* argv[]) {
 
   s16 dummy = 0;
   
+  dummy = 0;
+  while(dummy < 100) {
+    if(tirette.getValue()) {
+      dummy++;
+      _delay_ms(5);
+    }
+    else {
+      dummy = 0;
+    }
+  }
+
+  dummy = 0;
   while(tirette.getValue()) {
     if(ihm_io.inputUsedSpace() > 0) {
       io << "used sp = " << ihm_io.inputUsedSpace() << "\n";
@@ -191,15 +203,15 @@ int main(int argc, char* argv[]) {
   // actions.append(&yellow_mid_fire_action);
   // actions.append(&yellow_bot_fire_action);
 
-  // actions.append(&red_tree_action);
-  // actions.append(&yellow_tree_action);
-  // actions.append(&left_tree_action);
-  // actions.append(&right_tree_action);
+  actions.append(&red_tree_action);
+  actions.append(&yellow_tree_action);
+  actions.append(&left_tree_action);
+  actions.append(&right_tree_action);
 
-  // actions.append(&basket_action);
+  actions.append(&basket_action);
 
-  actions.append(&red_mammouth_action);
-  actions.append(&yellow_mammouth_action);
+  // actions.append(&red_mammouth_action);
+  // actions.append(&yellow_mammouth_action);
   
   io << "Place me please <3\n";
   //io >> dummy;
@@ -207,6 +219,7 @@ int main(int argc, char* argv[]) {
   while(dummy < 100) {
     if(tirette.getValue()) {
       dummy++;
+      _delay_ms(5);
     }
     else {
       dummy = 0;
@@ -232,16 +245,16 @@ int main(int argc, char* argv[]) {
   }
 
   //TEST_EVITEMENT
-  u8 number_of_cacul = 0;
-  while (1) {
-    avoidance_goto(Vect<2, s32>(1000, -200));
-    io << "NOUVEAU CALCUL : " << number_of_cacul << "\n";
-    number_of_cacul++;
-  }
+  // u8 number_of_cacul = 0;
+  // while (1) {
+  //   avoidance_goto(Vect<2, s32>(1000, -200));
+  //   io << "NOUVEAU CALCUL : " << number_of_cacul << "\n";
+  //   number_of_cacul++;
+  // }
 
   // TEST STRATEGY 
-  //io << "Begin Strategy\n";
-  //do_your_job();
+  io << "Begin Strategy\n";
+  do_your_job();
 
   // TEST BEGIN A FOND !!
   // traj.gotoPosition(Vect<2, s32>(-100, 500));
@@ -272,21 +285,21 @@ int main(int argc, char* argv[]) {
   // act1.doAction();
   // io << "DONE\n";
 
-  io << "Goto3\n";
-  traj.gotoPosition(yellow_mammouth_action.controlPoint());
-  while(!traj.isEnded());
+  // io << "Goto3\n";
+  // traj.gotoPosition(yellow_mammouth_action.controlPoint());
+  // while(!traj.isEnded());
 
-  io << "Do action3\n";
-  yellow_mammouth_action.doAction();
-  io << "DONE3\n";
+  // io << "Do action3\n";
+  // yellow_mammouth_action.doAction();
+  // io << "DONE3\n";
 
-  io << "Goto paint";
-  avoidance_goto(paint_action.controlPoint());
-  while(!traj.isEnded());
+  // io << "Goto paint";
+  // avoidance_goto(paint_action.controlPoint());
+  // while(!traj.isEnded());
 
-  io << "Do paint\n";
-  paint_action.doAction();
-  io << "DONE paint\n";
+  // io << "Do paint\n";
+  // paint_action.doAction();
+  // io << "DONE paint\n";
 
   while(1);
 

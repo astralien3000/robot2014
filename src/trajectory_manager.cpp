@@ -32,8 +32,9 @@ bool TrajectoryManager::isEnded(void) {
   Vect<2, s32> vdst = _dst - _pos.getValue();
   s32 dist_err = vdst.norm();
 
-  return (_state == STOP) || 
-    ((_state == NEAR_END) && (dist_err < 20));
+  // return (_state == STOP) || 
+  //   ((_state == NEAR_END) && (dist_err < 20));
+  return (_state == STOP);
 }
 
 void TrajectoryManager::setMode(Mode m) {

@@ -40,11 +40,14 @@ void HuntAction::doAction(void) {
   while(1) {
     io << entree.getValue() << " " << entree2.getValue() << "\n";
     }*/
+
   Vect<2, s32> look = _mamouth;
-  look[0] -= OFFSET*_number/2;
+  //look[0] -= OFFSET*_number/2;
+
+  trajectoryManager().lookAt(look);
+  while(!trajectoryManager().isEnded());
+
   for (int i=0; i<_number; i++) {
-    trajectoryManager().lookAt(look);
-    while(!trajectoryManager().isEnded()){};
     io << "start sending" << i<<"\n";
     sortie.setValue(true);
     s16 anti_bounce = 0;
@@ -72,7 +75,7 @@ void HuntAction::doAction(void) {
 	look[0]+=OFFSET;
   }
   io << "finished\n";
-  trajectoryManager().gotoDistance(-100);
+  trajectoryManager().gotoDistance(-150);
   while(trajectoryManager().isEnded()){};
   _done = true;
 }

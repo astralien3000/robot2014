@@ -101,7 +101,7 @@ $(HEX): $(ELF)
 	$(OBJCOPY) -O ihex $(ELF) $(HEX)
 
 load_unioc: atmega128 $(HEX)
-	sudo avarice -j $(DEV) --erase --program -f $(HEX)
+	avarice -j $(DEV) --erase --program -f $(HEX)
 #	sudo avrdude -cjtagmkI -p$(MMCU) -P $(DEV) -U flash:w:$(HEX) -D
 
 load_arduino: atmega2560 $(HEX)
