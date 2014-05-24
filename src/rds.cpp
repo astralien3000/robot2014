@@ -75,21 +75,30 @@ bool check_for_collision(void) {
   for(int i = 0; i < (int) adv.usedSpace(); i++) {
     io << i << " : " << adv.get(i).coord(0) << " , " << adv.get(i).coord(1) << "\n";
     
-    if(!traj.isBackward() && adv.get(i).coord(0) < 50 &&
-       (adv.get(i).coord(1) < 40 || adv.get(i).coord(1) > 320)) {
-      return true; // Short range in front cone
+    static const s32 SHORT_RANGE_DIST = 60;
+    static const s32 SHORT_RANGE_ANGLE = 45;
+    static const s32 LONG_RANGE_DIST = 110;
+    static const s32 LONG_RANGE_ANGLE = 30;
+    
+    if(!traj.isBackward() && adv.get(i).coord(0) < SHORT_RANGE_DIST &&
+       (adv.get(i).coord(1) < SHORT_RANGE_ANGLE ||
+	adv.get(i).coord(1) > (360 - SHORT_RANGE_ANGLE))) {
+      return true;
     }
-    if(!traj.isBackward() && adv.get(i).coord(0) < 100 &&
-       (adv.get(i).coord(1) < 20 || adv.get(i).coord(1) > 340)) {
-      return true; // Long range in front cone
+    if(!traj.isBackward() && adv.get(i).coord(0) < LONG_RANGE_DIST &&
+       (adv.get(i).coord(1) < LONG_RANGE_ANGLE ||
+	adv.get(i).coord(1) > (360 - LONG_RANGE_ANGLE))) {
+      return true;
     }
-    if(traj.isBackward() && adv.get(i).coord(0) < 50 &&
-       (adv.get(i).coord(1) > 140 && adv.get(i).coord(1) < 220)) {
-      return true; // Short range back cone
+    if(traj.isBackward() && adv.get(i).coord(0) < SHORT_RANGE_DIST &&
+       (adv.get(i).coord(1) > (180 - SHORT_RANGE_ANGLE) &&
+	adv.get(i).coord(1) < (180 + SHORT_RANGE_ANGLE))) {
+      return true;
     }
-    if(traj.isBackward() && adv.get(i).coord(0) < 100 &&
-       (adv.get(i).coord(1) > 160 && adv.get(i).coord(1) < 200)) {
-      return true; // Long range back cone
+    if(traj.isBackward() && adv.get(i).coord(0) < LONG_RANGE_DIST &&
+       (adv.get(i).coord(1) > (180 - LONG_RANGE_ANGLE) &&
+	adv.get(i).coord(1) < (180 + LONG_RANGE_ANGLE))) {
+      return true;
     }
   }
   return false;
