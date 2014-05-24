@@ -128,7 +128,7 @@ void asserv_speed_fast(void) {
   qramp_a.setFirstOrderLimit(40,40);
   qramp_a.setSecondOrderLimit(4,4);
 
-  // qramp_d.setFirstOrderLimit(29,29);
-  qramp_d.setFirstOrderLimit(20,20);
+  qramp_d.setFirstOrderLimit(29,29);
+  //qramp_d.setFirstOrderLimit(20,20);
   qramp_d.setSecondOrderLimit(2,2);
 }
