@@ -61,11 +61,11 @@ void DepositAction::doAction(void) {
   
   // Go far from the basket
   asserv_speed_normal();
-  trajectoryManager().gotoDistance(-200);
+  trajectoryManager().gotoDistance(-50);
   while(!trajectoryManager().isEnded()) {
     robot().unlock();
   }
-
+  
   // And finally we return to the control point
   trajectoryManager().setMode(TrajectoryManager::FASTER);
   trajectoryManager().gotoPosition(Vect<2, s32>(x, 450));

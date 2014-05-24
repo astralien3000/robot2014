@@ -45,7 +45,7 @@ void PaintAction::doAction(void) {
 
   // Go far from wall
   asserv_speed_normal();
-  trajectoryManager().gotoDistance(200);
+  trajectoryManager().gotoDistance(50);
   while(!trajectoryManager().isEnded()) {
     robot().unlock();
   }
