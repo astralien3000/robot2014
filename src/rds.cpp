@@ -6,6 +6,7 @@
 #include <geometry/world.hpp>
 
 #include "my_world.hpp"
+#include "trajectory.hpp"
 
 extern World<WORLD_SIZE, AABB> world;
 extern World<2, Circle> mini_world;
@@ -70,20 +71,35 @@ bool check_for_collision(void) {
   io << "CHECK_FOR_COLLISION\n";
   io << "i'm at : " << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
   io << "detected : " << adv.usedSpace() << "\n";
-
-  bool collision = false;
-
-  for (int i=0; i< (int)adv.usedSpace(); i++) {
+  
+  for(int i = 0; i < (int) adv.usedSpace(); i++) {
     io << i << " : " << adv.get(i).coord(0) << " , " << adv.get(i).coord(1) << "\n";
-    if (adv.get(i).coord(0) < 50 &&
-	(adv.get(i).coord(1) < 40 || adv.get(i).coord(1) > 320)) {
-      collision = true;
+    
+    static const s32 SHORT_RANGE_DIST = 60;
+    static const s32 SHORT_RANGE_ANGLE = 45;
+    static const s32 LONG_RANGE_DIST = 110;
+    static const s32 LONG_RANGE_ANGLE = 30;
+    
+    if(!traj.isBackward() && adv.get(i).coord(0) < SHORT_RANGE_DIST &&
+       (adv.get(i).coord(1) < SHORT_RANGE_ANGLE ||
+	adv.get(i).coord(1) > (360 - SHORT_RANGE_ANGLE))) {
+      return true;
     }
-    if (adv.get(i).coord(0) < 100 &&
-	(adv.get(i).coord(1) < 20 || adv.get(i).coord(1) > 340)) {
-      collision = true;
+    if(!traj.isBackward() && adv.get(i).coord(0) < LONG_RANGE_DIST &&
+       (adv.get(i).coord(1) < LONG_RANGE_ANGLE ||
+	adv.get(i).coord(1) > (360 - LONG_RANGE_ANGLE))) {
+      return true;
+    }
+    if(traj.isBackward() && adv.get(i).coord(0) < SHORT_RANGE_DIST &&
+       (adv.get(i).coord(1) > (180 - SHORT_RANGE_ANGLE) &&
+	adv.get(i).coord(1) < (180 + SHORT_RANGE_ANGLE))) {
+      return true;
+    }
+    if(traj.isBackward() && adv.get(i).coord(0) < LONG_RANGE_DIST &&
+       (adv.get(i).coord(1) > (180 - LONG_RANGE_ANGLE) &&
+	adv.get(i).coord(1) < (180 + LONG_RANGE_ANGLE))) {
+      return true;
     }
   }
-
-  return collision;
+  return false;
 }
