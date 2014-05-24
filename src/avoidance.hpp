@@ -7,7 +7,14 @@
 extern World<WORLD_SIZE, AABB> world;
 extern Astar astar;
 
+enum AvoidanceError {
+  SUCCESS,
+  IMPOSSIBLE,
+  SKATING,
+  MAX_AVOIDANCE_ERROR
+};
+
 void avoidance_init(void);
-bool avoidance_goto(const Vect<2, s32>&);
+enum AvoidanceError avoidance_goto(const Vect<2, s32>&);
 
 #endif//AVOIDANCE_HPP

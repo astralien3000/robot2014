@@ -52,7 +52,7 @@ bool check_collision_on_trajectory(Vect<2, s32> source, Vect<2, s32> target) {
   return false;
 }
 
-bool avoidance_goto(const Vect<2, s32>& target) {
+enum AvoidanceError avoidance_goto(const Vect<2, s32>& target) {
   Vect<2, s32> *path;
   io << "begin avoidance\n";
 
@@ -64,13 +64,18 @@ bool avoidance_goto(const Vect<2, s32>& target) {
 
   if (! astar.isPathEnded()) {
     io << "failed to find path\n";
-    return false;
+    return IMPOSSIBLE;
   }
   io << "path length " << astar.getPathLengh() << "\n";
   for (uint8_t i = astar.getPathLengh(); i>0; i--) {
     io << "goto " << path[i-1].coord(0) << " " << path[i-1].coord(1) << "...\n";
     traj.gotoPosition(path[i-1]);
     while(!traj.isEnded()) {
+
+      if (robot.getValue()) {
+	return SKATING;
+      }
+
       if (update_world()) {
 	io << "DETECTED !\n";
 	
@@ -80,7 +85,7 @@ bool avoidance_goto(const Vect<2, s32>& target) {
 	  traj.reset();
 	  //trajectory_reset();
 	  robot.unlock();
-	  return false;
+	  return IMPOSSIBLE;
 	}
 	
 	//segments suivants
@@ -99,5 +104,5 @@ bool avoidance_goto(const Vect<2, s32>& target) {
   }
 
   io << "DONE !\n";
-  return true;
+  return SUCCESS;
 }

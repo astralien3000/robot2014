@@ -97,10 +97,16 @@ inline void handler_reach(void) {
   u8 tries = 0;
   while (tries < 3) {
     robot.unlock();
-    if (avoidance_goto(current_action->controlPoint())) {
+    enum AvoidanceError ret = avoidance_goto(current_action->controlPoint());
+    if (ret == SUCCESS) {
       state = DO_ACTION;
       return;
     }
+    if (ret == SKATING) {
+      state = SKATED;
+      return;
+    }
+
     io << "try again\n";
     robot.lock();
     tries++;
@@ -114,6 +120,11 @@ inline void handler_reach(void) {
 inline void handler_do(void) {
   current_action->doAction();
   state = SEARCH_ACTION;
+}
+
+inline void handler_skating(void) {
+  io << "SKAAAATING\n";
+  while(1);
 }
 
 
@@ -130,6 +141,8 @@ void do_your_job(void) {
       handler_reach();
     } else if (state == DO_ACTION) {
       handler_do();
+    } else if (state == SKATED) {
+      handler_skating();
     }
   }
 }

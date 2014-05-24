@@ -6,6 +6,7 @@ enum State {
   SEARCH_ACTION,
   REACH_ACTION,
   DO_ACTION,
+  SKATED,
   MAX_STATE
 };
 
