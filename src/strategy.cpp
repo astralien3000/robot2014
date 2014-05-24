@@ -107,6 +107,7 @@ inline void handler_reach(void) {
   }
   io << "game over\n";
   //il faut baisser la priorité de l'action en cours.
+  current_action->resetPriority();
   state = SEARCH_ACTION;
 }
 
