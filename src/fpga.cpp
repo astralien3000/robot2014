@@ -33,12 +33,15 @@ void fpga_init(void) {
 
 void fpga_config(void) {
 #if defined (__AVR_ATmega128__)
-  RELATION = 15100;
+  //RELATION = 15100;
+  RELATION = 15750;
 #endif
 }
 
 void fpga_position_reset(void) {
   RESET = (1 << 1) | (1 << 4) | (1 << 7);
+  _delay_ms(1);
+  RESET = 0;
 }
 
 ///////////////////////////////////////////////
