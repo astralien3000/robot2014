@@ -16,7 +16,7 @@ enum Side {
 
 class Action {
 protected:
-  bool _done = false;
+  u8 _static_priority = 10;
 
 public:
 
@@ -52,7 +52,11 @@ public:
   virtual void doAction(void);
 
   inline void done(void) {
-    _done = true;
+    _static_priority = 0;
+  }
+
+  inline void resetPriority(void) {
+    _static_priority = 1;
   }
 
 public:

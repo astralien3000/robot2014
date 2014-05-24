@@ -22,16 +22,16 @@ HarvestAction::HarvestAction(const Vect<2, s32>& pos, s32 angle, s8 bonus = 0) {
 
   _ctrl_point = pos - dir + nor2;
 
-  _done = false;
   _bonus = bonus;
 }
 
 s16 HarvestAction::priority(void) {
-  if (_done)
+  if (_static_priority == 0) {
     return 0;
-  //return 0;
+  }
   // Future improvement ?
-  return _bonus + 10000/((controlPoint() - positionManager().getValue()).norm() +1);
+  _static_priority++;
+  return _static_priority * (_bonus + 10000/((controlPoint() - positionManager().getValue()).norm() +1));
 }
 
 #include "devices.hpp"
@@ -75,6 +75,6 @@ void HarvestAction::doAction(void) {
   trajectoryManager().setMode(TrajectoryManager::FASTER);
 
   _fruit++;
-  _done = true;
+  _static_priority = 0;
 }
 

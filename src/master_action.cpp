@@ -8,14 +8,17 @@ MasterAction::MasterAction(const Vect<2, s32>& pos, s32 angle) {
   _side_point[RED] = pos + Vect<2, s32>(DIST_MM * Math::cos<Math::DEGREE, double>(angle), DIST_MM * Math::sin<Math::DEGREE, double>(angle));
 
   _side_point[YELLOW] = pos - Vect<2, s32>(DIST_MM * Math::cos<Math::DEGREE, double>(angle), DIST_MM * Math::sin<Math::DEGREE, double>(angle));
-
-  _done = false;
 }
 
 s16 MasterAction::priority(void) {
+  if(_static_priority == 0) {
+    return 0;
+  }
+  _static_priority++;
+
   s16 dist = (controlPoint() - positionManager().getValue()).norm();
-  if(!_done && dist != 0) {
-    return 2000 / dist;
+  if(dist != 0) {
+    return _static_priority * (2000 / dist);
   }
   return 0;
 }
@@ -45,5 +48,5 @@ void MasterAction::doAction(void) {
     // Do sth ?
   }
 
-  _done = true;
+  _static_priority = 0;
 }

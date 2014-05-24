@@ -12,13 +12,14 @@ HuntAction::HuntAction(const Vect<2, s32>& pos, const Vect<2, s32>& mamouth,s32 
 }
 
 s16 HuntAction::priority(void) {
-  if(_done) {
+  if(_static_priority == 0) {
     return 0;
   }
+  _static_priority++;
   
   s16 dist = (controlPoint() - positionManager().getValue()).norm();
   if(dist != 0) {
-    return 10000 / dist;
+    return _static_priority * (10000 / dist);
   }
   return 10000;
 }
@@ -77,5 +78,5 @@ void HuntAction::doAction(void) {
   io << "finished\n";
   trajectoryManager().gotoDistance(-150);
   while(trajectoryManager().isEnded()){};
-  _done = true;
+  _static_priority = 0;
 }

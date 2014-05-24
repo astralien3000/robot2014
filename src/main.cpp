@@ -203,10 +203,10 @@ int main(int argc, char* argv[]) {
   // actions.append(&yellow_mid_fire_action);
   // actions.append(&yellow_bot_fire_action);
 
-  actions.append(&red_tree_action);
-  actions.append(&yellow_tree_action);
-  actions.append(&left_tree_action);
-  actions.append(&right_tree_action);
+  // actions.append(&red_tree_action);
+  // actions.append(&yellow_tree_action);
+  // actions.append(&left_tree_action);
+  // actions.append(&right_tree_action);
 
   actions.append(&basket_action);
 

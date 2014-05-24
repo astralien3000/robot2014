@@ -7,10 +7,15 @@ PaintAction::PaintAction(void) {
 }
 
 s16 PaintAction::priority(void) {
+  if(_static_priority == 0) {
+    return 0;
+  }
+  _static_priority++;
+
   s16 dist = (controlPoint() - positionManager().getValue()).norm();
   // pourquoi à chaque fois je vois un test "dist != 0" ???? si on est bien placé dès le départ on a pas le droit de faire l'action ?
-  if(!_done && dist != 0) {
-    return 4000 / dist;
+  if( dist != 0) {
+    return _static_priority * (4000 / dist);
   }
   return 0;
 }
@@ -55,6 +60,7 @@ void PaintAction::doAction(void) {
   trajectoryManager().gotoPosition(Vect<2, s32>(0, 550));
   while(!trajectoryManager().isEnded()) {
   }
-  _done = true;
+
+  _static_priority = 0;
   return;
 }
