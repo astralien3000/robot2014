@@ -81,16 +81,18 @@ void goto_wall(s32 dist) {
 
   io << "wall touched\n";
   
-  if(dist < 0) {
-    traj.gotoDistance(500);
-  }
-  else {
-    traj.gotoDistance(-500);
-  }
+  for(int i = 0 ; i < 3 ; i++) {
+    if(dist < 0) {
+      traj.gotoDistance(500);
+    }
+    else {
+      traj.gotoDistance(-500);
+    }
 
-  robot.unlock();
+    robot.unlock();
 
-  while(!robot.getValue());
+    while(!robot.getValue());
+  }
 
   io << "touching wall\n";
   traj.reset();
@@ -103,7 +105,14 @@ void match_init(bool red_side) {
   io << "Goto wall\n";
   goto_wall(DIST_INIT);
   io << "Reset X and angle\n";
-  set_angle(A_INIT);
+
+  //set_angle(A_INIT);
+
+  robot.lock();
+  fpga_position_reset();
+  trajectory_reset();
+  robot.unlock();
+
   pos.setX(X_INIT);
   
   io << "Go far from the wall\n";

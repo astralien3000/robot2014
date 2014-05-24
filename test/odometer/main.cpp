@@ -37,7 +37,8 @@ int main(int argc, char* argv[]) {
   sched.addTask(t);
 
   io << "----------------\n";
-  io << "angle = " << (odo.getValue().coord(1) >> 4) << "\n";
+  io << "angle (odo) = " << (odo.getValue().coord(1) >> 4) << "\n";
+  io << "angle (pos) = " << pos.angle() << "\n";
   io << "dist  = " << odo.getValue().coord(0) << "\n";
   io << "x = " << pos.getValue().coord(0) << "\n";
   io << "y  = " << pos.getValue().coord(1) << "\n";
@@ -50,7 +51,8 @@ int main(int argc, char* argv[]) {
     s16 dummy = 0;
     io >> dummy;
     io << "----------------\n";
-    io << "angle = " << (odo.getValue().coord(1) >> 4) << "\n";
+    io << "angle (odo) = " << (odo.getValue().coord(1) >> 4) << "\n";
+    io << "angle (pos) = " << pos.angle() << "\n";
     io << "dist  = " << odo.getValue().coord(0) << "\n";
     io << "x = " << pos.getValue().coord(0) << "\n";
     io << "y  = " << pos.getValue().coord(1) << "\n";

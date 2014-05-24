@@ -24,6 +24,8 @@ static void print_pos(void) {
 
 inline void handler_begin(void) {  
   asserv_speed_fast();
+  asserv_lockmode_activ();
+
   if (Action::side == RED) {
     io << "going to yellow fire !\n";
     traj.gotoPosition(yellow_top_fire.p());
@@ -32,7 +34,13 @@ inline void handler_begin(void) {
     traj.gotoPosition(red_top_fire.p());
   }
   while (!traj.isEnded()) {
-    //check_for_collision();
+    if(check_for_collision()) {
+      robot.lock();
+      traj.reset();
+      state = SEARCH_ACTION;
+      robot.unlock();
+      return;
+    }
     //and make sure ennemy is not boring
     print_pos();
   }

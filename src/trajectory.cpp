@@ -23,7 +23,8 @@ void control_init(void) {
   pid_ct.setMaxIntegral(25600);
   pid_ct.setOutShift(10);
 
-  pid_rt.setGains(5, 0, 0);
+  // pid_rt.setGains(5, 0, 0);
+  pid_rt.setGains(15, 0, 20);
   pid_rt.setMaxIntegral(100000);
   pid_rt.setOutShift(14);
 }
