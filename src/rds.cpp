@@ -6,6 +6,7 @@
 #include <geometry/world.hpp>
 
 #include "my_world.hpp"
+#include "trajectory.hpp"
 
 extern World<WORLD_SIZE, AABB> world;
 extern World<2, Circle> mini_world;
@@ -70,20 +71,26 @@ bool check_for_collision(void) {
   io << "CHECK_FOR_COLLISION\n";
   io << "i'm at : " << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
   io << "detected : " << adv.usedSpace() << "\n";
-
-  bool collision = false;
-
-  for (int i=0; i< (int)adv.usedSpace(); i++) {
+  
+  for(int i = 0; i < (int) adv.usedSpace(); i++) {
     io << i << " : " << adv.get(i).coord(0) << " , " << adv.get(i).coord(1) << "\n";
-    if (adv.get(i).coord(0) < 50 &&
-	(adv.get(i).coord(1) < 40 || adv.get(i).coord(1) > 320)) {
-      collision = true;
+    
+    if(!traj.isBackward() && adv.get(i).coord(0) < 50 &&
+       (adv.get(i).coord(1) < 40 || adv.get(i).coord(1) > 320)) {
+      return true; // Short range in front cone
     }
-    if (adv.get(i).coord(0) < 100 &&
-	(adv.get(i).coord(1) < 20 || adv.get(i).coord(1) > 340)) {
-      collision = true;
+    if(!traj.isBackward() && adv.get(i).coord(0) < 100 &&
+       (adv.get(i).coord(1) < 20 || adv.get(i).coord(1) > 340)) {
+      return true; // Long range in front cone
+    }
+    if(traj.isBackward() && adv.get(i).coord(0) < 50 &&
+       (adv.get(i).coord(1) > 140 && adv.get(i).coord(1) < 220)) {
+      return true; // Short range back cone
+    }
+    if(traj.isBackward() && adv.get(i).coord(0) < 100 &&
+       (adv.get(i).coord(1) > 160 && adv.get(i).coord(1) < 200)) {
+      return true; // Long range back cone
     }
   }
-
-  return collision;
+  return false;
 }
