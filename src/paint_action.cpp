@@ -38,6 +38,7 @@ void PaintAction::doAction(void) {
   while(!robot().getValue()) {
   }
   trajectoryManager().reset();
+  positionManager().setY(1050 - 125);
   robot().unlock();
 
   // Go far from wall

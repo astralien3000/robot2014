@@ -48,6 +48,7 @@ void DepositAction::doAction(void) {
   while(!robot().getValue()) {
   }
   trajectoryManager().reset();
+  positionManager().setY(1050 - 300 - 125);
   robot().unlock();
   
   // Actually deposit the fruits now
