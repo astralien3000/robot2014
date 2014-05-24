@@ -1,13 +1,13 @@
 #include "action.hpp"
 
-Input< Vect<2, s32> >* Action::_pos = 0;
+PositionManager* Action::_pos = 0;
 RectTrajectoryManager* Action::_traj = 0;
 SecureRobot* Action::_robot = 0;
 u8 Action::_fruit = 0;
 
 enum Side Action::side = RED;
 
-Input< Vect<2, s32> >& Action::positionManager(void) {
+PositionManager& Action::positionManager(void) {
   return *_pos;
 }
 
@@ -19,7 +19,7 @@ SecureRobot& Action::robot(void) {
   return *_robot;
 }
 
-void Action::setPositionManager(Input< Vect<2, s32> >& p) {
+void Action::setPositionManager(PositionManager& p) {
   _pos = &p;
 }
 

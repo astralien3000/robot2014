@@ -4,11 +4,9 @@
 #include <base/integer.hpp>
 #include <math/vect.hpp>
 
-#include <device/input.hpp>
-
 #include "secure_robot.hpp"
 #include "rect_trajectory_manager.hpp"
-
+#include "position_manager.hpp"
 
 enum Side {
   RED,
@@ -59,11 +57,11 @@ public:
 
 public:
   
-  static Input< Vect<2, s32> >& positionManager(void);
+  static PositionManager& positionManager(void);
   static RectTrajectoryManager& trajectoryManager(void);
   static SecureRobot& robot(void);
 
-  static void setPositionManager(Input< Vect<2, s32> >&);
+  static void setPositionManager(PositionManager&);
   static void setTrajectoryManager(RectTrajectoryManager&);
   static void setRobot(SecureRobot&);
 
@@ -74,7 +72,7 @@ protected:
   
 private:
   //! \brief Position manager common to all actions
-  static Input< Vect<2, s32> >* _pos;
+  static PositionManager* _pos;
 
   //! \brief Trajectory manager common to all actions
   static RectTrajectoryManager* _traj;

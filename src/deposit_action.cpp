@@ -44,10 +44,13 @@ void DepositAction::doAction(void) {
   
   // We stick to the basket
   asserv_speed_slow();
-  trajectoryManager().gotoDistance(3000);
-  while(!robot().getValue()) {
+  for(int i = 0; i < 3; i++) {
+    trajectoryManager().gotoDistance(3000);
+    while(!robot().getValue()) {
+    }
+    trajectoryManager().reset();
   }
-  trajectoryManager().reset();
+  positionManager().setY(1050 - 300 - 125);
   robot().unlock();
   
   // Actually deposit the fruits now
