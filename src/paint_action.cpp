@@ -34,10 +34,12 @@ void PaintAction::doAction(void) {
   
   // We stick the painting to the wall
   asserv_speed_slow();
-  trajectoryManager().gotoDistance(-3000);
-  while(!robot().getValue()) {
+  for(int i = 0; i < 3; i++) {
+    trajectoryManager().gotoDistance(-3000);
+    while(!robot().getValue()) {
+    }
+    trajectoryManager().reset();
   }
-  trajectoryManager().reset();
   positionManager().setY(1050 - 125);
   robot().unlock();
 
