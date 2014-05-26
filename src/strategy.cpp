@@ -138,16 +138,17 @@ inline void handler_skating(void) {
   s32 dist = 0;
   
   if(traj.isBackward()) {
-    dist = 200;
+    dist = 150;
   }
   else {
-    dist = -200;
+    dist = -150;
   }
 
   io << "Trying to go far\n";
   traj.gotoDistance(dist);
+  robot.unlock();
   for(u8 i = 0 ; i < 3 ; i++) {
-    while(!traj.isEnded() || robot.getValue()) {
+    while(!traj.isEnded() && !robot.getValue()) {
       
     }
 
