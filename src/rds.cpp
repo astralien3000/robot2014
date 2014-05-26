@@ -65,7 +65,7 @@ bool update_world(void) {
   return detected;
 }
 
-bool check_for_collision(void) {
+bool check_for_collision(u8 max_dist) {
   rds.update();
   List<2, Vect<2, s32> > adv = rds.getValue();
   io << "CHECK_FOR_COLLISION\n";
@@ -77,7 +77,7 @@ bool check_for_collision(void) {
     
     static const s32 SHORT_RANGE_DIST = 60;
     static const s32 SHORT_RANGE_ANGLE = 45;
-    static const s32 LONG_RANGE_DIST = 110;
+    s32 LONG_RANGE_DIST = max_dist;
     static const s32 LONG_RANGE_ANGLE = 30;
     
     if(!traj.isBackward() && adv.get(i).coord(0) < SHORT_RANGE_DIST &&

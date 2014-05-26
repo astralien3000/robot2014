@@ -83,7 +83,7 @@ inline void handler_search(void) {
 	}
 	io << "prio = " << prio << "\n";
       }));
-  if (max_prio >= 0) {
+  if (max_prio > 0) {
     state = REACH_ACTION;
   } else {
     robot.lock();
@@ -124,6 +124,34 @@ inline void handler_do(void) {
 
 inline void handler_skating(void) {
   io << "SKAAAATING\n";
+  
+  s32 dist = 0;
+  
+  if(traj.isBackward()) {
+    dist = 200;
+  }
+  else {
+    dist = -200;
+  }
+
+  io << "Trying to go far\n";
+  traj.gotoDistance(dist);
+  for(u8 i = 0 ; i < 3 ; i++) {
+    while(!traj.isEnded() || robot.getValue()) {
+      
+    }
+
+    if(robot.getValue()) {
+      robot.unlock();
+    }
+    else {
+      current_action->resetPriority();
+      state = SEARCH_ACTION;
+      return;
+    }
+  }
+    
+  io << "FAIL...\n";
   while(1);
 }
 
@@ -131,7 +159,7 @@ inline void handler_skating(void) {
 void do_your_job(void) {
   state = SEARCH_ACTION;
   //state = BEGIN;
-  io << "state is " << state << "\n";
+  //io << "state is " << state << "\n";
   while(1) {
     if (state == BEGIN) {
       handler_begin();
