@@ -52,7 +52,7 @@ bool check_collision_on_trajectory(Vect<2, s32> source, Vect<2, s32> target) {
   return false;
 }
 
-enum AvoidanceError avoidance_goto(const Vect<2, s32>& target) {
+enum Error avoidance_goto(const Vect<2, s32>& target) {
   Vect<2, s32> *path;
   io << "begin avoidance\n";
 

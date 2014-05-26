@@ -9,7 +9,7 @@ public:
 
   s16 priority(void);
   Vect<2, s32> controlPoint(void);
-  void doAction(void);
+  enum Error doAction(void);
 
 private:
   Vect<2, s32> _side_point[MAX_SIDE];

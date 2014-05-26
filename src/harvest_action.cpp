@@ -43,13 +43,19 @@ Vect<2, s32> HarvestAction::controlPoint(void) {
 }
 
 
-void HarvestAction::doAction(void) {
+enum Error HarvestAction::doAction(void) {
   io << "DO HARVERST\n";
   trajectoryManager().setMode(TrajectoryManager::FORWARD);
 
   // Face the wall
   trajectoryManager().gotoPosition(_begin_point);
   while(!trajectoryManager().isEnded()) {
+    if (robot().getValue()) {
+      return SKATING;
+    }
+    if (check_for_collision(60)) {
+      return IMPOSSIBLE;
+    }
   }
 
   // Do ?
@@ -59,6 +65,12 @@ void HarvestAction::doAction(void) {
   // Harvest
   trajectoryManager().gotoPosition(_end_point);
   while(!trajectoryManager().isEnded()) {
+    if (robot().getValue()) {
+      return SKATING;
+    }
+    if (check_for_collision(60)) {
+      return IMPOSSIBLE;
+    }
   }
 
   asserv_speed_normal();
@@ -66,15 +78,29 @@ void HarvestAction::doAction(void) {
   // Go far
   trajectoryManager().gotoAngle(pos.angle() - 90);
   while(!trajectoryManager().isEnded()) {
+    if (robot().getValue()) {
+      return SKATING;
+    }
+    if (check_for_collision(60)) {
+      return IMPOSSIBLE;
+    }
   }
 
   trajectoryManager().gotoDistance(100);
   while(!trajectoryManager().isEnded()) {
+    if (robot().getValue()) {
+      return SKATING;
+    }
+    if (check_for_collision(60)) {
+      return IMPOSSIBLE;
+    }
   }
   
   trajectoryManager().setMode(TrajectoryManager::FASTER);
 
   _fruit++;
   _static_priority = 0;
+
+  return SUCCESS;
 }
 

@@ -24,11 +24,11 @@ Vect<2, s32> PaintAction::controlPoint(void) {
   return Vect<2, s32>(0, 550);
 }
 
-void PaintAction::doAction(void) {
+enum Error PaintAction::doAction(void) {
   io << "DO PAINT\n";
   if((positionManager().getValue() - controlPoint()).norm() > 100) {
     io << "not at a good position\n";
-    return;
+    return IMPOSSIBLE;
   }
   
   // So we first get a bit closer
@@ -62,5 +62,5 @@ void PaintAction::doAction(void) {
   }
 
   _static_priority = 0;
-  return;
+  return SUCCESS;
 }

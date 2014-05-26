@@ -97,7 +97,7 @@ inline void handler_reach(void) {
   u8 tries = 0;
   while (tries < 3) {
     robot.unlock();
-    enum AvoidanceError ret = avoidance_goto(current_action->controlPoint());
+    enum Error ret = avoidance_goto(current_action->controlPoint());
     if (ret == SUCCESS) {
       state = DO_ACTION;
       return;
@@ -118,7 +118,17 @@ inline void handler_reach(void) {
 }
 
 inline void handler_do(void) {
-  current_action->doAction();
+  enum Error ret = current_action->doAction();
+  if (ret == IMPOSSIBLE) {
+    robot.lock();
+    traj.reset();
+    robot.unlock();
+    io << "action impossible : someone detected\n";
+  }
+  if (ret == SKATING) {
+    state = SKATED;
+    return;
+  }
   state = SEARCH_ACTION;
 }
 

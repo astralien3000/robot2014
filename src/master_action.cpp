@@ -20,7 +20,7 @@ s16 MasterAction::priority(void) {
   
   Side antiside = (side == RED) ? YELLOW : RED;
   if(scal(_side_point[side] - pos, _side_point[antiside] - _side_point[side]) < 0) {
-    return 0;
+    return 1;
   }
   
   s16 dist = (controlPoint() - pos).norm();
@@ -36,11 +36,11 @@ Vect<2, s32> MasterAction::controlPoint(void) {
 
 #include "devices.hpp"
 
-void MasterAction::doAction(void) {
+enum Error MasterAction::doAction(void) {
   io << "DO MASTER\n";
   if((positionManager().getValue() - controlPoint()).norm() > 100) {
     io << "not at a good position\n";
-    return;
+    return IMPOSSIBLE;
   }
 
   Side anti_side = RED;
@@ -52,8 +52,14 @@ void MasterAction::doAction(void) {
   io << " y = " << _side_point[anti_side].coord(1) << "\n";
   trajectoryManager().gotoPosition(_side_point[anti_side]);
   while(!trajectoryManager().isEnded()) {
-    // Do sth ?
+    if (robot().getValue()) {
+      return SKATING;
+    }
+    if (check_for_collision(60)) {
+      return IMPOSSIBLE;
+    }
   }
 
   _static_priority = 0;
+  return SUCCESS;
 }

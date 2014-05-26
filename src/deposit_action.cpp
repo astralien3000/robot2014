@@ -27,11 +27,11 @@ Vect<2, s32> DepositAction::controlPoint(void) {
   return Vect<2, s32>(((side == RED) ? 750 : -750), 350);
 }
 
-void DepositAction::doAction(void) {
+enum Error DepositAction::doAction(void) {
   io << "DO DEPOSIT\n";
   if((positionManager().getValue() - controlPoint()).norm() > 100) {
     io << "not at a good position\n";
-    return;
+    return IMPOSSIBLE;
   }
   
   s32 x = ((side == RED) ? 750 : -750);
@@ -40,6 +40,12 @@ void DepositAction::doAction(void) {
   trajectoryManager().setMode(TrajectoryManager::FORWARD);
   trajectoryManager().gotoPosition(Vect<2, s32>(x, 450));
   while(!trajectoryManager().isEnded()) {
+    if (robot().getValue()) {
+      return SKATING;
+    }
+    if (check_for_collision(60)) {
+      return IMPOSSIBLE;
+    }
   }
   
   // We stick to the basket
@@ -70,5 +76,13 @@ void DepositAction::doAction(void) {
   trajectoryManager().setMode(TrajectoryManager::FASTER);
   trajectoryManager().gotoPosition(Vect<2, s32>(x, 450));
   while(!trajectoryManager().isEnded()) {
+    if (robot().getValue()) {
+      return SKATING;
+    }
+    if (check_for_collision(60)) {
+      return IMPOSSIBLE;
+    }
   }
+
+  return SUCCESS;
 }

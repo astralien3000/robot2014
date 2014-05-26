@@ -28,7 +28,7 @@ Vect<2, s32> HuntAction::controlPoint(void) {
   return _pos;
 }
 
-void HuntAction::doAction(void) {
+enum Error HuntAction::doAction(void) {
   io << "DO HUNT\n";
   
     // Let Benoit do its job !
@@ -79,4 +79,6 @@ void HuntAction::doAction(void) {
   trajectoryManager().gotoDistance(-150);
   while(trajectoryManager().isEnded()){};
   _static_priority = 0;
+
+  return SUCCESS;
 }

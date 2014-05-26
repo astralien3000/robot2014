@@ -7,11 +7,19 @@
 #include "secure_robot.hpp"
 #include "rect_trajectory_manager.hpp"
 #include "position_manager.hpp"
+#include "rds.hpp"
 
 enum Side {
   RED,
   YELLOW,
   MAX_SIDE
+};
+
+enum Error {
+  SUCCESS,
+  IMPOSSIBLE,
+  SKATING,
+  MAX_ERROR
 };
 
 class Action {
@@ -49,7 +57,7 @@ public:
    */
   //! \todo Change the return type to an enum or an integer to specify an error code if one occured.
   //! \todo Should not it be abstract?
-  virtual void doAction(void);
+  virtual enum Error doAction(void);
 
   inline void done(void) {
     _static_priority = 0;
