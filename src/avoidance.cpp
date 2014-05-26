@@ -54,20 +54,30 @@ bool check_collision_on_trajectory(Vect<2, s32> source, Vect<2, s32> target) {
 
 enum Error avoidance_goto(const Vect<2, s32>& target) {
   Vect<2, s32> *path;
+  u8 length;
   io << "begin avoidance\n";
 
   update_world();
+
   io << "BEFORE ASTAR : going from : " << pos.getValue()[0] << " " << pos.getValue()[1] << " to " << target[0] << " " << target[1] << "\n";
-  path = astar.getTrajectory(pos.getValue(), (Vect<2, s32>)target);
 
-  io << "AFTER ASTAR : going from : " << pos.getValue()[0] << " " << pos.getValue()[1] << " to " << target[0] << " " << target[1] << "\n";
-
-  if (! astar.isPathEnded()) {
-    io << "failed to find path\n";
-    return IMPOSSIBLE;
+  if (!check_collision_on_trajectory(pos.getValue(), (Vect<2, s32>)target)) {
+    path = (Vect<2, s32>*)&target;
+    length = 1;
+    io << "optimized path without astar :)\n";
   }
-  io << "path length " << astar.getPathLengh() << "\n";
-  for (uint8_t i = astar.getPathLengh(); i>0; i--) {
+  else {
+    path = astar.getTrajectory(pos.getValue(), (Vect<2, s32>)target);
+    io << "AFTER ASTAR : going from : " << pos.getValue()[0] << " " << pos.getValue()[1] << " to " << target[0] << " " << target[1] << "\n";
+    if (! astar.isPathEnded()) {
+      io << "failed to find path\n";
+      return IMPOSSIBLE;
+    }
+    length = astar.getPathLengh();
+    io << "path length " << length << "\n";
+  }
+
+  for (uint8_t i = length; i>0; i--) {
     io << "goto " << path[i-1].coord(0) << " " << path[i-1].coord(1) << "...\n";
     traj.gotoPosition(path[i-1]);
     while(!traj.isEnded()) {
