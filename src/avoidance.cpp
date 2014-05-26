@@ -5,7 +5,7 @@
 #include <geometry/segment.hpp>
 #include <geometry/circle.hpp>
 
-#define ROBOT_RADIUS 200
+#define ROBOT_RADIUS 220
 
 World<WORLD_SIZE, AABB> world;
 World<2, Circle> mini_world;
