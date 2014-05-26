@@ -40,8 +40,17 @@ Vect<2, s32>* Astar::getTrajectory(Vect<2, s32> &&source, Vect<2, s32> &&target)
   this->beginY = convertY_real2simple(source[1]);
   this->targetX = convertX_real2simple(target[0]);
   this->targetY = convertY_real2simple(target[1]);
+
   if (isObstacle(targetX, targetY))
     return 0;
+
+  if (distance(beginX, beginY, targetX, targetY) < 4) {
+    path[0][0] = targetX_real;
+    path[0][1] = targetY_real;
+    pathLengh=1;
+    this->pathIsEnded = true;
+    return path;
+  }
 
   nodes[0].init();
   nodes[0].setXY(beginX, beginY);
