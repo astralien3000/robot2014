@@ -10,7 +10,7 @@ s16 PaintAction::priority(void) {
   if(_static_priority == 0) {
     return 0;
   }
-  _static_priority++;
+  if(_static_priority < 10) _static_priority++;
 
   s16 dist = (controlPoint() - positionManager().getValue()).norm();
   // pourquoi à chaque fois je vois un test "dist != 0" ???? si on est bien placé dès le départ on a pas le droit de faire l'action ?
@@ -43,10 +43,10 @@ void PaintAction::doAction(void) {
     trajectoryManager().gotoDistance(-3000);
     while(!robot().getValue()) {
     }
-    trajectoryManager().reset();
+    //trajectoryManager().reset();
+    robot().unlock();
   }
   positionManager().setY(1050 - 125);
-  robot().unlock();
 
   // Go far from wall
   asserv_speed_normal();

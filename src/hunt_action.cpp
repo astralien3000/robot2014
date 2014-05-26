@@ -15,7 +15,7 @@ s16 HuntAction::priority(void) {
   if(_static_priority == 0) {
     return 0;
   }
-  _static_priority++;
+  if(_static_priority < 10) _static_priority++;
   
   s16 dist = (controlPoint() - positionManager().getValue()).norm();
   if(dist != 0) {
