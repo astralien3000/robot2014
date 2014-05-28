@@ -13,6 +13,7 @@
 #include "rds.hpp"
 #include "servo.hpp"
 #include "avoidance.hpp"
+#include "secure_timer.hpp"
 
 #include "curv_trajectory_manager.hpp"
 
