@@ -10,9 +10,12 @@ RectTrajectoryManager traj(robot, odo, pos, pid_rt);
 
 static Scheduler& sched = Scheduler::instance();
 
+extern void secure_timer_tick(void);
+
 void control_init(void) {
   Task t([](void) {
       traj.update();
+      secure_timer_tick();
     });
 
   t.setPeriod(64000);

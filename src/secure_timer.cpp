@@ -2,31 +2,36 @@
 
 #include "devices.hpp"
 
-static u16 _secure_counter_s = 0;
+static u16 _secure_counter_tick = 0;
+static bool _go = false;
 
-static const u16 MATCH_DURATION_S = 30;
+static const u16 MATCH_DURATION_TICK = 2500;
 
-static void _secure_timer_tick(void) {
-  if(_secure_counter_s < MATCH_DURATION_S) {
-    _secure_counter_s++;
-    io << _secure_counter_s << "\n";
+void secure_timer_tick(void) {
+  if(_go) {
+    if(_secure_counter_tick < MATCH_DURATION_TICK) {
+      _secure_counter_tick++;
+      io << _secure_counter_tick << "\n";
+    }
+    else {
+      robot.setUnlockable(false);
+      robot.lock();
+      io << _secure_counter_tick << " END\n";
+      //while(1);
+    }
   }
-  else {
-    robot.setUnlockable(false);
-    robot.lock();
-    io << _secure_counter_s << "\n";
-    while(1);
-  }
-
-  //_secure_counter_s++;
+  //_secure_counter_tick++;
   //while(1);
 }
 
-Task t(_secure_timer_tick);
+//Task t(_secure_timer_tick);
 
 void secure_timer_init(void) {
-  t.setPeriod(1000000);
-  t.setRepeat();
+  _go = true;
+  // _secure_counter_tick = 0;
 
-  Scheduler::instance().addTask(t);
+  // t.setPeriod(1000000);
+  // t.setRepeat();
+
+  // Scheduler::instance().addTask(t);
 }

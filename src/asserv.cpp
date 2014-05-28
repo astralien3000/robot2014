@@ -91,6 +91,9 @@ void asserv_init(void) {
   
   pid_d.setGains(600, 8, 0);
   pid_d.setMaxIntegral(16000);
+  // TEST PATINAGEss
+  //pid_d.setGains(1600, 16, 0);
+  //pid_d.setMaxIntegral(32000);
   pid_d.setOutShift(6);
 
   qramp_a.setFirstOrderLimit(30,30);
@@ -112,7 +115,8 @@ void asserv_speed_slow(void) {
   qramp_a.setFirstOrderLimit(15,15);
   qramp_a.setSecondOrderLimit(2,2);
 
-  qramp_d.setFirstOrderLimit(5,5);
+  //qramp_d.setFirstOrderLimit(5,5);
+  qramp_d.setFirstOrderLimit(7,7);
   qramp_d.setSecondOrderLimit(1,2);
 }
 
@@ -120,7 +124,8 @@ void asserv_speed_normal(void) {
   qramp_a.setFirstOrderLimit(40,40);
   qramp_a.setSecondOrderLimit(4,4);
 
-  qramp_d.setFirstOrderLimit(13,13);
+  //qramp_d.setFirstOrderLimit(13,13);
+  qramp_d.setFirstOrderLimit(15,15);
   qramp_d.setSecondOrderLimit(2,2);
 }
 
