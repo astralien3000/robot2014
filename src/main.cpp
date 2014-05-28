@@ -70,6 +70,13 @@ HuntAction yellow_mammouth_action(Vect<2, s32>(-700, 400), Vect<2,s32>(-725,1050
 
 static Scheduler& sched = Scheduler::instance();
 
+
+// #include <avr/interrupt.h>
+
+// ISR(TIMER0_OVF_vect) {
+//   io << "INTERRUPTS\n";
+// }
+
 // void print_pos(void) {
 //   io << "(x " << pos.getValue().coord(0) << ", ";
 //   io << "y " << pos.getValue().coord(1) << ")\n";
@@ -79,9 +86,13 @@ static Scheduler& sched = Scheduler::instance();
 //   io << "STACK POINTER = " << SPH << " " << SPL << "\n";
 // }
 
+#include <hardware/timer.hpp>
+
 int main(int argc, char* argv[]) {
   (void)argc;
   (void)argv;
+
+  //Timer<0>::init();
 
   // Need to be the first thing to be done (for security)
   fpga_init();
@@ -96,8 +107,8 @@ int main(int argc, char* argv[]) {
   rds_init();
   servo_init();
   control_init();
+  //io << "gezgzegegb)zer\n";
   Interrupts::set();
-
   mot_l.inverse();
   enc_r.inverse();
 
@@ -243,11 +254,11 @@ int main(int argc, char* argv[]) {
   // while(!traj.isEnded()) {
   //   //check_for_collision();
   // }
-
+  io << "GO\n";
   traj.gotoDistance(200);
   while (!traj.isEnded()) {
   }
-
+  io << "BEGIN\n";
   //TEST_EVITEMENT
   // u8 number_of_cacul = 0;
   // while (1) {
