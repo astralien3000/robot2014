@@ -5,12 +5,8 @@
 #include <geometry/segment.hpp>
 #include <geometry/circle.hpp>
 
-<<<<<<< HEAD
 //static const u16 ROBOT_RADIUS = 260;
 //static const u16 MINI_ROBOT_RADIUS = 220;
-=======
-#define ROBOT_RADIUS 200
->>>>>>> parent of a461e1b... légère augmentation rayon robot pour fonctionner avec optimisation avoidance
 
 World<WORLD_SIZE, AABB> world;
 World<2, Circle> mini_world;
