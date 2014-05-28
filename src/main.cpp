@@ -230,7 +230,7 @@ int main(int argc, char* argv[]) {
   while(tirette.getValue());
   
   // Demarrage du compteur des 90s APRES LA TIRETTE
-  secure_timer_init();
+  //secure_timer_init();
   
   traj.setMode(TrajectoryManager::FASTER);
   traj.reset();
