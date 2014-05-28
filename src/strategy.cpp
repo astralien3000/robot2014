@@ -16,10 +16,10 @@ extern MasterAction red_top_fire_action;
 extern MasterAction yellow_top_fire_action;
 Action* current_action;
 
-static void print_pos(void) {
-  io << "(x " << pos.getValue().coord(0) << ", ";
-  io << "y " << pos.getValue().coord(1) << ")\n";
-}
+// static void print_pos(void) {
+//   io << "(x " << pos.getValue().coord(0) << ", ";
+//   io << "y " << pos.getValue().coord(1) << ")\n";
+// }
 
 
 inline void handler_begin(void) {  
@@ -41,8 +41,14 @@ inline void handler_begin(void) {
       robot.unlock();
       return;
     }
+
+    if (robot.getValue()) {
+      state = SKATED;
+      return;
+    }
+
     //and make sure ennemy is not boring
-    print_pos();
+    //print_pos();
   }
   // mettre le feu à done
   red_top_fire_action.done();
@@ -51,6 +57,18 @@ inline void handler_begin(void) {
   traj.gotoPosition(Vect<2, s32>(0, 450));
   while (!traj.isEnded()) {
     //hum hum
+    if(check_for_collision()) {
+      robot.lock();
+      traj.reset();
+      state = SEARCH_ACTION;
+      robot.unlock();
+      return;
+    }
+
+    if (robot.getValue()) {
+      state = SKATED;
+      return;
+    }
   }
 
   asserv_speed_normal();
@@ -58,16 +76,29 @@ inline void handler_begin(void) {
   traj.gotoPosition(paint_action.controlPoint());
   while (!traj.isEnded()) {
     //pareil
+    if (robot.getValue()) {
+      state = SKATED;
+      return;
+    }
+
   }
 
   paint_action.doAction();
   traj.gotoPosition(Vect<2, s32>(0, 450));
   while (!traj.isEnded()) {
     //pareil
+    if (robot.getValue()) {
+      state = SKATED;
+      return;
+    }
   }
   traj.gotoPosition(Vect<2, s32>(-300, 450));
   while (!traj.isEnded()) {
     //pareil
+    if (robot.getValue()) {
+      state = SKATED;
+      return;
+    }
   }
   
   state = SEARCH_ACTION;
@@ -87,13 +118,15 @@ inline void handler_search(void) {
     state = REACH_ACTION;
   } else {
     robot.lock();
-    io << "ERRRROOOOOOR MONSTER KILL\n";
+    io << "MONSTER KILL\n";
     while(1);
   }
 }
 
 inline void handler_reach(void) {
   io << "reach action\n";
+  current_action->resetPriority();
+  asserv_lockmode_passiv();
   u8 tries = 0;
   while (tries < 3) {
     robot.unlock();
@@ -113,7 +146,6 @@ inline void handler_reach(void) {
   }
   io << "game over\n";
   //il faut baisser la priorité de l'action en cours.
-  current_action->resetPriority();
   state = SEARCH_ACTION;
 }
 
@@ -133,7 +165,7 @@ inline void handler_do(void) {
 }
 
 inline void handler_skating(void) {
-  io << "SKAAAATING\n";
+  //io << "SKAAAATING\n";
   
   s32 dist = 0;
   
@@ -144,7 +176,7 @@ inline void handler_skating(void) {
     dist = -150;
   }
 
-  io << "Trying to go far\n";
+  //io << "Trying to go far\n";
   traj.gotoDistance(dist);
   robot.unlock();
   for(u8 i = 0 ; i < 3 ; i++) {

@@ -24,9 +24,9 @@ void rds_init(void) {
 bool update_world(void) {
   rds.update();
   List<2, Vect<2, s32> > adv = rds.getValue();
-  io << "UPDATE_WORLD\n";
-  io << "i'm at : " << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
-  io << "detected : " << adv.usedSpace() << "\n";
+  //io << "UPDATE_WORLD\n";
+  //io << "i'm at : " << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
+  //io << "detected : " << adv.usedSpace() << "\n";
 
   world.removeShape(&ennemy_robot);
   world.removeShape(&ennemy_pmi);
@@ -36,7 +36,7 @@ bool update_world(void) {
   bool detected = false;
 
   for (int i=0; i< (int)adv.usedSpace(); i++) {
-    io << i << " : " << adv.get(i).coord(0) << " , " << adv.get(i).coord(1) << "\n";
+    //io << i << " : " << adv.get(i).coord(0) << " , " << adv.get(i).coord(1) << "\n";
     //s32 abs_angle = 180 - adv.get(i).coord(1) + (odo.getValue().coord(1) >> 4);
     s32 abs_angle = (- adv.get(i).coord(1) - (odo.getValue().coord(1) >> 4))%360;
 
@@ -47,7 +47,7 @@ bool update_world(void) {
     //io << "abs_angle = " << abs_angle << "\n";
     //io << "my_angle = " << -(odo.getValue().coord(1) >> 4) << "\n";
     //io << "rel_x = " << rel_x << " \trel_y = " << rel_y << "\n";
-    io << "abs_x = " << abs_x << " \tabs_y = " << abs_y << "\n";
+    //io << "abs_x = " << abs_x << " \tabs_y = " << abs_y << "\n";
 
     if (i==0) {
       ennemy_robot = Circle(abs_x, abs_y, 330);
@@ -68,12 +68,12 @@ bool update_world(void) {
 bool check_for_collision(u8 max_dist) {
   rds.update();
   List<2, Vect<2, s32> > adv = rds.getValue();
-  io << "CHECK_FOR_COLLISION\n";
-  io << "i'm at : " << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
-  io << "detected : " << adv.usedSpace() << "\n";
+  //io << "CHECK_FOR_COLLISION\n";
+  //io << "i'm at : " << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
+  //io << "detected : " << adv.usedSpace() << "\n";
   
   for(int i = 0; i < (int) adv.usedSpace(); i++) {
-    io << i << " : " << adv.get(i).coord(0) << " , " << adv.get(i).coord(1) << "\n";
+    //io << i << " : " << adv.get(i).coord(0) << " , " << adv.get(i).coord(1) << "\n";
     
     static const s32 SHORT_RANGE_DIST = 60;
     static const s32 SHORT_RANGE_ANGLE = 45;

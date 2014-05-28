@@ -55,8 +55,8 @@ HarvestAction right_tree_action(right_tree.centre(), 0, 10);
 DepositAction basket_action;
 
 // MAMMOUTH (HUNT)
-HuntAction red_mammouth_action(Vect<2, s32>(700, 400),Vect<2, s32>(600,1050), 4);
-HuntAction yellow_mammouth_action(Vect<2, s32>(-700, 400), Vect<2,s32>(-600,1050), 4);
+HuntAction red_mammouth_action(Vect<2, s32>(700, 400),Vect<2, s32>(725,1050), 4);
+HuntAction yellow_mammouth_action(Vect<2, s32>(-700, 400), Vect<2,s32>(-725,1050), 4);
 
 // MAMMOUTH (CAPTURE)
 // TODO : 2
@@ -69,14 +69,14 @@ HuntAction yellow_mammouth_action(Vect<2, s32>(-700, 400), Vect<2,s32>(-600,1050
 
 static Scheduler& sched = Scheduler::instance();
 
-void print_pos(void) {
-  io << "(x " << pos.getValue().coord(0) << ", ";
-  io << "y " << pos.getValue().coord(1) << ")\n";
-}
+// void print_pos(void) {
+//   io << "(x " << pos.getValue().coord(0) << ", ";
+//   io << "y " << pos.getValue().coord(1) << ")\n";
+// }
 
-void print_sp(void) {
-  io << "STACK POINTER = " << SPH << " " << SPL << "\n";
-}
+// void print_sp(void) {
+//   io << "STACK POINTER = " << SPH << " " << SPL << "\n";
+// }
 
 int main(int argc, char* argv[]) {
   (void)argc;
@@ -163,15 +163,15 @@ int main(int argc, char* argv[]) {
   dummy = 0;
   while(tirette.getValue()) {
     if(ihm_io.inputUsedSpace() > 0) {
-      io << "used sp = " << ihm_io.inputUsedSpace() << "\n";
+      //io << "used sp = " << ihm_io.inputUsedSpace() << "\n";
       u8 c = ihm_io.getValue();
       if(! (c & 1)) {
 	dummy = 1;
-	io << "RED SIDE\n";
+	//io << "RED SIDE\n";
       }
       else {
 	dummy = 2;
-	io << "YELLOW SIDE\n";
+	//io << "YELLOW SIDE\n";
       }
     }
   }
@@ -184,7 +184,7 @@ int main(int argc, char* argv[]) {
 
   robot.lock();
 
-  io << "Conf\n";
+  //io << "Conf\n";
   Action::setPositionManager(pos);
   Action::setRobot(robot);
   Action::setTrajectoryManager(traj);
@@ -197,23 +197,23 @@ int main(int argc, char* argv[]) {
 
   actions.append(&red_top_fire_action);
   actions.append(&red_mid_fire_action);
-  actions.append(&red_bot_fire_action);
+  //actions.append(&red_bot_fire_action);
 
   actions.append(&yellow_top_fire_action);
   actions.append(&yellow_mid_fire_action);
-  actions.append(&yellow_bot_fire_action);
+  //actions.append(&yellow_bot_fire_action);
 
   //actions.append(&red_tree_action);
   //actions.append(&yellow_tree_action);
-  //actions.append(&left_tree_action);
-  //actions.append(&right_tree_action);
+  // actions.append(&left_tree_action);
+  // actions.append(&right_tree_action);
 
-  //actions.append(&basket_action);
+  // actions.append(&basket_action);
 
   //actions.append(&red_mammouth_action);
   //actions.append(&yellow_mammouth_action);
   
-  io << "Place me please <3\n";
+  //io << "Place me please <3\n";
   //io >> dummy;
   dummy = 0;
   while(dummy < 100) {
@@ -227,6 +227,9 @@ int main(int argc, char* argv[]) {
   }
 
   while(tirette.getValue());
+  
+  // Demarrage du compteur des 90s APRES LA TIRETTE
+  secure_timer_init();
   
   traj.setMode(TrajectoryManager::FASTER);
   traj.reset();
@@ -253,7 +256,7 @@ int main(int argc, char* argv[]) {
   // }
 
   // TEST STRATEGY 
-  io << "Begin Strategy\n";
+  //io << "Begin Strategy\n";
   do_your_job();
 
   // TEST BEGIN A FOND !!

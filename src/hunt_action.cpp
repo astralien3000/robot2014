@@ -42,14 +42,16 @@ enum Error HuntAction::doAction(void) {
     io << entree.getValue() << " " << entree2.getValue() << "\n";
     }*/
 
-  Vect<2, s32> look = _mamouth;
-  //look[0] -= OFFSET*_number/2;
-
-  trajectoryManager().lookAt(look);
-  while(!trajectoryManager().isEnded());
-
   for (int i=0; i<_number; i++) {
     io << "start sending" << i<<"\n";
+    
+    //Vect<2, s32> look = _mamouth;
+    //look[0] -= OFFSET*_number/2;
+    int look = 85-(OFFSET*_number/2)/10;
+    //trajectoryManager().lookAt(look);
+    trajectoryManager().gotoAngle(look);
+    while(!trajectoryManager().isEnded());
+
     sortie.setValue(true);
     s16 anti_bounce = 0;
     while(anti_bounce < ANTI_BOUNCE_LIMIT) {
@@ -73,9 +75,10 @@ enum Error HuntAction::doAction(void) {
 	anti_bounce = 0;
       }
     }
-	look[0]+=OFFSET;
+    //look[0]+=OFFSET;
+    look += OFFSET/10;
   }
-  io << "finished\n";
+  //io << "finished\n";
   trajectoryManager().gotoDistance(-150);
   while(trajectoryManager().isEnded()){};
   _static_priority = 0;

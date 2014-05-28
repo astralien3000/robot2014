@@ -5,7 +5,8 @@
 #include <geometry/segment.hpp>
 #include <geometry/circle.hpp>
 
-#define ROBOT_RADIUS 220
+//static const u16 ROBOT_RADIUS = 260;
+//static const u16 MINI_ROBOT_RADIUS = 220;
 
 World<WORLD_SIZE, AABB> world;
 World<2, Circle> mini_world;
@@ -15,14 +16,19 @@ void avoidance_init(void) {
   fill_world(world);
 }
 
-bool check_collision_on_trajectory(Vect<2, s32> source, Vect<2, s32> target) {
+template<typename MyWorld, MyWorld& WORLD, u16 ROBOT_RADIUS>
+static bool _check_collision_on_trajectory(Vect<2, s32> source, Vect<2, s32> target) {
   //TEST AVEC COLLISION SUR SEGMENTS QUI ENCADRENT LA TRAJECTOIRE
   s32 x1, y1, x2, y2, dx, dy;
   Segment seg;
   Circle cir;
   
   cir = Circle(target, ROBOT_RADIUS);
-  if (mini_world.collide(cir))
+  if (WORLD.collide(cir))
+    return true;
+
+  seg = Segment(source, target);
+  if (WORLD.collide(seg))
     return true;
 
   dx = target.coord(0) - source.coord(0);
@@ -38,7 +44,7 @@ bool check_collision_on_trajectory(Vect<2, s32> source, Vect<2, s32> target) {
   x2 = target.coord(0) - dy;
   y2 = target.coord(1) + dx;
   seg = Segment(x1, y1, x2, y2);
-  if (mini_world.collide(seg))
+  if (WORLD.collide(seg))
     return true;
   
   x1 = source.coord(0) + dy;
@@ -46,10 +52,18 @@ bool check_collision_on_trajectory(Vect<2, s32> source, Vect<2, s32> target) {
   x2 = target.coord(0) + dy;
   y2 = target.coord(1) - dx;
   seg = Segment(x1, y1, x2, y2); 
-  if (mini_world.collide(seg))
+  if (WORLD.collide(seg))
     return true;
   
   return false;
+}
+
+bool mini_check_collision_on_trajectory(Vect<2, s32> source, Vect<2, s32> target) {
+  return _check_collision_on_trajectory<World<2, Circle>, mini_world, 220>(source, target);
+}
+
+bool check_collision_on_trajectory(Vect<2, s32> source, Vect<2, s32> target) {
+  return _check_collision_on_trajectory<World<WORLD_SIZE, AABB>, world, 260>(source, target);
 }
 
 enum Error avoidance_goto(const Vect<2, s32>& target) {
@@ -67,6 +81,7 @@ enum Error avoidance_goto(const Vect<2, s32>& target) {
     io << "optimized path without astar :)\n";
   }
   else {
+    io << "astar...\n";
     path = astar.getTrajectory(pos.getValue(), (Vect<2, s32>)target);
     io << "AFTER ASTAR : going from : " << pos.getValue()[0] << " " << pos.getValue()[1] << " to " << target[0] << " " << target[1] << "\n";
     if (! astar.isPathEnded()) {
@@ -90,7 +105,7 @@ enum Error avoidance_goto(const Vect<2, s32>& target) {
 	io << "DETECTED !\n";
 	
 	//premier segment
-	if (check_collision_on_trajectory(pos.getValue(), path[i-1])) {
+	if (mini_check_collision_on_trajectory(pos.getValue(), path[i-1])) {
 	  robot.lock();
 	  traj.reset();
 	  //trajectory_reset();
