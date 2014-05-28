@@ -19,6 +19,10 @@ Rds rds("", rds_io);
 
 void rds_init(void) {
   //rds_io.setMode(Stream::BINARY);
+  world.addShape(&ennemy_robot);
+  world.addShape(&ennemy_pmi);
+  mini_world.addShape(&ennemy_robot);
+  mini_world.addShape(&ennemy_pmi);
 }
 
 bool update_world(void) {
@@ -27,15 +31,29 @@ bool update_world(void) {
   //io << "UPDATE_WORLD\n";
   //io << "i'm at : " << pos.getValue().coord(0) << " " << pos.getValue().coord(1) << "\n";
   //io << "detected : " << adv.usedSpace() << "\n";
-
+  static const s32 DIST_TO_RM = 650;
+  if((pos.getValue() - ennemy_robot.centre()).norm() > DIST_TO_RM) {
+    ennemy_robot.centre() = Vect<2, s32>(0, 1500);
+  }
+  if((pos.getValue() - ennemy_pmi.centre()).norm() > DIST_TO_RM) {
+    ennemy_pmi.centre() = Vect<2, s32>(0, 1500);
+  }
+  
+  if(ennemy_pmi.centre().coord(1) != 1500 && ennemy_robot.centre().coord(1) == 1500) {
+    ennemy_robot = ennemy_pmi;
+    ennemy_pmi.centre() = Vect<2, s32>(0, 1500);
+  }
+  
+  /*
   world.removeShape(&ennemy_robot);
   world.removeShape(&ennemy_pmi);
   mini_world.removeShape(&ennemy_robot);
   mini_world.removeShape(&ennemy_pmi);
-
+  */
+  
   bool detected = false;
-
-  for (int i=0; i< (int)adv.usedSpace(); i++) {
+  
+  for (int i = 0; i< (int)adv.usedSpace(); i++) {
     //io << i << " : " << adv.get(i).coord(0) << " , " << adv.get(i).coord(1) << "\n";
     //s32 abs_angle = 180 - adv.get(i).coord(1) + (odo.getValue().coord(1) >> 4);
     s32 abs_angle = (- adv.get(i).coord(1) - (odo.getValue().coord(1) >> 4))%360;
@@ -50,13 +68,14 @@ bool update_world(void) {
     //io << "abs_x = " << abs_x << " \tabs_y = " << abs_y << "\n";
 
     if (i==0) {
-      ennemy_robot = Circle(abs_x, abs_y, 330);
-      world.addShape(&ennemy_robot);
-      mini_world.addShape(&ennemy_robot);
+      ennemy_robot.centre() = Vect<2, s32>(abs_x, abs_y);
+      //world.addShape(&ennemy_robot);
+      //mini_world.addShape(&ennemy_robot);
     } else {
-      ennemy_pmi = Circle(abs_x, abs_y, 330);
-      world.addShape(&ennemy_pmi);
-      mini_world.addShape(&ennemy_pmi);
+      //ennemy_pmi = Circle(abs_x, abs_y, 330);
+      ennemy_pmi.centre() = Vect<2, s32>(abs_x, abs_y);
+      //world.addShape(&ennemy_pmi);
+      //mini_world.addShape(&ennemy_pmi);
     }
 
     detected = true;
