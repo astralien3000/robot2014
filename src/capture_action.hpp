@@ -5,7 +5,7 @@
 
 class CaptureAction : public Action {
 public:
-  CaptureAction(const Vect<2, s32>& pos, const Vect<2, s32>& mamouth, s32 number);
+  CaptureAction(const Vect<2, s32>& pos, const Vect<2, s32>& mamouth);
   
   s16 priority(void);
   Vect<2, s32> controlPoint(void);
