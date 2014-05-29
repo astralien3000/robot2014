@@ -9,14 +9,14 @@ static const u16 MATCH_DURATION_TICK = 2500;
 
 void secure_timer_tick(void) {
   if(_go) {
+    _secure_counter_tick++;
     if(_secure_counter_tick < MATCH_DURATION_TICK) {
-      _secure_counter_tick++;
-      io << _secure_counter_tick << "\n";
+      //io << _secure_counter_tick << "\n";
     }
     else {
       robot.setUnlockable(false);
       robot.lock();
-      io << _secure_counter_tick << " END\n";
+      //io << _secure_counter_tick << " END\n";
       //while(1);
     }
   }
@@ -34,4 +34,8 @@ void secure_timer_init(void) {
   // t.setRepeat();
 
   // Scheduler::instance().addTask(t);
+}
+
+u16 secure_timer_time(void) {
+  return (u16)((u32)_secure_counter_tick * (u32)90 / (u32)MATCH_DURATION_TICK);
 }
