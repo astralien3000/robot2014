@@ -15,6 +15,7 @@ private:
 
   Vect<2, s32> _begin_point;
   Vect<2, s32> _ctrl_point;
+  Vect<2, s32> _end_ctrl_point;
   Vect<2, s32> _end_point;
   s8 _bonus;
 

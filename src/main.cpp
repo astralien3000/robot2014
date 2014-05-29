@@ -56,8 +56,8 @@ HarvestAction right_tree_action(right_tree.centre(), 0, 10);
 DepositAction basket_action;
 
 // MAMMOUTH (HUNT)
-HuntAction red_mammouth_action(Vect<2, s32>(700, 400),Vect<2, s32>(725,1050), 4);
-HuntAction yellow_mammouth_action(Vect<2, s32>(-700, 400), Vect<2,s32>(-725,1050), 4);
+HuntAction red_mammouth_action(Vect<2, s32>(700, 300),Vect<2, s32>(725,1050), 4);
+HuntAction yellow_mammouth_action(Vect<2, s32>(-700, 300), Vect<2,s32>(-650,1050), 4);
 
 // MAMMOUTH (CAPTURE)
 // TODO : 2
@@ -159,6 +159,9 @@ int main(int argc, char* argv[]) {
   Pin<37> tirette("tirette");
   tirette.setMode(PinMode::INPUT);
 
+  Pin<39> side_pin("side");
+  side_pin.setMode(PinMode::INPUT);
+
   s16 dummy = 0;
   
   dummy = 0;
@@ -174,25 +177,34 @@ int main(int argc, char* argv[]) {
 
   dummy = 0;
   while(tirette.getValue()) {
-    if(ihm_io.inputUsedSpace() > 0) {
-      //io << "used sp = " << ihm_io.inputUsedSpace() << "\n";
-      u8 c = ihm_io.getValue();
-      if(! (c & 1)) {
-	dummy = 1;
-	//io << "RED SIDE\n";
-      }
-      else {
-	dummy = 2;
-	//io << "YELLOW SIDE\n";
-      }
-    }
+    // if(ihm_io.inputUsedSpace() > 0) {
+    //   //io << "used sp = " << ihm_io.inputUsedSpace() << "\n";
+    //   u8 c = ihm_io.getValue();
+    //   if(! (c & 1)) {
+    // 	dummy = 1;
+    // 	//io << "RED SIDE\n";
+    //   }
+    //   else {
+    // 	dummy = 2;
+    // 	//io << "YELLOW SIDE\n";
+    //   }
+    // }
   }
 
   // io << "Side \n";
   // io >> dummy;
   // io << dummy << "\n";
+  dummy = 1 + side_pin.getValue();
+
+  // if(dummy == 1) {
+  //   io << "RED\n";
+  // }
+  // else {
+  //   io << "YELLOW\n";
+  // }
+
   side_init(dummy==1);
-  //match_init(dummy==1);
+  match_init(dummy==1);
 
   robot.lock();
 
@@ -207,13 +219,13 @@ int main(int argc, char* argv[]) {
 
   actions.append(&paint_action);
 
-  //actions.append(&red_top_fire_action);
-  //actions.append(&red_mid_fire_action);
-  //actions.append(&red_bot_fire_action);
+  actions.append(&red_top_fire_action);
+  actions.append(&red_mid_fire_action);
+  actions.append(&red_bot_fire_action);
 
-  //actions.append(&yellow_top_fire_action);
-  //actions.append(&yellow_mid_fire_action);
-  //actions.append(&yellow_bot_fire_action);
+  actions.append(&yellow_top_fire_action);
+  actions.append(&yellow_mid_fire_action);
+  actions.append(&yellow_bot_fire_action);
 
   actions.append(&red_tree_action);
   actions.append(&yellow_tree_action);
@@ -222,8 +234,8 @@ int main(int argc, char* argv[]) {
 
   actions.append(&basket_action);
 
-  //actions.append(&red_mammouth_action);
-  //actions.append(&yellow_mammouth_action);
+  actions.append(&red_mammouth_action);
+  actions.append(&yellow_mammouth_action);
   
   //io << "Place me please <3\n";
   //io >> dummy;
@@ -258,7 +270,7 @@ int main(int argc, char* argv[]) {
   traj.gotoDistance(200);
   while (!traj.isEnded()) {
   }
-  io << "BEGIN\n";
+  //io << "BEGIN\n";
   //TEST_EVITEMENT
   // u8 number_of_cacul = 0;
   // while (1) {

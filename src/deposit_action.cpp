@@ -15,12 +15,17 @@ s16 DepositAction::priority(void) {
   if(_fruit == 0) {
     return 0;
   }
+  if(_static_priority == 0) {
+    return 0;
+  }
+
+  _static_priority+= 3;
   
   s16 dist = (controlPoint() - positionManager().getValue()).norm();
   if(dist != 0) {
-    return _fruit * 7000 / dist;
+    return _static_priority * (_fruit * 7000 / dist);
   }
-  return _fruit * 7000;
+  return _static_priority * (_fruit * 7000);
 }
 
 Vect<2, s32> DepositAction::controlPoint(void) {
@@ -83,6 +88,7 @@ enum Error DepositAction::doAction(void) {
       return IMPOSSIBLE;
     }
   }
-
+  
+  //done();
   return SUCCESS;
 }

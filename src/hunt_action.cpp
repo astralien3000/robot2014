@@ -45,12 +45,19 @@ enum Error HuntAction::doAction(void) {
   for (int i=0; i<_number; i++) {
     io << "start sending" << i<<"\n";
     
-    //Vect<2, s32> look = _mamouth;
-    //look[0] -= OFFSET*_number/2;
-    int look = 85-(OFFSET*_number/2)/10;
-    //trajectoryManager().lookAt(look);
-    trajectoryManager().gotoAngle(look);
-    while(!trajectoryManager().isEnded());
+    Vect<2, s32> look = _mamouth;
+    look[0] -= OFFSET*_number/2;
+    //int look = 85-(OFFSET*_number/2)/10;
+    trajectoryManager().lookAt(look);
+    //trajectoryManager().gotoAngle(look);
+    while(!trajectoryManager().isEnded()) {
+      if (robot().getValue()) {
+	trajectoryManager().gotoDistance(-50);
+	while(!trajectoryManager().isEnded()) {
+	  robot().unlock();
+	}
+      }
+    }
 
     sortie.setValue(true);
     s16 anti_bounce = 0;
@@ -75,12 +82,19 @@ enum Error HuntAction::doAction(void) {
 	anti_bounce = 0;
       }
     }
-    //look[0]+=OFFSET;
-    look += OFFSET/10;
+    look[0]+=OFFSET;
+    //look += OFFSET/10;
   }
   //io << "finished\n";
   trajectoryManager().gotoDistance(-150);
-  while(trajectoryManager().isEnded()){};
+  while(trajectoryManager().isEnded()){
+    if (robot().getValue()) {
+      robot().unlock();
+    }
+    if (check_for_collision(60)) {
+      return IMPOSSIBLE;
+    }
+  };
   _static_priority = 0;
 
   return SUCCESS;

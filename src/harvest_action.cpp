@@ -21,6 +21,7 @@ HarvestAction::HarvestAction(const Vect<2, s32>& pos, s32 angle, s8 bonus = 0) {
   nor2 /= MULT;
 
   _ctrl_point = pos - dir + nor2;
+  _end_ctrl_point = pos + dir + nor2;
 
   _bonus = bonus;
 }
@@ -58,46 +59,44 @@ enum Error HarvestAction::doAction(void) {
     }
   }
 
-  asserv_speed_slow();
-
-  // Calibrate
-  for(u8 i = 0 ; i < 4 ; i++) {
-    trajectoryManager().gotoDistance(3000);
-    robot().unlock();
-    while(!robot().getValue()) {
-    }
-  }
+  // // Calibrate
+  // for(u8 i = 0 ; i < 4 ; i++) {
+  //   trajectoryManager().gotoDistance(3000);
+  //   robot().unlock();
+  //   while(!robot().getValue()) {
+  //   }
+  // }
   
-  s32 angle = positionManager().angle() % 360;
-  if(355 < angle || (-5 < angle && angle < 5)) {
-    // ANGLE 0
-    io << "ANGLE 0\n";
-    positionManager().setX(1500 - 125);
-  }
-  else if(85 < angle && angle < 95) {
-    // ANGLE 90
-    io << "ANGLE 90\n";
-    //positionManager().setY();
-    io << "ERROR : NO FRUITS HERE !!\n";
-  }
-  else if(175 < angle && angle < 185) {
-    // ANGLE 180
-    io << "ANGLE 180\n";
-    positionManager().setX(-1500 + 125);
-  }
-  else if(265 < angle && angle < 275) {
-    // ANGLE 270
-    io << "ANGLE 270\n";
-    positionManager().setY(-950 + 125);
-  }
+  // s32 angle = positionManager().angle() % 360;
+  // if(355 < angle || (-5 < angle && angle < 5)) {
+  //   // ANGLE 0
+  //   io << "ANGLE 0\n";
+  //   positionManager().setX(1500 - 125);
+  // }
+  // else if(85 < angle && angle < 95) {
+  //   // ANGLE 90
+  //   io << "ANGLE 90\n";
+  //   //positionManager().setY();
+  //   io << "ERROR : NO FRUITS HERE !!\n";
+  // }
+  // else if(175 < angle && angle < 185) {
+  //   // ANGLE 180
+  //   io << "ANGLE 180\n";
+  //   positionManager().setX(-1500 + 125);
+  // }
+  // else if(265 < angle && angle < 275) {
+  //   // ANGLE 270
+  //   io << "ANGLE 270\n";
+  //   positionManager().setY(-950 + 125);
+  // }
   
-  // Go far from wall
-  trajectoryManager().gotoDistance(-200);
-  while(!trajectoryManager().isEnded()) {
-    if(robot().getValue()) {
-      robot().unlock();
-    }
-  }
+  // // Go far from wall
+  // trajectoryManager().gotoDistance(-200);
+  // while(!trajectoryManager().isEnded()) {
+  //   if(robot().getValue()) {
+  //     robot().unlock();
+  //   }
+  // }
 
   // Goto begin point
   trajectoryManager().setMode(TrajectoryManager::FASTER);
@@ -111,14 +110,18 @@ enum Error HarvestAction::doAction(void) {
     }
   }
 
+  asserv_speed_slow();
+
   // Harvest
   trajectoryManager().setMode(TrajectoryManager::FORWARD);
   trajectoryManager().gotoPosition(_end_point);
   while(!trajectoryManager().isEnded()) {
     if (robot().getValue()) {
+      asserv_speed_normal();
       return SKATING;
     }
     if (check_for_collision(60)) {
+      asserv_speed_normal();
       return IMPOSSIBLE;
     }
   }
@@ -126,7 +129,7 @@ enum Error HarvestAction::doAction(void) {
   asserv_speed_normal();
 
   // Go far
-  trajectoryManager().gotoAngle(pos.angle() - 90);
+  trajectoryManager().gotoPosition(_end_ctrl_point);
   while(!trajectoryManager().isEnded()) {
     if (robot().getValue()) {
       return SKATING;
@@ -135,16 +138,27 @@ enum Error HarvestAction::doAction(void) {
       return IMPOSSIBLE;
     }
   }
+  
 
-  trajectoryManager().gotoDistance(100);
-  while(!trajectoryManager().isEnded()) {
-    if (robot().getValue()) {
-      return SKATING;
-    }
-    if (check_for_collision(60)) {
-      return IMPOSSIBLE;
-    }
-  }
+  // trajectoryManager().gotoAngle(pos.angle() + 90);
+  // while(!trajectoryManager().isEnded()) {
+  //   if (robot().getValue()) {
+  //     return SKATING;
+  //   }
+  //   if (check_for_collision(60)) {
+  //     return IMPOSSIBLE;
+  //   }
+  // }
+
+  // trajectoryManager().gotoDistance(100);
+  // while(!trajectoryManager().isEnded()) {
+  //   if (robot().getValue()) {
+  //     return SKATING;
+  //   }
+  //   if (check_for_collision(60)) {
+  //     return IMPOSSIBLE;
+  //   }
+  // }
   
   trajectoryManager().setMode(TrajectoryManager::FASTER);
 
