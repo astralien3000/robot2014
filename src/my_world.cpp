@@ -43,9 +43,9 @@ Circle red_movable_torch(-600, -50, 80);
 Circle yellow_movable_torch(600, -50, 80);
 
 // Other robots
-Circle my_pmi(0, 1100, 10);
-Circle ennemy_robot(-30, 1100, 10);
-Circle ennemy_pmi(30, 1100, 10);
+Circle my_pmi(0, 1500, 330);
+Circle ennemy_robot(0, 1500, 330);
+Circle ennemy_pmi(0, 1500, 330);
 
 void fill_world(World<WORLD_SIZE, AABB>& world) {
   world.addShape(&top);
