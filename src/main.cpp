@@ -38,19 +38,19 @@ List<20, Action*> actions;
 PaintAction paint_action;
 
 // FIRE
-MasterAction red_top_fire_action(red_top_fire.p(), 180);
-MasterAction red_mid_fire_action(red_mid_fire.p(), 90);
+MasterAction red_top_fire_action(red_top_fire.p(), 180, 5);
+MasterAction red_mid_fire_action(red_mid_fire.p(), 90, 2);
 MasterAction red_bot_fire_action(red_bot_fire.p(), 0);
 
-MasterAction yellow_top_fire_action(yellow_top_fire.p(), 180);
-MasterAction yellow_mid_fire_action(yellow_mid_fire.p(), -90);
+MasterAction yellow_top_fire_action(yellow_top_fire.p(), 180, 5);
+MasterAction yellow_mid_fire_action(yellow_mid_fire.p(), -90, 2);
 MasterAction yellow_bot_fire_action(yellow_bot_fire.p(), 0);
 
 // TREE
-HarvestAction red_tree_action(red_tree.centre(), -90, 10);
-HarvestAction yellow_tree_action(yellow_tree.centre(), 90, 0);
-HarvestAction left_tree_action(left_tree.centre(), 0, 0);
-HarvestAction right_tree_action(right_tree.centre(), 0, 10);
+HarvestAction red_tree_action(red_tree.centre(), -90, -1);
+HarvestAction yellow_tree_action(yellow_tree.centre(), 90, -1);
+HarvestAction left_tree_action(left_tree.centre(), 0, -1);
+HarvestAction right_tree_action(right_tree.centre(), 0, -1);
 
 // BASKET
 DepositAction basket_action;
@@ -60,7 +60,8 @@ HuntAction red_mammouth_action(Vect<2, s32>(700, 300),Vect<2, s32>(725,1050), 4)
 HuntAction yellow_mammouth_action(Vect<2, s32>(-700, 300), Vect<2,s32>(-650,1050), 4);
 
 // MAMMOUTH (CAPTURE)
-// TODO : 2
+CaptureAction red_final_action(Vect<2, s32>(700, 300),Vect<2, s32>(725,1050);
+CaptureAction yellow_final_action(Vect<2, s32>(-700, 300),Vect<2, s32>(-650,1050);
 
 // CALIBRATE
 // TODO : 4
@@ -87,6 +88,21 @@ static Scheduler& sched = Scheduler::instance();
 // }
 
 #include <hardware/timer.hpp>
+
+template <bool WAIT_FOR>
+void antibounce_wait(Input<bool>& i) {
+  s16 dummy = 0;
+  
+  while(dummy < 100) {
+    if(i.getValue() == WAIT_FOR) {
+      dummy++;
+      _delay_ms(5);
+    }
+    else {
+      dummy = 0;
+    }
+  }
+}
 
 int main(int argc, char* argv[]) {
   (void)argc;
@@ -123,6 +139,8 @@ int main(int argc, char* argv[]) {
   // TEST SERVO
   // while(1) {
   //   u16 cmd = 0;
+  //   //cmd += 10;
+  //   //_delay_ms(1000);
   //   io << "Command ?\n";
   //   io >> cmd;
   //   io << cmd << "\n";
@@ -132,7 +150,8 @@ int main(int argc, char* argv[]) {
   //   // SERVO4 = cmd;
   //   // SERVO5 = cmd;
   //   // SERVO6 = cmd;
-  //   // SERVO7 = cmd;
+
+  //   //SERVO7 = cmd;
   //   // SERVO8 = cmd;
   //   // SERVO9 = cmd;
   //   // SERVO10 = cmd;
@@ -142,11 +161,10 @@ int main(int argc, char* argv[]) {
   //   // SERVO14 = cmd;
   //   // SERVO15 = cmd;
   //   // SERVO16 = cmd;
-
-  //   FpgaServomotor<volatile u16, SERVO4_ADDR> servo("basket_servo");
-  //   servo.setMinCommand(900);
-  //   servo.setMaxCommand(1650);
-  //   servo.setValue(cmd);
+  //   // FpgaServomotor<volatile u16, SERVO7_ADDR> servo("servo");
+  //   // servo.setMinCommand(100);
+  //   // servo.setMaxCommand(1900);
+  //   // servo.setValue(cmd);
   // }
 
 
@@ -164,6 +182,7 @@ int main(int argc, char* argv[]) {
 
   s16 dummy = 0;
   
+  /*
   dummy = 0;
   while(dummy < 100) {
     if(tirette.getValue()) {
@@ -174,8 +193,12 @@ int main(int argc, char* argv[]) {
       dummy = 0;
     }
   }
-
+  */
+  antibounce_wait<true>(tirette);
+  
+  antibounce_wait<false>(tirette);
   dummy = 0;
+  /*
   while(tirette.getValue()) {
     // if(ihm_io.inputUsedSpace() > 0) {
     //   //io << "used sp = " << ihm_io.inputUsedSpace() << "\n";
@@ -190,7 +213,7 @@ int main(int argc, char* argv[]) {
     //   }
     // }
   }
-
+  */
   // io << "Side \n";
   // io >> dummy;
   // io << dummy << "\n";
@@ -239,6 +262,8 @@ int main(int argc, char* argv[]) {
   
   //io << "Place me please <3\n";
   //io >> dummy;
+  antibounce_wait<true>(tirette);
+  /*
   dummy = 0;
   while(dummy < 100) {
     if(tirette.getValue()) {
@@ -249,8 +274,9 @@ int main(int argc, char* argv[]) {
       dummy = 0;
     }
   }
-
-  while(tirette.getValue());
+  */
+  antibounce_wait<false>(tirette);
+  // while(tirette.getValue());
   
   // Demarrage du compteur des 90s APRES LA TIRETTE
   secure_timer_init();

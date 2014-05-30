@@ -31,9 +31,9 @@ extern FpgaServomotor<volatile u16, SERVO4_ADDR> basket_servo;
 #define BASKET_SERVO_UP_CMD 1650
 #define BASKET_SERVO_DOWN_CMD 900
 
-extern FpgaServomotor<volatile u16, SERVO3_ADDR> arba_servo;
-#define ARBA_SERVO_LOCK_CMD 1650
-#define ARBA_SERVO_UNLOCK_CMD 900
+extern FpgaServomotor<volatile u16, SERVO7_ADDR> arba_servo;
+#define ARBA_SERVO_LOCK_CMD 450
+#define ARBA_SERVO_UNLOCK_CMD 600
 
 //// Incremental Encoders
 //extern Encoder<volatile u32> enc_l;

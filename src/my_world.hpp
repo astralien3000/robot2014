@@ -8,7 +8,7 @@
 #include <geometry/segment.hpp>
 #include <geometry/circle.hpp>
 
-static const u8 WORLD_SIZE = 20;
+static const list_t WORLD_SIZE = 20;
 
 // Fixed table elements
 extern Segment top; // Mammoths side

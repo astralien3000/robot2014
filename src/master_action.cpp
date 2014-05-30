@@ -4,7 +4,8 @@
 
 #include "devices.hpp"
 
-MasterAction::MasterAction(const Vect<2, s32>& pos, s32 angle) {
+MasterAction::MasterAction(const Vect<2, s32>& pos, s32 angle, s8 bonus)
+  : _bonus(bonus) {
   _side_point[RED] = pos + Vect<2, s32>(DIST_MM * Math::cos<Math::DEGREE, double>(angle), DIST_MM * Math::sin<Math::DEGREE, double>(angle));
   
   _side_point[YELLOW] = pos - Vect<2, s32>(DIST_MM * Math::cos<Math::DEGREE, double>(angle), DIST_MM * Math::sin<Math::DEGREE, double>(angle));
@@ -25,7 +26,7 @@ s16 MasterAction::priority(void) {
   
   s16 dist = (controlPoint() - pos).norm();
   if(dist != 0) {
-    return _static_priority * (2000 / dist);
+    return _static_priority * (_bonus + 2000 / dist);
   }
   return 0;
 }

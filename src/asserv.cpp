@@ -112,11 +112,13 @@ void asserv_lockmode_activ(void) {
 }
 
 void asserv_speed_slow(void) {
-  qramp_a.setFirstOrderLimit(15,15);
+  //  qramp_a.setFirstOrderLimit(15,15);
+  qramp_a.setFirstOrderLimit(20,20);
   qramp_a.setSecondOrderLimit(2,2);
 
   //qramp_d.setFirstOrderLimit(5,5);
-  qramp_d.setFirstOrderLimit(8,8);
+  //  qramp_d.setFirstOrderLimit(8,8);
+  qramp_d.setFirstOrderLimit(10,10);
   qramp_d.setSecondOrderLimit(1,2);
 }
 

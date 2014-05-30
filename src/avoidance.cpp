@@ -5,24 +5,30 @@
 #include <geometry/segment.hpp>
 #include <geometry/circle.hpp>
 
-#define ROBOT_RADIUS 220
+static const u16 ROBOT_RADIUS = 270;
+static const u16 MINI_ROBOT_RADIUS = 220;
 
 World<WORLD_SIZE, AABB> world;
-World<2, Circle> mini_world;
+World<2, AABB> mini_world;
 Astar astar(42, world);
 
 void avoidance_init(void) {
   fill_world(world);
 }
 
-bool check_collision_on_trajectory(Vect<2, s32> source, Vect<2, s32> target) {
+template<list_t SIZE>
+bool _check_collision_on_trajectory(Vect<2, s32> source, Vect<2, s32> target, u16 radius, const World<SIZE, AABB>& world_used) {
   //TEST AVEC COLLISION SUR SEGMENTS QUI ENCADRENT LA TRAJECTOIRE
   s32 x1, y1, x2, y2, dx, dy;
   Segment seg;
   Circle cir;
   
-  cir = Circle(target, ROBOT_RADIUS);
-  if (mini_world.collide(cir))
+  cir = Circle(target, radius);
+  if (world_used.collide(cir))
+    return true;
+
+  seg = Segment(source.coord(0), source.coord(1), target.coord(0), target.coord(1));
+  if (world_used.collide(seg))
     return true;
 
   dx = target.coord(0) - source.coord(0);
@@ -30,15 +36,15 @@ bool check_collision_on_trajectory(Vect<2, s32> source, Vect<2, s32> target) {
 
   s32 norm = (Vect<2, s32>(dx, dy)).norm();
 
-  dx = dx * ROBOT_RADIUS / norm;
-  dy = dy * ROBOT_RADIUS / norm;
+  dx = dx * radius / norm;
+  dy = dy * radius / norm;
 
   x1 = source.coord(0) - dy;
   y1 = source.coord(1) + dx;
   x2 = target.coord(0) - dy;
   y2 = target.coord(1) + dx;
   seg = Segment(x1, y1, x2, y2);
-  if (mini_world.collide(seg))
+  if (world_used.collide(seg))
     return true;
   
   x1 = source.coord(0) + dy;
@@ -46,10 +52,18 @@ bool check_collision_on_trajectory(Vect<2, s32> source, Vect<2, s32> target) {
   x2 = target.coord(0) + dy;
   y2 = target.coord(1) - dx;
   seg = Segment(x1, y1, x2, y2); 
-  if (mini_world.collide(seg))
+  if (world_used.collide(seg))
     return true;
   
   return false;
+}
+
+bool check_collision_on_trajectory(Vect<2, s32> source, Vect<2, s32> target) {
+  return _check_collision_on_trajectory<WORLD_SIZE>(source, target, ROBOT_RADIUS, world);
+}
+
+bool mini_check_collision_on_trajectory(Vect<2, s32> source, Vect<2, s32> target) {
+  return _check_collision_on_trajectory<2>(source, target, MINI_ROBOT_RADIUS, mini_world);
 }
 
 enum Error avoidance_goto(const Vect<2, s32>& target) {
@@ -90,7 +104,7 @@ enum Error avoidance_goto(const Vect<2, s32>& target) {
 	io << "DETECTED !\n";
 	
 	//premier segment
-	if (check_collision_on_trajectory(pos.getValue(), path[i-1])) {
+	if (mini_check_collision_on_trajectory(pos.getValue(), path[i-1])) {
 	  robot.lock();
 	  traj.reset();
 	  //trajectory_reset();

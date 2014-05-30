@@ -154,7 +154,7 @@ void RectTrajectoryManager::update_follow_trajectory_dist(void) {
 void RectTrajectoryManager::update_near_end(void) {
   _robot.setValue(Vect<2, s32>(_dist_cmd, deg2raw(_angle_cmd)));
   
-  if(Math::abs(_odo.getValue().coord(0) - _dist_cmd) < 20) {
+  if(Math::abs(_odo.getValue().coord(0) - _dist_cmd) < 40) {
     _state = STOP;
     //io << "Stop !\n";
   }

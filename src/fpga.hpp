@@ -58,9 +58,14 @@ static const u32 UART_BAUD = 115200;
 #define SERVO4_ADDR 0x800A
 #define SERVO4   (*(volatile u16*)0x800A)
 
+#define SERVO5_ADDR 0x800C
 #define SERVO5   (*(volatile u16*)0x800C)
+
 #define SERVO6   (*(volatile u16*)0x800E)
+
+#define SERVO7_ADDR 0x8010
 #define SERVO7   (*(volatile u16*)0x8010)
+
 #define SERVO8   (*(volatile u16*)0x8012)
 #define SERVO9   (*(volatile u16*)0x8014)
 #define SERVO10   (*(volatile u16*)0x8016)

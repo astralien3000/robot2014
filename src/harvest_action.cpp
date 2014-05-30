@@ -32,7 +32,7 @@ s16 HarvestAction::priority(void) {
   }
   // Future improvement ?
   _static_priority++;
-  return _static_priority * (_bonus + 10000/((controlPoint() - positionManager().getValue()).norm() +1));
+  return _static_priority * (_bonus + 7000/((controlPoint() - positionManager().getValue()).norm() +1));
 }
 
 #include "devices.hpp"
