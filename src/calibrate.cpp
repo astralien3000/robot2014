@@ -82,7 +82,7 @@ void goto_wall(s32 dist) {
   io << "wall touched\n";
   
   for(int i = 0 ; i < 3 ; i++) {
-    if(dist < 0) {
+    if(dist > 0) {
       traj.gotoDistance(500);
     }
     else {

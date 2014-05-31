@@ -7,7 +7,7 @@
 AVERSIVE_ROOT=../../aversive--
 
 ## Your project's object .o files
-OBJ=main.o fpga.o asserv.o eirbot_shell.o secure_robot.o skating_detector.o position_manager.o trajectory_manager.o rect_trajectory_manager.o astar.o node.o my_world.o action.o master_action.o harvest_action.o calibrate.o trajectory.o rds.o avoidance.o paint_action.o deposit_action.o strategy.o hunt_action.o servo.o secure_timer.o
+OBJ=main.o fpga.o asserv.o eirbot_shell.o secure_robot.o skating_detector.o position_manager.o trajectory_manager.o rect_trajectory_manager.o astar.o node.o my_world.o action.o master_action.o harvest_action.o calibrate.o trajectory.o rds.o avoidance.o paint_action.o deposit_action.o strategy.o hunt_action.o servo.o secure_timer.o capture_action.o
 
 ## Your executable file name
 GEN_EXEC=robot

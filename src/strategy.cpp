@@ -34,6 +34,8 @@ inline void handler_begin(void) {
     traj.gotoPosition(red_top_fire.p());
   }
   while (!traj.isEnded()) {
+	if((Math::abs(pos.getValue().coord(0)))<75)
+		asserv_speed_normal();	
     if(check_for_collision()) {
       robot.lock();
       traj.reset();
@@ -200,8 +202,8 @@ inline void handler_skating(void) {
 
 
 void do_your_job(void) {
-  state = SEARCH_ACTION;
-  //state = BEGIN;
+  //state = SEARCH_ACTION;
+  state = BEGIN;
   //io << "state is " << state << "\n";
   while(1) {
     if (state == BEGIN) {

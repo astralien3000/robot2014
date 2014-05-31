@@ -26,7 +26,7 @@ s16 MasterAction::priority(void) {
   
   s16 dist = (controlPoint() - pos).norm();
   if(dist != 0) {
-    return _static_priority * (_bonus + 2000 / dist);
+    return _static_priority * (_bonus + 4000 / dist);
   }
   return 0;
 }

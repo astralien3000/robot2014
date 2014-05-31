@@ -22,6 +22,7 @@
 #include "deposit_action.hpp"
 #include "hunt_action.hpp"
 #include "paint_action.hpp"
+#include "capture_action.hpp"
 #include "strategy.hpp"
 
 #include <device/servomotor/fpga_servomotor.hpp>
@@ -40,28 +41,28 @@ PaintAction paint_action;
 // FIRE
 MasterAction red_top_fire_action(red_top_fire.p(), 180, 5);
 MasterAction red_mid_fire_action(red_mid_fire.p(), 90, 2);
-MasterAction red_bot_fire_action(red_bot_fire.p(), 0);
+MasterAction red_bot_fire_action(red_bot_fire.p(), 1);
 
 MasterAction yellow_top_fire_action(yellow_top_fire.p(), 180, 5);
 MasterAction yellow_mid_fire_action(yellow_mid_fire.p(), -90, 2);
-MasterAction yellow_bot_fire_action(yellow_bot_fire.p(), 0);
+MasterAction yellow_bot_fire_action(yellow_bot_fire.p(), 1);
 
 // TREE
-HarvestAction red_tree_action(red_tree.centre(), -90, -1);
-HarvestAction yellow_tree_action(yellow_tree.centre(), 90, -1);
-HarvestAction left_tree_action(left_tree.centre(), 0, -1);
-HarvestAction right_tree_action(right_tree.centre(), 0, -1);
+HarvestAction red_tree_action(red_tree.centre(), -90, -75);
+HarvestAction yellow_tree_action(yellow_tree.centre(), 90, -75);
+HarvestAction left_tree_action(left_tree.centre(), 0, -75);
+HarvestAction right_tree_action(right_tree.centre(), 0, -75);
 
 // BASKET
 DepositAction basket_action;
 
 // MAMMOUTH (HUNT)
-HuntAction red_mammouth_action(Vect<2, s32>(700, 300),Vect<2, s32>(725,1050), 4);
-HuntAction yellow_mammouth_action(Vect<2, s32>(-700, 300), Vect<2,s32>(-650,1050), 4);
+// HuntAction red_mammouth_action(Vect<2, s32>(850, 350),Vect<2, s32>(850,1050), 0);
+// HuntAction yellow_mammouth_action(Vect<2, s32>(-750, 350), Vect<2,s32>(-750,1050), 0);
 
 // MAMMOUTH (CAPTURE)
-CaptureAction red_final_action(Vect<2, s32>(700, 300),Vect<2, s32>(725,1050);
-CaptureAction yellow_final_action(Vect<2, s32>(-700, 300),Vect<2, s32>(-650,1050);
+CaptureAction red_final_action(Vect<2, s32>(900, 470),Vect<2, s32>(900,1050));
+CaptureAction yellow_final_action(Vect<2, s32>(-600, 470),Vect<2, s32>(-600,1050));
 
 // CALIBRATE
 // TODO : 4
@@ -257,8 +258,11 @@ int main(int argc, char* argv[]) {
 
   actions.append(&basket_action);
 
-  actions.append(&red_mammouth_action);
-  actions.append(&yellow_mammouth_action);
+  //actions.append(&red_mammouth_action);
+  //actions.append(&yellow_mammouth_action);
+  
+  actions.append(&red_final_action);  
+  actions.append(&yellow_final_action);  
   
   //io << "Place me please <3\n";
   //io >> dummy;

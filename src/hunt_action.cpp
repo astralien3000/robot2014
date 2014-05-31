@@ -3,6 +3,7 @@
 #include "device/other/pin.hpp"
 
 static s16 ANTI_BOUNCE_LIMIT = 100;
+static u8 nb_balls = 7;
 
 HuntAction::HuntAction(const Vect<2, s32>& pos, const Vect<2, s32>& mamouth,s32 number)
 : _pos(pos), _mamouth(mamouth), _number(number) {
@@ -31,7 +32,7 @@ Vect<2, s32> HuntAction::controlPoint(void) {
 enum Error HuntAction::doAction(void) {
   io << "DO HUNT\n";
   
-    // Let Benoit do its job !
+  // Let Benoit do its job !
   Pin<36> sortie("PE4");//PE4, green
   sortie.setMode(PinMode::OUTPUT);
   Pin<38> entree("PE6");//PE6, yellow
@@ -42,23 +43,43 @@ enum Error HuntAction::doAction(void) {
     io << entree.getValue() << " " << entree2.getValue() << "\n";
     }*/
 
-  for (int i=0; i<_number; i++) {
-    io << "start sending" << i<<"\n";
+
+  trajectoryManager().lookAt(_mamouth);
+  while(!trajectoryManager().isEnded()) {
+    if(robot().getValue()) {
+      return SKATING;
+    }
+  }
+  
+  Vect<2, s32> look = _mamouth;
+  for (int i=0; i<_number && nb_balls > 0; i++, nb_balls--) {
+    //io << "sending " << i << " soon\n";
     
-    Vect<2, s32> look = _mamouth;
-    look[0] -= OFFSET*_number/2;
-    //int look = 85-(OFFSET*_number/2)/10;
+    // trajectoryManager().gotoDistance(20);
+    // while(!trajectoryManager().isEnded()) {}
+    // Vect<2, s32> look = _mamouth;
+    // look[0] -= OFFSET*_number/2;
+    // //int look = 85-(OFFSET*_number/2)/10;
+    // trajectoryManager().lookAt(look);
+    // //trajectoryManager().gotoAngle(look);
+    // while(!trajectoryManager().isEnded()) {
+    //   if (robot().getValue()) {
+    // 	trajectoryManager().gotoDistance(-50);
+    // 	while(!trajectoryManager().isEnded()) {
+    // 	  robot().unlock();
+    // 	}
+    //   }
+    // }
+    
+    look.coord(0) += _mamouth.coord(0) + i * 12;
     trajectoryManager().lookAt(look);
-    //trajectoryManager().gotoAngle(look);
     while(!trajectoryManager().isEnded()) {
-      if (robot().getValue()) {
-	trajectoryManager().gotoDistance(-50);
-	while(!trajectoryManager().isEnded()) {
-	  robot().unlock();
-	}
+      if(robot().getValue()) {
+	return SKATING;
       }
     }
-
+    
+    io << "start sending" << i<<"\n";
     sortie.setValue(true);
     s16 anti_bounce = 0;
     while(anti_bounce < ANTI_BOUNCE_LIMIT) {
@@ -83,7 +104,7 @@ enum Error HuntAction::doAction(void) {
       }
     }
     look[0]+=OFFSET;
-    //look += OFFSET/10;
+    look += OFFSET/10;
   }
   //io << "finished\n";
   trajectoryManager().gotoDistance(-150);

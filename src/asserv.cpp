@@ -58,13 +58,13 @@ void asserv_init(void) {
 
   // MotorControl
   diff_l.setDelta(1);
-  pid_l.setGains(200, 0, 0);
-  pid_l.setMaxIntegral(0);
+  pid_l.setGains(300, 0, 0);
+  pid_l.setMaxIntegral(10000);
   pid_l.setOutShift(10);
 
   diff_r.setDelta(1);
-  pid_r.setGains(200, 0, 0);
-  pid_r.setMaxIntegral(0);
+  pid_r.setGains(300, 0, 0);
+  pid_r.setMaxIntegral(10000);
   pid_r.setOutShift(10);
 
   // Odometer
@@ -89,6 +89,7 @@ void asserv_init(void) {
   pid_a.setMaxIntegral(6000);
   pid_a.setOutShift(6);
   
+  //pid_d.setGains(600, 8, 0);
   pid_d.setGains(600, 8, 0);
   pid_d.setMaxIntegral(16000);
   // TEST PATINAGEss
@@ -118,7 +119,7 @@ void asserv_speed_slow(void) {
 
   //qramp_d.setFirstOrderLimit(5,5);
   //  qramp_d.setFirstOrderLimit(8,8);
-  qramp_d.setFirstOrderLimit(10,10);
+  qramp_d.setFirstOrderLimit(8,8);
   qramp_d.setSecondOrderLimit(1,2);
 }
 

@@ -37,6 +37,7 @@ void RectTrajectoryManager::gotoDistance(s32 dist) {
   _dist_cmd = _odo.getValue().coord(0) + dist;
   _angle_cmd = raw2deg(_odo.getValue().coord(1));
 
+  _mod = (dist > 0) ? FORWARD : BACKWARD;
   _state = FOLLOW_TRAJECTORY;
 }
 

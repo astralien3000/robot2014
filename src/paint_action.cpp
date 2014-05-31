@@ -3,6 +3,9 @@
 
 #include "asserv.hpp"
 
+#define F_CPU 16000000l
+#include <util/delay.h>
+
 PaintAction::PaintAction(void) {
 }
 
@@ -15,10 +18,10 @@ s16 PaintAction::priority(void) {
   s16 dist = (controlPoint() - positionManager().getValue()).norm();
   // pourquoi à chaque fois je vois un test "dist != 0" ???? si on est bien placé dès le départ on a pas le droit de faire l'action ?
   if( dist != 0) {
-    return _static_priority * (30000 / dist);
+    return _static_priority * (6500 / dist);
     //return _static_priority * (4000 / dist);
   }
-  return 0;
+  return 10000;
 }
 
 Vect<2, s32> PaintAction::controlPoint(void) {
@@ -36,30 +39,52 @@ enum Error PaintAction::doAction(void) {
   trajectoryManager().setMode(TrajectoryManager::BACKWARD);
   trajectoryManager().gotoPosition(Vect<2, s32>(0, 875));
   while(!trajectoryManager().isEnded()) {
+    if(check_for_collision(60)) {
+      robot().lock();
+      _delay_ms(5);
+    }
+    else {
+      robot().unlock();
+    }
   }
   
   // We stick the painting to the wall
   asserv_speed_slow();
   for(int i = 0; i < 3; i++) {
+    robot().unlock();
     trajectoryManager().gotoDistance(-3000);
     while(!robot().getValue()) {
     }
     //trajectoryManager().reset();
-    robot().unlock();
+    trajectoryManager().reset();
   }
   positionManager().setY(1050 - 125);
 
   // Go far from wall
   asserv_speed_normal();
+  robot().unlock();
   trajectoryManager().gotoDistance(50);
   while(!trajectoryManager().isEnded()) {
-    robot().unlock();
+    if(check_for_collision(60)) {
+      robot().lock();
+      _delay_ms(5);
+    }
+    else {
+      robot().unlock();
+    }
   }
-  
+
   // And finally we return to the control point
   trajectoryManager().setMode(TrajectoryManager::FASTER);
   trajectoryManager().gotoPosition(Vect<2, s32>(0, 550));
   while(!trajectoryManager().isEnded()) {
+    if(check_for_collision(60)) {
+      robot().lock();
+      _delay_ms(5);
+    }
+    else {
+      robot().unlock();
+    }
   }
 
   _static_priority = 0;

@@ -53,7 +53,7 @@ bool update_world(void) {
   
   bool detected = false;
   
-  for (int i = 0; i< (int)adv.usedSpace(); i++) {
+  for(int i = 0; i< (int)adv.usedSpace(); i++) {
     //io << i << " : " << adv.get(i).coord(0) << " , " << adv.get(i).coord(1) << "\n";
     //s32 abs_angle = 180 - adv.get(i).coord(1) + (odo.getValue().coord(1) >> 4);
     s32 abs_angle = (- adv.get(i).coord(1) - (odo.getValue().coord(1) >> 4))%360;
@@ -67,7 +67,7 @@ bool update_world(void) {
     //io << "rel_x = " << rel_x << " \trel_y = " << rel_y << "\n";
     //io << "abs_x = " << abs_x << " \tabs_y = " << abs_y << "\n";
 
-    if (i==0) {
+    if(i==0) {
       ennemy_robot.centre() = Vect<2, s32>(abs_x, abs_y);
       //world.addShape(&ennemy_robot);
       //mini_world.addShape(&ennemy_robot);
@@ -94,9 +94,9 @@ bool check_for_collision(u8 max_dist) {
   for(int i = 0; i < (int) adv.usedSpace(); i++) {
     //io << i << " : " << adv.get(i).coord(0) << " , " << adv.get(i).coord(1) << "\n";
     
-    static const s32 SHORT_RANGE_DIST = 60;
+    const s32 SHORT_RANGE_DIST = (60 > max_dist) ? max_dist : 60;
     static const s32 SHORT_RANGE_ANGLE = 45;
-    s32 LONG_RANGE_DIST = max_dist;
+    const s32 LONG_RANGE_DIST = max_dist;
     static const s32 LONG_RANGE_ANGLE = 30;
     
     if(!traj.isBackward() && adv.get(i).coord(0) < SHORT_RANGE_DIST &&
