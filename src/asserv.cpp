@@ -16,7 +16,7 @@ PidFilter pid_a;
 DiffFilter diff_l;
 DiffFilter diff_r;
 DiffFilter diff_d;
-DiffFilter diff_a;
+//DiffFilter diff_a;
 
 QuadrampFilter qramp_l;
 QuadrampFilter qramp_r;
@@ -44,7 +44,7 @@ MotorController motc_r(mot_r, enc_r, id, diff_r, pid_r);
 
 Odometer odo(enc_l, enc_r);
 
-RobotController _robot(motc_l, motc_r, odo, qramp_d, id, pid_d, qramp_a, id, pid_a);
+RobotController _robot(motc_l, motc_r, odo, id, diff_d, pid_d, qramp_a, id, pid_a);
 SecureRobot robot(_robot, odo, skd_l, skd_r, mot_l, mot_r);
 //SecureRobot robot(_robot, odo, skd_l, skd_r, motc_l, motc_r);
 
@@ -90,12 +90,12 @@ void asserv_init(void) {
   pid_a.setOutShift(6);
   
   //pid_d.setGains(600, 8, 0);
-  pid_d.setGains(600, 8, 0);
-  pid_d.setMaxIntegral(16000);
-  // TEST PATINAGEss
-  //pid_d.setGains(1600, 16, 0);
-  //pid_d.setMaxIntegral(32000);
-  pid_d.setOutShift(6);
+  //  pid_d.setGains(600, 8, 0);
+  pid_d.setGains(100, 0, 0);
+  pid_d.setMaxIntegral(160000);
+  pid_d.setOutShift(5);
+
+  diff_d.setDelta(1);
 
   qramp_a.setFirstOrderLimit(30,30);
   qramp_a.setSecondOrderLimit(4,4);
@@ -114,13 +114,13 @@ void asserv_lockmode_activ(void) {
 
 void asserv_speed_slow(void) {
   //  qramp_a.setFirstOrderLimit(15,15);
-  qramp_a.setFirstOrderLimit(20,20);
-  qramp_a.setSecondOrderLimit(2,2);
+  qramp_a.setFirstOrderLimit(30,30);
+  qramp_a.setSecondOrderLimit(4,4);
 
   //qramp_d.setFirstOrderLimit(5,5);
   //  qramp_d.setFirstOrderLimit(8,8);
   qramp_d.setFirstOrderLimit(8,8);
-  qramp_d.setSecondOrderLimit(1,2);
+  qramp_d.setSecondOrderLimit(2,2);
 }
 
 void asserv_speed_normal(void) {

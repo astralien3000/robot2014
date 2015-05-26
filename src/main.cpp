@@ -7,359 +7,83 @@
 #include <hardware/interrupts.hpp>
 #include <system/scheduler.hpp>
 #include "fpga.hpp"
-#include "astar.hpp"
-#include "calibrate.hpp"
-#include "trajectory.hpp"
-#include "rds.hpp"
-#include "servo.hpp"
-#include "avoidance.hpp"
-#include "secure_timer.hpp"
 
-#include "curv_trajectory_manager.hpp"
-
-#include "master_action.hpp"
-#include "harvest_action.hpp"
-#include "deposit_action.hpp"
-#include "hunt_action.hpp"
-#include "paint_action.hpp"
-#include "capture_action.hpp"
-#include "strategy.hpp"
-
-#include <device/servomotor/fpga_servomotor.hpp>
-#include <device/other/pin.hpp>
-
-// IHM
-FpgaUartStream ihm_io("ihm", UART_TX_2_DATA, UART_TX_2_OCUP, UART_RX_2_DATA, UART_RX_2_AVA);
-
-//
-
-List<20, Action*> actions;
-
-// PAINT
-PaintAction paint_action;
-
-// FIRE
-MasterAction red_top_fire_action(red_top_fire.p(), 180, 5);
-MasterAction red_mid_fire_action(red_mid_fire.p(), 90, 2);
-MasterAction red_bot_fire_action(red_bot_fire.p(), 1);
-
-MasterAction yellow_top_fire_action(yellow_top_fire.p(), 180, 5);
-MasterAction yellow_mid_fire_action(yellow_mid_fire.p(), -90, 2);
-MasterAction yellow_bot_fire_action(yellow_bot_fire.p(), 1);
-
-// TREE
-HarvestAction red_tree_action(red_tree.centre(), -90, -75);
-HarvestAction yellow_tree_action(yellow_tree.centre(), 90, -75);
-HarvestAction left_tree_action(left_tree.centre(), 0, -75);
-HarvestAction right_tree_action(right_tree.centre(), 0, -75);
-
-// BASKET
-DepositAction basket_action;
-
-// MAMMOUTH (HUNT)
-// HuntAction red_mammouth_action(Vect<2, s32>(850, 350),Vect<2, s32>(850,1050), 0);
-// HuntAction yellow_mammouth_action(Vect<2, s32>(-750, 350), Vect<2,s32>(-750,1050), 0);
-
-// MAMMOUTH (CAPTURE)
-CaptureAction red_final_action(Vect<2, s32>(900, 470),Vect<2, s32>(900,1050));
-CaptureAction yellow_final_action(Vect<2, s32>(-600, 470),Vect<2, s32>(-600,1050));
-
-// CALIBRATE
-// TODO : 4
+#include <math/trigo.hpp>
 
 #define F_CPU 16000000l
 #include <util/delay.h>
 
 static Scheduler& sched = Scheduler::instance();
 
+static Vect<2, s32> cmd;
 
-// #include <avr/interrupt.h>
+static void control_init(void) {
+  Task t([]() {
+      Vect<2, s32> _cmd = cmd;
+      s32 angle_err = (cmd.coord(1) - odo.getValue().coord(1));
+      // if(angle_err != 0) {
+      // 	_cmd.coord(0) = Math::abs((_cmd.coord(0)) / (angle_err >> 5));
+      // }
+      _cmd.coord(0) = Math::abs(_cmd.coord(0));
+      _cmd.coord(1) = - cmd.coord(1);
+      robot.setValue(_cmd);
+    });
 
-// ISR(TIMER0_OVF_vect) {
-//   io << "INTERRUPTS\n";
-// }
-
-// void print_pos(void) {
-//   io << "(x " << pos.getValue().coord(0) << ", ";
-//   io << "y " << pos.getValue().coord(1) << ")\n";
-// }
-
-// void print_sp(void) {
-//   io << "STACK POINTER = " << SPH << " " << SPL << "\n";
-// }
-
-#include <hardware/timer.hpp>
-
-template <bool WAIT_FOR>
-void antibounce_wait(Input<bool>& i) {
-  s16 dummy = 0;
+  t.setPeriod(64000);
+  t.setRepeat();
   
-  while(dummy < 100) {
-    if(i.getValue() == WAIT_FOR) {
-      dummy++;
-      _delay_ms(5);
-    }
-    else {
-      dummy = 0;
-    }
-  }
+  sched.addTask(t);
 }
 
 int main(int argc, char* argv[]) {
   (void)argc;
   (void)argv;
 
-  //Timer<0>::init();
-
   // Need to be the first thing to be done (for security)
   fpga_init();
   MOT_R = 0;
   MOT_L = 0;
 
-  Aversive::init();
   asserv_init();
 
   robot.lock();
 
-  rds_init();
-  servo_init();
-  control_init();
-  //io << "gezgzegegb)zer\n";
-  Interrupts::set();
   mot_l.inverse();
   enc_r.inverse();
 
-  //TEST ALARACHE BENOIT LANCEBALLE
-  // s16 wait = 0;
-  // io << "Enter a number\n";
-  // io >> wait;
-  // io << "Do action\n";
-  // act3.doAction();
-  // while(1);
+  control_init();
+  Interrupts::set();
 
-  // TEST SERVO
-  // while(1) {
-  //   u16 cmd = 0;
-  //   //cmd += 10;
-  //   //_delay_ms(1000);
-  //   io << "Command ?\n";
-  //   io >> cmd;
-  //   io << cmd << "\n";
-  //   // SERVO1 = cmd;
-  //   // SERVO2 = cmd;
-  //   // SERVO3 = cmd;
-  //   // SERVO4 = cmd;
-  //   // SERVO5 = cmd;
-  //   // SERVO6 = cmd;
-
-  //   //SERVO7 = cmd;
-  //   // SERVO8 = cmd;
-  //   // SERVO9 = cmd;
-  //   // SERVO10 = cmd;
-  //   // SERVO11 = cmd;
-  //   // SERVO12 = cmd;
-  //   // SERVO13 = cmd;
-  //   // SERVO14 = cmd;
-  //   // SERVO15 = cmd;
-  //   // SERVO16 = cmd;
-  //   // FpgaServomotor<volatile u16, SERVO7_ADDR> servo("servo");
-  //   // servo.setMinCommand(100);
-  //   // servo.setMaxCommand(1900);
-  //   // servo.setValue(cmd);
-  // }
-
-
+  robot.setLockable(false);
   robot.unlock();
 
   asserv_speed_slow();
 
-  traj.setMode(TrajectoryManager::FASTER);
+  Vect<2, s32> dir;
+  s32 last_angle = 0;
+  while(1) {
+    io << "CMD ?\n";
 
-  Pin<37> tirette("tirette");
-  tirette.setMode(PinMode::INPUT);
+    io >> dir.coord(0);
+    io << dir.coord(0) << "\n";
 
-  Pin<39> side_pin("side");
-  side_pin.setMode(PinMode::INPUT);
+    io >> dir.coord(1);
+    io << dir.coord(1) << "\n";
 
-  s16 dummy = 0;
-  
-  /*
-  dummy = 0;
-  while(dummy < 100) {
-    if(tirette.getValue()) {
-      dummy++;
-      _delay_ms(5);
+    if(dir.norm() != 0) {
+      s32 angle = Math::atan2<Math::DEGREE, s32>(dir.coord(1), dir.coord(0));
+      cmd.coord(1) = angle << 4;
+      cmd.coord(0) = dir.norm();
+      last_angle = angle;
     }
     else {
-      dummy = 0;
+      cmd.coord(1) = last_angle;
+      cmd.coord(0) = 0;
     }
+
   }
-  */
-  antibounce_wait<true>(tirette);
-  
-  antibounce_wait<false>(tirette);
-  dummy = 0;
-  /*
-  while(tirette.getValue()) {
-    // if(ihm_io.inputUsedSpace() > 0) {
-    //   //io << "used sp = " << ihm_io.inputUsedSpace() << "\n";
-    //   u8 c = ihm_io.getValue();
-    //   if(! (c & 1)) {
-    // 	dummy = 1;
-    // 	//io << "RED SIDE\n";
-    //   }
-    //   else {
-    // 	dummy = 2;
-    // 	//io << "YELLOW SIDE\n";
-    //   }
-    // }
-  }
-  */
-  // io << "Side \n";
-  // io >> dummy;
-  // io << dummy << "\n";
-  dummy = 1 + side_pin.getValue();
-
-  // if(dummy == 1) {
-  //   io << "RED\n";
-  // }
-  // else {
-  //   io << "YELLOW\n";
-  // }
-
-  side_init(dummy==1);
-  match_init(dummy==1);
-
-  robot.lock();
-
-  //io << "Conf\n";
-  Action::setPositionManager(pos);
-  Action::setRobot(robot);
-  Action::setTrajectoryManager(traj);
-  if (dummy == 1)
-    Action::side = RED;
-  else
-    Action::side = YELLOW;
-
-  actions.append(&paint_action);
-
-  actions.append(&red_top_fire_action);
-  actions.append(&red_mid_fire_action);
-  actions.append(&red_bot_fire_action);
-
-  actions.append(&yellow_top_fire_action);
-  actions.append(&yellow_mid_fire_action);
-  actions.append(&yellow_bot_fire_action);
-
-  actions.append(&red_tree_action);
-  actions.append(&yellow_tree_action);
-  actions.append(&left_tree_action);
-  actions.append(&right_tree_action);
-
-  actions.append(&basket_action);
-
-  //actions.append(&red_mammouth_action);
-  //actions.append(&yellow_mammouth_action);
-  
-  actions.append(&red_final_action);  
-  actions.append(&yellow_final_action);  
-  
-  //io << "Place me please <3\n";
-  //io >> dummy;
-  antibounce_wait<true>(tirette);
-  /*
-  dummy = 0;
-  while(dummy < 100) {
-    if(tirette.getValue()) {
-      dummy++;
-      _delay_ms(5);
-    }
-    else {
-      dummy = 0;
-    }
-  }
-  */
-  antibounce_wait<false>(tirette);
-  // while(tirette.getValue());
-  
-  // Demarrage du compteur des 90s APRES LA TIRETTE
-  secure_timer_init();
-  
-  traj.setMode(TrajectoryManager::FASTER);
-  traj.reset();
-  trajectory_reset();
-  robot.unlock();
-
-  asserv_speed_normal();
-
-  // traj.gotoDistance(300);
-  // while(!traj.isEnded()) {
-  //   //check_for_collision();
-  // }
-  io << "GO\n";
-  traj.gotoDistance(200);
-  while (!traj.isEnded()) {
-  }
-  //io << "BEGIN\n";
-  //TEST_EVITEMENT
-  // u8 number_of_cacul = 0;
-  // while (1) {
-  //   avoidance_goto(Vect<2, s32>(1000, -200));
-  //   io << "NOUVEAU CALCUL : " << number_of_cacul << "\n";
-  //   number_of_cacul++;
-  // }
-
-  // TEST STRATEGY 
-  //io << "Begin Strategy\n";
-  do_your_job();
-
-  // TEST BEGIN A FOND !!
-  // traj.gotoPosition(Vect<2, s32>(-100, 500));
-  // while(!traj.isEnded()) {
-  //   if(check_for_collision()) {
-  //     robot.lock();
-  //     io << "over\n";
-  //     while(1);
-  //   }
-  // }
-
-  // TEST AVOIDANCE / ASTAR
-  // while(1) {
-  //   io << "goto\n";
-  //   avoidance_goto(Vect<2, s32>(1100, -600));
-  //   volatile s32 attente = 0;
-  //   while (attente < 3000000)
-  //     attente++;
-  // }
-
-  // io << "Goto\n";
-  // traj.gotoPosition(act1.controlPoint());
-  // while(!traj.isEnded());
-
-  // print_pos();
-
-  // io << "Do action\n";
-  // act1.doAction();
-  // io << "DONE\n";
-
-  // io << "Goto3\n";
-  // traj.gotoPosition(yellow_mammouth_action.controlPoint());
-  // while(!traj.isEnded());
-
-  // io << "Do action3\n";
-  // yellow_mammouth_action.doAction();
-  // io << "DONE3\n";
-
-  // io << "Goto paint";
-  // avoidance_goto(paint_action.controlPoint());
-  // while(!traj.isEnded());
-
-  // io << "Do paint\n";
-  // paint_action.doAction();
-  // io << "DONE paint\n";
 
   while(1);
 
-  Aversive::setReturnCode(0);
-  return Aversive::exit();
+  return 0;
 }
